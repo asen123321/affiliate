@@ -144,9 +144,6 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/data-fixtures" />
       <path value="$PROJECT_DIR$/vendor/knplabs/knp-paginator-bundle" />
       <path value="$PROJECT_DIR$/vendor/knplabs/knp-components" />
-      <path value="$PROJECT_DIR$/vendor/php-webdriver/webdriver" />
-      <path value="$PROJECT_DIR$/vendor/symfony/panther" />
-      <path value="$PROJECT_DIR$/vendor/dbrekelmans/bdi" />
     </include_path>
   </component>
   <component name="PhpInterpreters">

@@ -1,95 +1,316 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}🔥 Най-добрите оферти - Технологии и Мода{% endblock %}
+{% block title %}🔥 Best Tech Deals 2025 - Exclusive Reviews & Hot Offers{% endblock %}
 
 {% block body %}
-    <div class="container-fluid bg-dark text-white py-5 mb-5" style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);">
-        <div class="container text-center">
-            <h1 class="display-3 fw-black mb-3">ЕКСКЛУЗИВНИ <span style="color: #f093fb;">ОФЕРТИ</span></h1>
-            <p class="lead opacity-75">Ръчно подбрани промоции от най-големите магазини</p>
 
-            <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
-                <a href="{{ path('app_compare', {'category': 'emag-deals'}) }}"
-                   class="btn btn-outline-light rounded-pill px-4 py-2">
-                    <i class="bi bi-bar-chart"></i> Сравни eMAG Оферти
-                </a>
-                <a href="{{ path('app_compare', {'category': 'fashion-days'}) }}"
-                   class="btn btn-outline-light rounded-pill px-4 py-2">
-                    <i class="bi bi-bar-chart"></i> Сравни Fashion Days
-                </a>
-                <a href="{{ path('app_compare', {'category': 'alleop'}) }}"
-                   class="btn btn-outline-light rounded-pill px-4 py-2">
-                    <i class="bi bi-bar-chart"></i> Сравни Alleop
-                </a>
+    <div class="mega-hero position-relative overflow-hidden">
+        <div class="animated-blobs"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center py-5">
+                <div class="col-lg-7 text-white py-5">
+                    <div class="mb-3">
+                        <span class="badge-hot">🔥 TRENDING NOW</span>
+                    </div>
+                    <h1 class="display-2 fw-black mb-4 text-shadow">
+                        Get The Best Tech<br>
+                        <span class="gradient-text">Before It Sells Out!</span>
+                    </h1>
+                    <p class="lead fs-3 mb-4 fw-semibold">
+                        💰 Exclusive deals • ⚡ Expert reviews • ✅ Verified picks
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="stat-box">
+                            <div class="fs-2 fw-black">50+</div>
+                            <div class="small opacity-90">Products Tested</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="fs-2 fw-black">100%</div>
+                            <div class="small opacity-90">Honest Reviews</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="fs-2 fw-black">24/7</div>
+                            <div class="small opacity-90">Price Updates</div>
+                        </div>
+                    </div>
+                    <a href="#deals" class="btn btn-mega-cta btn-lg px-5 py-3 fw-black">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>SHOP HOT DEALS NOW
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="floating-emoji">
+                        <div class="emoji-item" style="animation-delay: 0s;">💎</div>
+                        <div class="emoji-item" style="animation-delay: 0.5s;">🚀</div>
+                        <div class="emoji-item" style="animation-delay: 1s;">⚡</div>
+                        <div class="emoji-item" style="animation-delay: 1.5s;">💰</div>
+                        <div class="emoji-item" style="animation-delay: 2s;">🔥</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container" id="deals">
+    <div class="alert-ticker">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-center gap-3 py-2">
+                <i class="bi bi-clock-history text-danger fs-5 animate-pulse"></i>
+                <span class="fw-bold">⚡ LIMITED TIME OFFERS ⚡</span>
+                <span class="text-muted">|</span>
+                <span>🔥 New deals added daily</span>
+                <span class="text-muted">|</span>
+                <span>✅ Price drops alert active</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5" id="deals">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-black mb-3">
+                💎 <span class="gradient-text">Editor's Choice Deals</span> 💎
+            </h2>
+            <p class="lead text-muted">Handpicked by experts. Verified by real tests. Loved by thousands.</p>
+        </div>
+
         <div class="row g-4">
             {% for review in reviews %}
                 <div class="col-6 col-md-4 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-hover-effect">
+                    <div class="product-card h-100">
+                        {% if review.badge %}
+                            <div class="product-badge">
+                    <span class="badge-premium">
+                        <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
+                    </span>
+                            </div>
+                        {% endif %}
 
-                        <div class="position-absolute top-0 start-0 m-2" style="z-index: 10;">
-                            {% if 'fashiondays' in review.originalProductUrl %}
-                                <span class="badge bg-dark px-2 py-1 shadow-sm">Fashion Days</span>
-                            {% elseif 'emag' in review.originalProductUrl %}
-                                <span class="badge bg-primary px-2 py-1 shadow-sm">eMAG</span>
-                            {% elseif 'alleop' in review.originalProductUrl %}
-                                <span class="badge bg-success px-2 py-1 shadow-sm">Alleop</span>
-                            {% endif %}
+                        <div class="hot-corner">
+                            <div class="hot-label">🔥 HOT</div>
                         </div>
 
-                        <div class="bg-white d-flex align-items-center justify-content-center p-3" style="height: 200px;">
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank">
-                                <img src="{{ review.imageUrl }}" class="img-fluid" style="max-height: 180px; object-fit: contain;" alt="{{ review.title }}">
-                            </a>
-                        </div>
-
-                        <div class="card-body d-flex flex-column">
-                            <h6 class="card-title fw-bold text-dark mb-2" style="height: 40px; overflow: hidden;">
-                                {{ review.title }}
-                            </h6>
-
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-end mb-3">
-                                    <span class="fs-4 fw-black text-danger">{{ review.price }} лв.</span>
-                                    <small class="text-muted text-decoration-line-through">verified</small>
+                        {% if review.imageUrl %}
+                            <div class="product-image-wrapper">
+                                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank">
+                                    <img src="{{ review.imageUrl }}" class="product-image" alt="{{ review.title }}">
+                                </a>
+                                <div class="image-overlay">
+                                    <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="quick-view" style="text-decoration: none; cursor: pointer;">
+                                        👁️ QUICK VIEW
+                                    </a>
                                 </div>
+                            </div>
+                        {% else %}
+                            <div class="product-image-wrapper bg-gradient">
+                                <div class="d-flex align-items-center justify-content-center" style="height: 220px;">
+                                    <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                                </div>
+                            </div>
+                        {% endif %}
 
-                                <a href="{{ path('app_review_show', {slug: review.slug}) }}" class="btn btn-outline-dark w-100 rounded-3 fw-bold mb-2">
-                                    ДЕТАЙЛИ
-                                </a>
-                                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="btn btn-primary w-100 rounded-3 fw-bold shadow-sm" style="background: #667eea; border: none;">
-                                    КЪМ МАГАЗИНА
-                                </a>
+                        <div class="product-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div class="rating-stars">
+                                    {% for i in 1..5 %}
+                                        {% if i <= review.rating %}⭐{% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-number">{{ review.rating }}.0</span>
+                            </div>
+
+                            <h3 class="product-title">{{ review.title|slice(0, 50) }}{% if review.title|length > 50 %}...{% endif %}</h3>
+
+                            <div class="product-price-section">
+                                <div class="current-price">{{ review.price }} лв.</div>
+                                <div class="price-tag">💰 BEST PRICE</div>
+                            </div>
+
+                            <a href="{{ path('app_review_show', {slug: review.slug}) }}" class="btn-product-cta">
+                        <span class="cta-text">
+                            <i class="bi bi-lightning-charge-fill me-1"></i>
+                            VIEW DEAL
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+                                <span class="cta-glow"></span>
+                            </a>
+
+                            <div class="trust-icons">
+                                <span class="trust-item" title="Free Shipping">🚚</span>
+                                <span class="trust-item" title="30-Day Returns">↩️</span>
+                                <span class="trust-item" title="Secure Payment">🔒</span>
+                                <span class="trust-item" title="Expert Tested">✅</span>
                             </div>
                         </div>
                     </div>
                 </div>
             {% else %}
-                <div class="col-12 text-center py-5">
-                    <div class="display-1 text-muted mb-4">🏜️</div>
-                    <h3 class="text-secondary">Няма намерени продукти за този източник.</h3>
-                    <a href="{{ path('app_home') }}" class="btn btn-primary mt-3">Виж всички</a>
+                <div class="col-12">
+                    <div class="alert alert-light text-center rounded-4 border-0 shadow-sm py-5">
+                        <div class="display-1 mb-3">😢</div>
+                        <h4 class="fw-bold mb-2">No deals available yet</h4>
+                        <p class="text-muted mb-0">Check back soon for amazing offers!</p>
+                    </div>
                 </div>
             {% endfor %}
         </div>
 
-        <div class="d-flex justify-content-center my-5">
-            {{ knp_pagination_render(reviews) }}
+        {# Настройки за пагинацията #}
+        {% set current = reviews.currentPageNumber %}
+        {% set total = reviews.pageCount %}
+        {% set range = 2 %}
+
+        {% if total > 1 %}
+            <div class="d-flex flex-wrap justify-content-center gap-2 my-5">
+                {% if current > 1 %}
+                    <a href="{{ path('app_home', app.request.query.all|merge({'page': current - 1})) }}" class="btn btn-outline-primary btn-square">Назад</a>
+                {% endif %}
+
+                <a href="{{ path('app_home', app.request.query.all|merge({'page': 1})) }}" class="btn {{ current == 1 ? 'btn-primary' : 'btn-outline-primary' }} btn-square">1</a>
+
+                {% if current - range > 2 %}
+                    <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
+                {% endif %}
+
+                {% for i in (current - range)..(current + range) %}
+                    {% if i > 1 and i < total %}
+                        <a href="{{ path('app_home', app.request.query.all|merge({'page': i})) }}" class="btn {{ current == i ? 'btn-primary' : 'btn-outline-primary' }} btn-square">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if current + range < total - 1 %}
+                    <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
+                {% endif %}
+
+                <a href="{{ path('app_home', app.request.query.all|merge({'page': total})) }}" class="btn {{ current == total ? 'btn-primary' : 'btn-outline-primary' }} btn-square">{{ total }}</a>
+
+                {% if current < total %}
+                    <a href="{{ path('app_home', app.request.query.all|merge({'page': current + 1})) }}" class="btn btn-outline-primary btn-square">Напред</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="bottom-cta-section">
+        <div class="container text-center py-5">
+            <div class="display-4 fw-black text-white mb-3">⚡ Don't Miss Out! ⚡</div>
+            <p class="lead text-white mb-4 opacity-90">Join thousands of smart shoppers getting the best tech deals</p>
+            <a href="#deals" class="btn btn-mega-white btn-lg px-5 py-3 fw-black">
+                <i class="bi bi-arrow-up me-2"></i>BACK TO DEALS
+            </a>
         </div>
     </div>
 
     <style>
-        .fw-black { font-weight: 900; }
-        .product-hover-effect { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .product-hover-effect:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+        /* Typography */
+        .fw-black { font-weight: 900 !important; }
+        .text-shadow { text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 
-        /* Стилизиране на пагинацията на KNP */
-        .pagination { gap: 5px; }
-        .page-item .page-link { border-radius: 8px; color: #667eea; font-weight: bold; border: none; }
-        .page-item.active .page-link { background-color: #667eea; color: white; }
+        /* MEGA HERO SECTION */
+        .mega-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 70vh;
+            position: relative;
+        }
+
+        .animated-blobs {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 1;
+        }
+
+        .btn-square {
+            min-width: 42px; height: 42px;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0 10px; font-weight: 600; border-radius: 6px;
+        }
+
+        .btn-square:first-child, .btn-square:last-child { min-width: auto; padding: 0 15px; }
+
+        .animated-blobs::before, .animated-blobs::after {
+            content: ''; position: absolute; background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        .animated-blobs::before { width: 500px; height: 500px; top: -250px; right: -100px; }
+        .animated-blobs::after { width: 400px; height: 400px; bottom: -200px; left: -100px; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -50px) rotate(120deg); }
+            66% { transform: translate(-20px, 30px) rotate(240deg); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #f093fb 50%, #fff 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; animation: gradient-flow 3s ease infinite;
+        }
+
+        @keyframes gradient-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .badge-hot {
+            display: inline-block; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
+            color: white; padding: 8px 20px; border-radius: 50px; font-weight: 800;
+            border: 2px solid rgba(255, 255, 255, 0.3); animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            padding: 15px 25px; border-radius: 15px; border: 2px solid rgba(255, 255, 255, 0.2); text-align: center;
+        }
+
+        .btn-mega-cta {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
+            border: none; color: white !important; border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4); transition: all 0.3s ease;
+        }
+
+        .floating-emoji { position: relative; height: 400px; }
+        .emoji-item { position: absolute; font-size: 5rem; animation: float-emoji 6s infinite ease-in-out; }
+        @keyframes float-emoji { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }
+
+        /* PRODUCT CARD */
+        .product-card {
+            background: white; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); transition: all 0.4s ease;
+        }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25); }
+
+        .badge-premium { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
+        .hot-label { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 8px 16px; font-size: 0.7rem; font-weight: 900; border-bottom-left-radius: 15px; }
+
+        .product-image-wrapper { position: relative; height: 220px; overflow: hidden; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .product-card:hover .product-image { transform: scale(1.1); }
+
+        .image-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(102, 126, 234, 0.85); display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .product-card:hover .image-overlay { opacity: 1; }
+        .quick-view { color: white; font-weight: 800; }
+
+        .product-body { padding: 18px; }
+        .product-title { font-size: 0.95rem; font-weight: 700; color: #2d3748; min-height: 42px; margin-bottom: 12px; }
+        .current-price { font-size: 1.75rem; font-weight: 900; color: #ff6b6b; }
+
+        .btn-product-cta {
+            display: block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; text-align: center; padding: 14px 20px; border-radius: 12px;
+            font-weight: 800; text-decoration: none; transition: all 0.3s ease;
+        }
+
+        .bottom-cta-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-mega-white { background: white; color: #667eea !important; border-radius: 50px; }
+
+        html { scroll-behavior: smooth; }
     </style>
+
 {% endblock %}
