@@ -1,0 +1,230 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сравни {{ review.title }} - различни платформи{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Начало</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_review_show', {slug: review.slug}) }}">{{ review.title|slice(0, 30) }}...</a></li>
+            <li class="breadcrumb-item active">Сравни цени</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold mb-3">
+                <i class="bi bi-graph-up text-primary"></i>
+                Сравнение на цени за подобни продукти
+            </h1>
+            <p class="lead text-muted">
+                Намерени продукти подобни на: <strong>{{ review.title }}</strong>
+            </p>
+        </div>
+    </div>
+
+    {% set hasProducts = products.emag|length > 0 or products.fashiondays|length > 0 or products.alleop|length > 0 %}
+
+    {% if hasProducts %}
+        <!-- Price Comparison Chart -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">
+                            <i class="bi bi-bar-chart-line-fill text-primary"></i>
+                            Сравнение на цени по платформи
+                        </h3>
+                        <canvas id="priceChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-laptop display-4 text-primary mb-3"></i>
+                        <h4 class="card-title">eMAG</h4>
+                        <p class="display-6 fw-bold text-primary mb-0">{{ products.emag|length }}</p>
+                        <small class="text-muted">продукта</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-bag-heart display-4 text-danger mb-3"></i>
+                        <h4 class="card-title">Fashion Days</h4>
+                        <p class="display-6 fw-bold text-danger mb-0">{{ products.fashiondays|length }}</p>
+                        <small class="text-muted">продукта</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-basket display-4 text-success mb-3"></i>
+                        <h4 class="card-title">Alleop</h4>
+                        <p class="display-6 fw-bold text-success mb-0">{{ products.alleop|length }}</p>
+                        <small class="text-muted">продукта</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products by Platform -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="mb-4"><i class="bi bi-list-ul"></i> Всички намерени продукти</h3>
+
+                <!-- eMAG Products -->
+                {% if products.emag|length > 0 %}
+                    <h4 class="text-primary mb-3"><i class="bi bi-laptop"></i> eMAG ({{ products.emag|length }})</h4>
+                    <div class="row g-3 mb-5">
+                        {% for product in products.emag %}
+                            {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'eMAG'} %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Fashion Days Products -->
+                {% if products.fashiondays|length > 0 %}
+                    <h4 class="text-danger mb-3"><i class="bi bi-bag-heart"></i> Fashion Days ({{ products.fashiondays|length }})</h4>
+                    <div class="row g-3 mb-5">
+                        {% for product in products.fashiondays %}
+                            {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'Fashion Days'} %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Alleop Products -->
+                {% if products.alleop|length > 0 %}
+                    <h4 class="text-success mb-3"><i class="bi bi-basket"></i> Alleop ({{ products.alleop|length }})</h4>
+                    <div class="row g-3 mb-5">
+                        {% for product in products.alleop %}
+                            {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'Alleop'} %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Chart Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('priceChart');
+
+                const emagProducts = {{ products.emag|json_encode|raw }};
+                const fashionDaysProducts = {{ products.fashiondays|json_encode|raw }};
+                const alleopProducts = {{ products.alleop|json_encode|raw }};
+
+                function getAveragePrice(products) {
+                    if (products.length === 0) return 0;
+                    const total = products.reduce((sum, p) => sum + parseFloat(p.price || 0), 0);
+                    return (total / products.length).toFixed(2);
+                }
+
+                function getMinPrice(products) {
+                    if (products.length === 0) return 0;
+                    return Math.min(...products.map(p => parseFloat(p.price || 0))).toFixed(2);
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['eMAG', 'Fashion Days', 'Alleop'],
+                        datasets: [
+                            {
+                                label: 'Най-ниска цена (лв.)',
+                                data: [
+                                    getMinPrice(emagProducts),
+                                    getMinPrice(fashionDaysProducts),
+                                    getMinPrice(alleopProducts)
+                                ],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(34, 197, 94, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(59, 130, 246, 1)',
+                                    'rgba(239, 68, 68, 1)',
+                                    'rgba(34, 197, 94, 1)'
+                                ],
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Средна цена (лв.)',
+                                data: [
+                                    getAveragePrice(emagProducts),
+                                    getAveragePrice(fashionDaysProducts),
+                                    getAveragePrice(alleopProducts)
+                                ],
+                                backgroundColor: [
+                                    'rgba(99, 102, 241, 0.6)',
+                                    'rgba(244, 114, 182, 0.6)',
+                                    'rgba(74, 222, 128, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(99, 102, 241, 1)',
+                                    'rgba(244, 114, 182, 1)',
+                                    'rgba(74, 222, 128, 1)'
+                                ],
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + ' лв.';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' лв.';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    {% else %}
+        <div class="alert alert-warning text-center py-5">
+            <i class="bi bi-exclamation-triangle display-1 mb-3"></i>
+            <h3>Няма намерени подобни продукти</h3>
+            <p class="mb-4">В момента няма други продукти с подобни характеристики в нашата база данни.</p>
+            <a href="{{ path('app_review_show', {slug: review.slug}) }}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Обратно към продукта
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

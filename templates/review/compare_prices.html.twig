@@ -1,0 +1,291 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сравни цени между платформи{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- Search Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold text-center mb-3">
+                <i class="bi bi-graph-up-arrow text-primary"></i> Сравнение на цени
+            </h1>
+            <p class="text-center text-muted mb-4">
+                Намерете най-добрата цена за вашия продукт между eMAG, Fashion Days и Alleop
+            </p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <form action="{{ path('app_compare_prices') }}" method="get">
+                <div class="input-group input-group-lg shadow-sm">
+                    <input type="search"
+                           name="q"
+                           class="form-control"
+                           placeholder="Например: кафемашина, лаптоп, рокля..."
+                           value="{{ query }}"
+                           required>
+                    <button class="btn btn-primary px-4" type="submit">
+                        <i class="bi bi-search"></i> Сравни цени
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if query %}
+        {% set hasProducts = products.emag|length > 0 or products.fashiondays|length > 0 or products.alleop|length > 0 %}
+
+        {% if hasProducts %}
+            <!-- Price Chart -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="card-title mb-4">
+                                <i class="bi bi-bar-chart-line text-primary"></i>
+                                Сравнение на цени за "{{ query }}"
+                            </h3>
+                            <canvas id="priceComparisonChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Tabs -->
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-pills nav-fill mb-4" id="platformTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if products.emag|length > 0 %}active{% endif %}"
+                                    id="emag-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#emag"
+                                    type="button">
+                                <i class="bi bi-laptop"></i> eMAG
+                                <span class="badge bg-primary">{{ products.emag|length }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if products.emag|length == 0 and products.fashiondays|length > 0 %}active{% endif %}"
+                                    id="fashiondays-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#fashiondays"
+                                    type="button">
+                                <i class="bi bi-bag-heart"></i> Fashion Days
+                                <span class="badge bg-primary">{{ products.fashiondays|length }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if products.emag|length == 0 and products.fashiondays|length == 0 and products.alleop|length > 0 %}active{% endif %}"
+                                    id="alleop-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#alleop"
+                                    type="button">
+                                <i class="bi bi-basket"></i> Alleop
+                                <span class="badge bg-primary">{{ products.alleop|length }}</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="platformTabContent">
+                        <!-- eMAG Tab -->
+                        <div class="tab-pane fade {% if products.emag|length > 0 %}show active{% endif %}"
+                             id="emag"
+                             role="tabpanel">
+                            {% if products.emag|length > 0 %}
+                                <div class="row g-3">
+                                    {% for product in products.emag %}
+                                        {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'eMAG'} %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Няма намерени продукти в eMAG
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Fashion Days Tab -->
+                        <div class="tab-pane fade {% if products.emag|length == 0 and products.fashiondays|length > 0 %}show active{% endif %}"
+                             id="fashiondays"
+                             role="tabpanel">
+                            {% if products.fashiondays|length > 0 %}
+                                <div class="row g-3">
+                                    {% for product in products.fashiondays %}
+                                        {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'Fashion Days'} %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Няма намерени продукти в Fashion Days
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Alleop Tab -->
+                        <div class="tab-pane fade {% if products.emag|length == 0 and products.fashiondays|length == 0 and products.alleop|length > 0 %}show active{% endif %}"
+                             id="alleop"
+                             role="tabpanel">
+                            {% if products.alleop|length > 0 %}
+                                <div class="row g-3">
+                                    {% for product in products.alleop %}
+                                        {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'Alleop'} %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Няма намерени продукти в Alleop
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart.js Script -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('priceComparisonChart');
+
+                    // Prepare data for chart
+                    const emagProducts = {{ products.emag|json_encode|raw }};
+                    const fashionDaysProducts = {{ products.fashiondays|json_encode|raw }};
+                    const alleopProducts = {{ products.alleop|json_encode|raw }};
+
+                    // Calculate average prices
+                    function getAveragePrice(products) {
+                        if (products.length === 0) return 0;
+                        const total = products.reduce((sum, p) => sum + parseFloat(p.price || 0), 0);
+                        return (total / products.length).toFixed(2);
+                    }
+
+                    // Get min/max prices
+                    function getMinPrice(products) {
+                        if (products.length === 0) return 0;
+                        return Math.min(...products.map(p => parseFloat(p.price || 0))).toFixed(2);
+                    }
+
+                    function getMaxPrice(products) {
+                        if (products.length === 0) return 0;
+                        return Math.max(...products.map(p => parseFloat(p.price || 0))).toFixed(2);
+                    }
+
+                    const chartData = {
+                        labels: ['eMAG', 'Fashion Days', 'Alleop'],
+                        datasets: [
+                            {
+                                label: 'Минимална цена (лв.)',
+                                data: [
+                                    getMinPrice(emagProducts),
+                                    getMinPrice(fashionDaysProducts),
+                                    getMinPrice(alleopProducts)
+                                ],
+                                backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                                borderColor: 'rgba(34, 197, 94, 1)',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Средна цена (лв.)',
+                                data: [
+                                    getAveragePrice(emagProducts),
+                                    getAveragePrice(fashionDaysProducts),
+                                    getAveragePrice(alleopProducts)
+                                ],
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Максимална цена (лв.)',
+                                data: [
+                                    getMaxPrice(emagProducts),
+                                    getMaxPrice(fashionDaysProducts),
+                                    getMaxPrice(alleopProducts)
+                                ],
+                                backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                borderColor: 'rgba(239, 68, 68, 1)',
+                                borderWidth: 2
+                            }
+                        ]
+                    };
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y + ' лв.';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + ' лв.';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+                <h3>Няма намерени продукти</h3>
+                <p class="text-muted">Опитайте с различна търсачка или по-общи ключови думи</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .nav-pills .nav-link:not(.active) {
+        background: #f8f9fa;
+        color: #6c757d;
+    }
+    .nav-pills .nav-link:hover:not(.active) {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+</style>
+{% endblock %}

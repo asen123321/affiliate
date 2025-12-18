@@ -70,7 +70,7 @@
                     <!-- Store Filters -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link {{ not app.request.query.get('source') ? 'active' : '' }}"
+                            <a class="nav-link {{ not app.request.query.get('source') and app.request.get('_route') == 'app_home' ? 'active' : '' }}"
                                href="{{ path('app_home') }}">
                                 <i class="bi bi-house-fill"></i> Всички
                             </a>
@@ -91,6 +91,12 @@
                             <a class="nav-link {{ app.request.query.get('source') == 'alleop' ? 'active' : '' }}"
                                href="{{ path('app_home', {'source': 'alleop'}) }}">
                                 <i class="bi bi-basket"></i> Alleop
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_compare_prices' ? 'active' : '' }}"
+                               href="{{ path('app_compare_prices') }}">
+                                <i class="bi bi-graph-up-arrow"></i> Сравни цени
                             </a>
                         </li>
                     </ul>

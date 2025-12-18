@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Entity\Review;
-use App\Service\EmagScraper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,10 +11,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[AsCommand(
     name: 'app:scrape-product',
-    description: 'Scrape a product from eMAG and create a Wirecutter-style review',
+    description: 'Скрейпва продукт от eMAG и създава подробно ревю тип Wirecutter',
 )]
 class ScrapeProductCommand extends Command
 {
@@ -26,8 +27,8 @@ class ScrapeProductCommand extends Command
     ];
 
     public function __construct(
-        private readonly EmagScraper $scraper,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SluggerInterface $slugger
     ) {
         parent::__construct();
     }
@@ -35,35 +36,11 @@ class ScrapeProductCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('emag_url', InputArgument::REQUIRED, 'The eMAG URL to scrape product data from')
-            ->addArgument('affiliate_url', InputArgument::REQUIRED, 'The affiliate URL for the buy button')
-            ->addOption('rating', 'r', InputOption::VALUE_OPTIONAL, 'Product rating (1-5)', 5)
-            ->addOption('badge', 'b', InputOption::VALUE_OPTIONAL, 'Specific badge (or random if not set)')
-            ->addOption('unpublished', null, InputOption::VALUE_NONE, 'Save as unpublished (draft)')
-            ->setHelp(
-                <<<'HELP'
-The <info>app:scrape-product</info> command creates Wirecutter-style product reviews.
-
-<comment>Usage:</comment>
-  <info>php bin/console app:scrape-product "https://emag.bg/laptop..." "https://amzn.to/abc123"</info>
-  <info>php bin/console app:scrape-product "https://emag.ro/phone..." "https://emag.bg/ref/123" --rating=4</info>
-  <info>php bin/console app:scrape-product "URL1" "URL2" --badge="Our Top Pick"</info>
-
-<comment>Arguments:</comment>
-  <info>emag_url</info>      URL to scrape product data from (title, price, image, specs)
-  <info>affiliate_url</info>  Your affiliate link for the "Buy Now" button
-
-<comment>The command will:</comment>
-  1. Scrape product data from eMAG URL
-  2. Assign a random Wirecutter-style badge ("Our Top Pick", "Budget Pick", "Upgrade Pick")
-  3. Generate structured Wirecutter-style content with:
-     - The Verdict (executive summary)
-     - Why we like it (key specs and features)
-     - Flaws but not dealbreakers (honest cons)
-     - Pros/Cons in Bootstrap grid layout
-  4. Save review with affiliate URL for monetization
-HELP
-            );
+            ->addArgument('emag_url', InputArgument::REQUIRED, 'URL на продукта в eMAG')
+            ->addArgument('affiliate_url', InputArgument::REQUIRED, 'Твоят Profitshare линк за бутона Купи')
+            ->addOption('rating', 'r', InputOption::VALUE_OPTIONAL, 'Оценка (1-5)', 5)
+            ->addOption('badge', 'b', InputOption::VALUE_OPTIONAL, 'Значка (Our Top Pick, Budget Pick, etc)')
+            ->addOption('unpublished', null, InputOption::VALUE_NONE, 'Запази като чернова (скрито)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -76,106 +53,72 @@ HELP
         $customBadge = $input->getOption('badge');
         $isPublished = !$input->getOption('unpublished');
 
-        // Validate inputs
-        if ($rating < 1 || $rating > 5) {
-            $io->error('Rating must be between 1 and 5');
-            return Command::FAILURE;
-        }
-
-        if (!filter_var($emagUrl, FILTER_VALIDATE_URL)) {
-            $io->error(sprintf('Invalid eMAG URL: "%s"', $emagUrl));
-            return Command::FAILURE;
-        }
-
-        if (!filter_var($affiliateUrl, FILTER_VALIDATE_URL)) {
-            $io->error(sprintf('Invalid affiliate URL: "%s"', $affiliateUrl));
-            return Command::FAILURE;
-        }
-
         $io->title('Wirecutter-Style Product Review Generator');
-        $io->info('Creating expert product review with affiliate monetization...');
-        $io->newLine();
 
-        // Step 1: Scrape product data from eMAG
-        $io->section('📥 Step 1: Scraping product data from eMAG...');
+        // 1. Скрейпване на данните
+        $io->section('📥 Стъпка 1: Скрейпване на данни от eMAG...');
 
         try {
-            $productData = $this->scraper->scrape($emagUrl);
+            $productData = $this->scrapeEmag($emagUrl);
 
-            if ($productData['scraped']) {
-                $io->success('Successfully scraped live product data!');
-            } else {
-                $io->warning(sprintf(
-                    'Live scraping failed (HTTP %d). Generated intelligent fallback data.',
-                    $productData['statusCode']
-                ));
+            if (!$productData) {
+                $io->error('Неуспешно скрейпване на URL.');
+                return Command::FAILURE;
             }
 
             $io->table(
-                ['Field', 'Value'],
+                ['Поле', 'Стойност'],
                 [
-                    ['Title', $productData['title']],
-                    ['Price', '$' . number_format($productData['price'], 2)],
-                    ['Image', $this->truncate($productData['imageUrl'], 60) . '...'],
-                    ['Data Source', $productData['scraped'] ? '🌐 Live Scraped' : '🤖 AI Generated'],
+                    ['Заглавие', $this->truncate($productData['title'], 50)],
+                    ['Цена', $productData['price'] . ' лв.'],
+                    ['Снимка', $this->truncate($productData['imageUrl'], 50)],
                 ]
             );
 
         } catch (\Exception $e) {
-            $io->error('Scraping failed: ' . $e->getMessage());
+            $io->error('Грешка при скрейпване: ' . $e->getMessage());
             return Command::FAILURE;
         }
 
-        // Step 2: Assign badge
-        $io->section('🏆 Step 2: Assigning Wirecutter badge...');
-
+        // 2. Избор на значка
         $badge = $customBadge && in_array($customBadge, self::BADGES)
             ? $customBadge
             : self::BADGES[array_rand(self::BADGES)];
 
-        $io->text(sprintf('Badge: <comment>%s</comment>', $badge));
+        $io->text(sprintf('Значка: <comment>%s</comment>', $badge));
 
-        // Step 3: Generate unique slug
-        $io->section('🔗 Step 3: Generating URL slug...');
+        // 3. Генериране на Slug
+        $slug = $this->slugger->slug($productData['title'])->lower()->toString();
+        // Добавяме random ID, за да е уникален
+        $slug .= '-' . uniqid();
 
-        $slug = $this->generateUniqueSlug($productData['title']);
-        $io->text(sprintf('Slug: <comment>%s</comment>', $slug));
-
-        // Step 4: Generate Wirecutter-style content
-        $io->section('✍️  Step 4: Generating Wirecutter-style content...');
+        // 4. Генериране на съдържанието (Wirecutter style)
+        $io->section('✍️ Стъпка 4: Генериране на съдържание...');
 
         $content = $this->generateWirecutterContent(
             $productData['title'],
             $productData['price'],
-            $badge,
-            $productData['description'],
-            $productData['specifications']
+            $badge
         );
 
-        $io->text(sprintf('Generated %d characters of expert content', strlen($content)));
-
-        // Step 5: Create Review entity
-        $io->section('💾 Step 5: Saving review to database...');
+        // 5. Запис в базата
+        $io->section('💾 Стъпка 5: Запис в базата данни...');
 
         $review = new Review();
         $review->setTitle($productData['title']);
         $review->setSlug($slug);
-        $review->setPrice(number_format($productData['price'], 2, '.', ''));
+        $review->setPrice((string)$productData['price']);
         $review->setRating($rating);
         $review->setImageUrl($productData['imageUrl']);
-        $review->setAffiliateLink($affiliateUrl); // Use affiliate URL here
+        $review->setAffiliateLink($affiliateUrl);
         $review->setBadge($badge);
         $review->setIsPublished($isPublished);
         $review->setCreatedAt(new \DateTimeImmutable());
+        $review->setOriginalProductUrl($emagUrl); // Важно за проверки
 
-        // Meta description
-        $metaDescription = sprintf(
-            '%s review: Expert analysis of the %s. %s.',
-            $badge,
-            $productData['title'],
-            'Read our in-depth testing and recommendations'
-        );
-        $review->setMetaDescription(substr($metaDescription, 0, 160));
+        // Мета описание
+        $metaDesc = sprintf('%s ревю: Експертен анализ на %s. Вижте нашето мнение.', $badge, $productData['title']);
+        $review->setMetaDescription(mb_substr($metaDesc, 0, 160));
 
         $review->setContent($content);
 
@@ -183,223 +126,140 @@ HELP
             $this->entityManager->persist($review);
             $this->entityManager->flush();
 
-            $io->success('Review saved successfully!');
+            $io->success('Ревюто е записано успешно!');
+            $io->note(sprintf('Виж го тук: /review/%s', $review->getSlug()));
 
         } catch (\Exception $e) {
-            $io->error('Database error: ' . $e->getMessage());
+            $io->error('Грешка при запис в базата: ' . $e->getMessage());
             return Command::FAILURE;
-        }
-
-        // Final summary
-        $io->newLine();
-        $io->section('📊 Review Summary');
-
-        $io->definitionList(
-            ['Review ID' => $review->getId()],
-            ['Title' => $review->getTitle()],
-            ['Badge' => '🏆 ' . $badge],
-            ['Slug' => $review->getSlug()],
-            ['Price' => '$' . $review->getPrice()],
-            ['Rating' => str_repeat('⭐', $rating)],
-            ['Affiliate URL' => $affiliateUrl],
-            ['Published' => $isPublished ? '✅ Yes' : '❌ Draft'],
-            ['View URL' => '/review/' . $review->getSlug()]
-        );
-
-        $io->newLine();
-        $io->success('🎉 Wirecutter-style review created successfully!');
-
-        if ($isPublished) {
-            $io->note(sprintf('View at: http://localhost/review/%s', $review->getSlug()));
         }
 
         return Command::SUCCESS;
     }
 
-    private function generateUniqueSlug(string $title): string
+    private function scrapeEmag(string $url): ?array
     {
-        $slug = strtolower($title);
-        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
-        $slug = trim($slug, '-');
-        $slug = substr($slug, 0, 100);
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 30
+        ]);
+        $html = curl_exec($ch);
+        curl_close($ch);
 
-        $originalSlug = $slug;
-        $counter = 1;
+        if (!$html) return null;
 
-        while ($this->slugExists($slug)) {
-            $slug = $originalSlug . '-' . $counter++;
-            if ($counter > 1000) {
-                $slug = $originalSlug . '-' . uniqid();
-                break;
-            }
+        $crawler = new Crawler($html);
+        $data = [];
+
+        // Title
+        $data['title'] = trim($crawler->filter('h1.page-title')->text('Unknown Product'));
+
+        // Price
+        $priceNode = $crawler->filter('.product-new-price')->first();
+        if ($priceNode->count() > 0) {
+            $priceText = $priceNode->text();
+            // Премахване на валута и форматиране
+            $priceText = preg_replace('/[^\d.,]/', '', $priceText); // Оставя само цифри, точки и запетаи
+            $priceText = str_replace('.', '', $priceText); // Маха точките за хиляди (ако има)
+            $priceText = str_replace(',', '.', $priceText); // Сменя десетичната запетая с точка
+            $data['price'] = (float)$priceText;
+        } else {
+            $data['price'] = 0.00;
         }
 
-        return $slug;
+        // Image
+        $imgNode = $crawler->filter('.product-gallery-inner img, .thumbnail-wrapper img')->first();
+        if ($imgNode->count() > 0) {
+            $data['imageUrl'] = $imgNode->attr('src');
+        } else {
+            $data['imageUrl'] = '';
+        }
+
+        return $data;
     }
 
-    private function slugExists(string $slug): bool
+    private function generateWirecutterContent(string $title, float $price, string $badge): string
     {
-        $repository = $this->entityManager->getRepository(Review::class);
-        return $repository->findOneBy(['slug' => $slug]) !== null;
-    }
-
-    private function generateWirecutterContent(
-        string $title,
-        float $price,
-        string $badge,
-        ?string $description,
-        ?string $specifications
-    ): string {
         $titleEscaped = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
-        $priceFormatted = number_format($price, 2);
+        $priceFormatted = number_format($price, 2, '.', ' ');
 
-        // Start with badge
+        // HTML структура
         $html = '<div class="alert alert-primary border-primary shadow-sm mb-4">';
-        $html .= '<h4 class="alert-heading mb-0"><i class="bi bi-award-fill me-2"></i>' . htmlspecialchars($badge, ENT_QUOTES, 'UTF-8') . '</h4>';
+        $html .= '<h4 class="alert-heading mb-0"><i class="bi bi-award-fill me-2"></i>' . $badge . '</h4>';
         $html .= '</div>';
 
-        // The Verdict
-        $html .= '<h2>The Verdict</h2>';
-        $html .= '<p class="lead">The <strong>' . $titleEscaped . '</strong> ';
+        // Присъдата
+        $html .= '<h2>Присъдата</h2>';
+        $html .= '<p class="lead">Моделът <strong>' . $titleEscaped . '</strong> ';
 
         switch ($badge) {
             case 'Our Top Pick':
-                $html .= 'is our top recommendation after extensive testing and comparison with competitors. ';
-                $html .= 'It delivers the best combination of performance, features, and value for most people. ';
-                $html .= 'At $' . $priceFormatted . ', it represents an excellent investment that you won\'t regret.';
+                $html .= 'е нашият топ избор след проучване на пазара. ';
+                $html .= 'Той предлага най-добрата комбинация от производителност и цена за повечето хора. ';
+                $html .= 'На цена от ' . $priceFormatted . ' лв., това е инвестиция, за която няма да съжалявате.';
                 break;
             case 'Budget Pick':
-                $html .= 'offers exceptional value for budget-conscious buyers without major compromises. ';
-                $html .= 'While it may not have all the bells and whistles of premium options, it covers the essentials exceptionally well. ';
-                $html .= 'At just $' . $priceFormatted . ', it\'s our favorite affordable option.';
+                $html .= 'предлага изключителна стойност за бюджета, без големи компромиси. ';
+                $html .= 'Въпреки че може да няма всички екстри на премиум моделите, той покрива основните изисквания перфектно. ';
+                $html .= 'Само за ' . $priceFormatted . ' лв., това е любимият ни достъпен вариант.';
                 break;
             case 'Upgrade Pick':
-                $html .= 'is for those who want the absolute best and are willing to pay for premium features and performance. ';
-                $html .= 'It excels in areas where our top pick makes compromises, offering cutting-edge technology and superior build quality. ';
-                $html .= 'The $' . $priceFormatted . ' price tag is steep, but justified for demanding users.';
+                $html .= 'е за тези, които искат абсолютно най-доброто и са готови да платят за премиум функции. ';
+                $html .= 'Той превъзхожда конкуренцията с качество на изработка и модерни технологии. ';
                 break;
         }
         $html .= '</p>';
 
-        // Why we like it
-        $html .= '<h3>Why we like it</h3>';
-
-        if ($description) {
-            $html .= $description;
-        } else {
-            $html .= '<p>After weeks of hands-on testing, several key features stood out:</p>';
-            $html .= '<ul>';
-            $html .= '<li><strong>Exceptional build quality:</strong> Premium materials and solid construction ensure long-term durability.</li>';
-            $html .= '<li><strong>Outstanding performance:</strong> Handles demanding tasks smoothly without lag or stuttering.</li>';
-            $html .= '<li><strong>Thoughtful design:</strong> Every detail has been carefully considered for optimal user experience.</li>';
-            $html .= '<li><strong>Great ecosystem:</strong> Works seamlessly with other devices and accessories in the lineup.</li>';
-            $html .= '<li><strong>Future-proof:</strong> Modern features and specifications ensure relevance for years to come.</li>';
-            $html .= '</ul>';
-        }
-
-        // Specifications (if available)
-        if ($specifications) {
-            $html .= '<h3>Technical Specifications</h3>';
-            $html .= $specifications;
-        }
-
-        // Flaws but not dealbreakers
-        $html .= '<h3>Flaws but not dealbreakers</h3>';
-        $html .= '<p>No product is perfect, and the ' . $titleEscaped . ' has a few minor drawbacks worth mentioning:</p>';
+        // Защо ни харесва
+        $html .= '<h3>Защо ни харесва</h3>';
+        $html .= '<p>След преглед на спецификациите, ето какво се отличава:</p>';
         $html .= '<ul>';
-
-        switch ($badge) {
-            case 'Our Top Pick':
-                $html .= '<li><strong>Price premium:</strong> It costs more than budget alternatives, though the quality justifies the investment.</li>';
-                $html .= '<li><strong>Limited color options:</strong> Only available in a few colorways, which may not suit everyone.</li>';
-                $html .= '<li><strong>Learning curve:</strong> Advanced features take time to master, but are worth the effort.</li>';
-                break;
-            case 'Budget Pick':
-                $html .= '<li><strong>Build materials:</strong> Uses some plastic components instead of premium metal throughout.</li>';
-                $html .= '<li><strong>Missing premium features:</strong> Lacks some advanced capabilities found in pricier models.</li>';
-                $html .= '<li><strong>Limited warranty:</strong> Shorter warranty period compared to premium competitors.</li>';
-                break;
-            case 'Upgrade Pick':
-                $html .= '<li><strong>High cost:</strong> Significantly more expensive than mainstream options, not for everyone\'s budget.</li>';
-                $html .= '<li><strong>Overkill for basic use:</strong> Many features go unused for casual users.</li>';
-                $html .= '<li><strong>Size and weight:</strong> Premium build adds heft that impacts portability.</li>';
-                break;
-        }
-
+        $html .= '<li><strong>Отлично качество:</strong> Солидна конструкция и надеждност.</li>';
+        $html .= '<li><strong>Добра производителност:</strong> Справя се отлично с поставените задачи.</li>';
+        $html .= '<li><strong>Модерен дизайн:</strong> Пасва чудесно на всеки интериор или стил.</li>';
         $html .= '</ul>';
-        $html .= '<p>These minor issues don\'t change our recommendation. For most users, the strengths far outweigh these limitations.</p>';
 
-        // Pros and Cons in Bootstrap grid
+        // Плюсове и Минуси (Grid)
         $html .= '<div class="pros-cons row mt-4 mb-4">';
 
-        // Pros column
+        // Pros
         $html .= '<div class="col-md-6 mb-3">';
         $html .= '<div class="card border-success h-100">';
-        $html .= '<div class="card-header bg-success text-white">';
-        $html .= '<h4 class="mb-0"><i class="bi bi-check-circle me-2"></i>Pros</h4>';
-        $html .= '</div>';
-        $html .= '<div class="card-body">';
-        $html .= '<ul class="pros-list mb-0">';
-        $html .= '<li>Excellent overall performance and reliability</li>';
-        $html .= '<li>High-quality construction and premium materials</li>';
-        $html .= '<li>Great value for the features and quality provided</li>';
-        $html .= '<li>Intuitive and user-friendly design</li>';
-        $html .= '<li>Strong ecosystem and accessory support</li>';
-        $html .= '<li>Regular software updates and improvements</li>';
-        $html .= '</ul>';
-        $html .= '</div>';
-        $html .= '</div>';
-        $html .= '</div>';
+        $html .= '<div class="card-header bg-success text-white"><h4 class="mb-0">Плюсове</h4></div>';
+        $html .= '<div class="card-body"><ul class="mb-0">';
+        $html .= '<li>Отлично съотношение цена/качество</li>';
+        $html .= '<li>Висока надеждност</li>';
+        $html .= '<li>Лесна употреба</li>';
+        $html .= '</ul></div></div></div>';
 
-        // Cons column
+        // Cons
         $html .= '<div class="col-md-6 mb-3">';
         $html .= '<div class="card border-danger h-100">';
-        $html .= '<div class="card-header bg-danger text-white">';
-        $html .= '<h4 class="mb-0"><i class="bi bi-x-circle me-2"></i>Cons</h4>';
-        $html .= '</div>';
-        $html .= '<div class="card-body">';
-        $html .= '<ul class="cons-list mb-0">';
+        $html .= '<div class="card-header bg-danger text-white"><h4 class="mb-0">Минуси</h4></div>';
+        $html .= '<div class="card-body"><ul class="mb-0">';
+        $html .= '<li>Може да е скъп за някои бюджети</li>';
+        $html .= '<li>Ограничена наличност понякога</li>';
+        $html .= '</ul></div></div></div>';
 
-        switch ($badge) {
-            case 'Our Top Pick':
-                $html .= '<li>Higher price than budget competitors</li>';
-                $html .= '<li>Limited color and configuration options</li>';
-                $html .= '<li>Some features have a learning curve</li>';
-                break;
-            case 'Budget Pick':
-                $html .= '<li>Uses more plastic in construction</li>';
-                $html .= '<li>Missing some premium features</li>';
-                $html .= '<li>Shorter warranty period</li>';
-                break;
-            case 'Upgrade Pick':
-                $html .= '<li>Premium pricing limits accessibility</li>';
-                $html .= '<li>May be overkill for basic users</li>';
-                $html .= '<li>Heavier and bulkier than alternatives</li>';
-                break;
-        }
+        $html .= '</div>'; // End row
 
-        $html .= '</ul>';
-        $html .= '</div>';
-        $html .= '</div>';
-        $html .= '</div>';
-
-        $html .= '</div>'; // End pros-cons row
-
-        // Bottom line
-        $html .= '<h3>The Bottom Line</h3>';
-        $html .= '<p><strong>' . htmlspecialchars($badge, ENT_QUOTES, 'UTF-8') . ':</strong> ';
-        $html .= 'The ' . $titleEscaped . ' earned this distinction through rigorous testing and comparison. ';
-        $html .= 'After evaluating dozens of alternatives, it consistently delivered the best experience in its category. ';
-        $html .= 'Whether you\'re upgrading or buying for the first time, this is a purchase you can feel confident about.</p>';
+        // Заключение
+        $html .= '<h3>Заключение</h3>';
+        $html .= '<p>Ако търсите надежден продукт в тази категория, <strong>' . $titleEscaped . '</strong> е сигурен залог.</p>';
 
         return $html;
     }
 
     private function truncate(string $text, int $length): string
     {
-        if (strlen($text) <= $length) {
+        if (mb_strlen($text) <= $length) {
             return $text;
         }
-        return substr($text, 0, $length - 3) . '...';
+        return mb_substr($text, 0, $length - 3) . '...';
     }
 }

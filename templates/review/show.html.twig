@@ -104,6 +104,27 @@
                     {{ review.content|raw }}
                 </div>
 
+                <!-- PRICE COMPARISON BUTTON -->
+                <div class="comparison-cta my-4">
+                    <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                        <div class="card-body p-4 text-center">
+                            <h4 class="mb-3">
+                                <i class="bi bi-graph-up-arrow text-primary"></i>
+                                Сравни цените
+                            </h4>
+                            <p class="text-muted mb-3">
+                                Намери най-добрата оферта за подобни продукти в eMAG, Fashion Days и Alleop
+                            </p>
+                            <a href="{{ path('app_review_compare', {slug: review.slug}) }}"
+                               class="btn btn-primary btn-lg">
+                                <i class="bi bi-bar-chart-line me-2"></i>
+                                Виж сравнение на цени
+                                <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- BOTTOM MEGA CTA -->
                 <div class="bottom-mega-cta">
                     <div class="cta-inner">
@@ -130,6 +151,237 @@
                     </a>
                 </div>
             </article>
+
+            <!-- SIMILAR PRODUCTS SECTION -->
+            {% set hasSimilarProducts = similarProducts.emag|length > 0 or similarProducts.fashiondays|length > 0 or similarProducts.alleop|length > 0 %}
+
+            {% if hasSimilarProducts %}
+            <div class="similar-products-section mt-5">
+                <div class="section-header text-center mb-4">
+                    <h2 class="h3 fw-bold">
+                        <i class="bi bi-graph-up text-primary"></i>
+                        Сравни цените - Подобни продукти
+                    </h2>
+                    <p class="text-muted">Намери най-добрата оферта от различни платформи</p>
+                </div>
+
+                <!-- Platform Tabs -->
+                <ul class="nav nav-pills justify-content-center mb-4" id="similarTabs" role="tablist">
+                    {% if similarProducts.emag|length > 0 %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active"
+                                id="similar-emag-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#similar-emag"
+                                type="button">
+                            <i class="bi bi-laptop"></i> eMAG
+                            <span class="badge bg-white text-primary ms-1">{{ similarProducts.emag|length }}</span>
+                        </button>
+                    </li>
+                    {% endif %}
+
+                    {% if similarProducts.fashiondays|length > 0 %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if similarProducts.emag|length == 0 %}active{% endif %}"
+                                id="similar-fashiondays-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#similar-fashiondays"
+                                type="button">
+                            <i class="bi bi-bag-heart"></i> Fashion Days
+                            <span class="badge bg-white text-danger ms-1">{{ similarProducts.fashiondays|length }}</span>
+                        </button>
+                    </li>
+                    {% endif %}
+
+                    {% if similarProducts.alleop|length > 0 %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if similarProducts.emag|length == 0 and similarProducts.fashiondays|length == 0 %}active{% endif %}"
+                                id="similar-alleop-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#similar-alleop"
+                                type="button">
+                            <i class="bi bi-basket"></i> Alleop
+                            <span class="badge bg-white text-success ms-1">{{ similarProducts.alleop|length }}</span>
+                        </button>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="similarTabContent">
+                    <!-- eMAG Products -->
+                    {% if similarProducts.emag|length > 0 %}
+                    <div class="tab-pane fade show active" id="similar-emag" role="tabpanel">
+                        <div class="row g-3">
+                            {% for product in similarProducts.emag|slice(0, 6) %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm similar-card">
+                                    {% if product.imageUrl %}
+                                    <img src="{{ product.imageUrl }}"
+                                         class="card-img-top p-3"
+                                         alt="{{ product.title }}"
+                                         style="height: 200px; object-fit: contain; background: white;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <span class="badge bg-primary mb-2">eMAG</span>
+                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
+                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
+                                        </h6>
+                                        {% if product.rating %}
+                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
+                                            {% for i in 1..5 %}
+                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% if product.price %}
+                                        <div class="h5 text-primary fw-bold mb-3">{{ product.price }} лв.</div>
+                                        {% endif %}
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i> Детайли
+                                            </a>
+                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
+                                               class="btn btn-primary btn-sm"
+                                               target="_blank"
+                                               rel="noopener noreferrer">
+                                                <i class="bi bi-cart-plus"></i> Купи
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Fashion Days Products -->
+                    {% if similarProducts.fashiondays|length > 0 %}
+                    <div class="tab-pane fade {% if similarProducts.emag|length == 0 %}show active{% endif %}" id="similar-fashiondays" role="tabpanel">
+                        <div class="row g-3">
+                            {% for product in similarProducts.fashiondays|slice(0, 6) %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm similar-card">
+                                    {% if product.imageUrl %}
+                                    <img src="{{ product.imageUrl }}"
+                                         class="card-img-top p-3"
+                                         alt="{{ product.title }}"
+                                         style="height: 200px; object-fit: contain; background: white;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <span class="badge bg-danger mb-2">Fashion Days</span>
+                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
+                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
+                                        </h6>
+                                        {% if product.rating %}
+                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
+                                            {% for i in 1..5 %}
+                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% if product.price %}
+                                        <div class="h5 text-danger fw-bold mb-3">{{ product.price }} лв.</div>
+                                        {% endif %}
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-eye"></i> Детайли
+                                            </a>
+                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
+                                               class="btn btn-danger btn-sm"
+                                               target="_blank"
+                                               rel="noopener noreferrer">
+                                                <i class="bi bi-cart-plus"></i> Купи
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Alleop Products -->
+                    {% if similarProducts.alleop|length > 0 %}
+                    <div class="tab-pane fade {% if similarProducts.emag|length == 0 and similarProducts.fashiondays|length == 0 %}show active{% endif %}" id="similar-alleop" role="tabpanel">
+                        <div class="row g-3">
+                            {% for product in similarProducts.alleop|slice(0, 6) %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm similar-card">
+                                    {% if product.imageUrl %}
+                                    <img src="{{ product.imageUrl }}"
+                                         class="card-img-top p-3"
+                                         alt="{{ product.title }}"
+                                         style="height: 200px; object-fit: contain; background: white;">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <span class="badge bg-success mb-2">Alleop</span>
+                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
+                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
+                                        </h6>
+                                        {% if product.rating %}
+                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
+                                            {% for i in 1..5 %}
+                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% if product.price %}
+                                        <div class="h5 text-success fw-bold mb-3">{{ product.price }} лв.</div>
+                                        {% endif %}
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-success btn-sm">
+                                                <i class="bi bi-eye"></i> Детайли
+                                            </a>
+                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
+                                               class="btn btn-success btn-sm"
+                                               target="_blank"
+                                               rel="noopener noreferrer">
+                                                <i class="bi bi-cart-plus"></i> Купи
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <style>
+                .similar-products-section {
+                    background: #f8f9fa;
+                    padding: 3rem 2rem;
+                    border-radius: 20px;
+                    margin-top: 3rem;
+                }
+                .similar-card {
+                    transition: all 0.3s ease;
+                    border: 1px solid #e9ecef;
+                }
+                .similar-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+                }
+                .nav-pills .nav-link {
+                    font-weight: 600;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 50px;
+                    margin: 0 0.25rem;
+                }
+                .nav-pills .nav-link:not(.active) {
+                    background: white;
+                    color: #6c757d;
+                }
+                .nav-pills .nav-link.active {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }
+            </style>
+            {% endif %}
         </div>
 
         <!-- RIGHT COLUMN: STICKY SIDEBAR -->
@@ -227,70 +479,7 @@
         </div>
     </div>
 </div>
-    {# Настройки за логиката #}
-    {% set current = reviews.currentPageNumber %}
-    {% set total = reviews.pageCount %}
-    {% set range = 2 %} {# Колко страници да показва около текущата #}
 
-    {% if total > 1 %}
-        <div class="d-flex flex-wrap justify-content-center gap-2 my-5">
-
-            {# --- БУТОН "НАЗАД" --- #}
-            {% if current > 1 %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': current - 1})) }}"
-                   class="btn btn-outline-primary btn-square">
-                    Назад
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary btn-square disabled">Назад</span>
-            {% endif %}
-
-            {# --- ВИНАГИ ПОКАЗВАЙ ПЪРВА СТРАНИЦА --- #}
-            <a href="{{ path('app_home', app.request.query.all|merge({'page': 1})) }}"
-               class="btn {{ current == 1 ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                1
-            </a>
-
-            {# --- ЛЯВО МНОГОТОЧИЕ (...) --- #}
-            {% if current - range > 2 %}
-                <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
-            {% endif %}
-
-            {# --- СРЕДНИТЕ СТРАНИЦИ (FOR ЦИКЪЛЪТ) --- #}
-            {% for i in (current - range)..(current + range) %}
-                {% if i > 1 and i < total %}
-                    <a href="{{ path('app_home', app.request.query.all|merge({'page': i})) }}"
-                       class="btn {{ current == i ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                        {{ i }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            {# --- ДЯСНО МНОГОТОЧИЕ (...) --- #}
-            {% if current + range < total - 1 %}
-                <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
-            {% endif %}
-
-            {# --- ПОСЛЕДНА СТРАНИЦА (Ако не е 1-ва) --- #}
-            {% if total > 1 %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': total})) }}"
-                   class="btn {{ current == total ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                    {{ total }} {# Или пишеш "Напред" тук, ако искаш #}
-                </a>
-            {% endif %}
-
-            {# --- БУТОН "НАПРЕД" --- #}
-            {% if current < total %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': current + 1})) }}"
-                   class="btn btn-outline-primary btn-square">
-                    Напред
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary btn-square disabled">Напред</span>
-            {% endif %}
-
-        </div>
-    {% endif %}
 <style>
 /* ============================================
    ULTRA-MODERN CLICKBAIT PRODUCT PAGE

@@ -70,8 +70,34 @@ class ReviewController extends AbstractController
             throw $this->createNotFoundException('Review not found');
         }
 
+        // Find similar products across all platforms
+        $similarProducts = $reviewRepository->findSimilarAcrossPlatforms(
+            $review->getTitle(),
+            $review->getId(),
+            12  // Get 12 similar products
+        );
+
+        // Group similar products by platform
+        $productsByPlatform = [
+            'emag' => [],
+            'fashiondays' => [],
+            'alleop' => []
+        ];
+
+        foreach ($similarProducts as $product) {
+            $url = $product->getOriginalProductUrl();
+            if (str_contains($url, 'emag.bg')) {
+                $productsByPlatform['emag'][] = $product;
+            } elseif (str_contains($url, 'fashiondays')) {
+                $productsByPlatform['fashiondays'][] = $product;
+            } elseif (str_contains($url, 'alleop')) {
+                $productsByPlatform['alleop'][] = $product;
+            }
+        }
+
         return $this->render('review/show.html.twig', [
             'review' => $review,
+            'similarProducts' => $productsByPlatform,
         ]);
     }
 
@@ -158,5 +184,76 @@ class ReviewController extends AbstractController
         }
 
         return $this->redirect($affiliateLink);
+    }
+
+    /**
+     * Price comparison across platforms
+     */
+    #[Route('/compare-prices', name: 'app_compare_prices')]
+    public function comparePrices(
+        Request $request,
+        ReviewRepository $reviewRepository
+    ): Response {
+        $query = $request->query->get('q', '');
+
+        if (empty($query)) {
+            return $this->render('review/compare_prices.html.twig', [
+                'query' => '',
+                'products' => [],
+            ]);
+        }
+
+        // Get products grouped by platform
+        $productsByPlatform = $reviewRepository->findForPriceComparison($query);
+
+        return $this->render('review/compare_prices.html.twig', [
+            'query' => $query,
+            'products' => $productsByPlatform,
+        ]);
+    }
+
+    /**
+     * Compare similar products on single product page
+     */
+    #[Route('/review/{slug}/compare', name: 'app_review_compare')]
+    public function compareProduct(
+        string $slug,
+        ReviewRepository $reviewRepository
+    ): Response {
+        $review = $reviewRepository->findOneBy(['slug' => $slug, 'isPublished' => true]);
+
+        if (!$review) {
+            throw $this->createNotFoundException('Review not found');
+        }
+
+        // Find similar products across platforms
+        $similarProducts = $reviewRepository->findSimilarAcrossPlatforms(
+            $review->getTitle(),
+            $review->getId(),
+            20
+        );
+
+        // Group by platform
+        $productsByPlatform = [
+            'emag' => [],
+            'fashiondays' => [],
+            'alleop' => []
+        ];
+
+        foreach ($similarProducts as $product) {
+            $url = $product->getOriginalProductUrl();
+            if (str_contains($url, 'emag.bg')) {
+                $productsByPlatform['emag'][] = $product;
+            } elseif (str_contains($url, 'fashiondays')) {
+                $productsByPlatform['fashiondays'][] = $product;
+            } elseif (str_contains($url, 'alleop')) {
+                $productsByPlatform['alleop'][] = $product;
+            }
+        }
+
+        return $this->render('review/compare_product.html.twig', [
+            'review' => $review,
+            'products' => $productsByPlatform,
+        ]);
     }
 }
