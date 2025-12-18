@@ -4,1038 +4,169 @@
 
 {% block body %}
 
-<!-- STICKY DEAL BAR (Mobile Top) -->
-<div class="sticky-deal-bar d-lg-none">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between py-2 px-3">
-            <div>
-                <div class="deal-price">${{ review.price }}</div>
-                <div class="deal-rating">⭐ {{ review.rating }}.0</div>
+    <div class="sticky-deal-bar d-lg-none">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between py-2 px-3">
+                <div>
+                    <div class="deal-price">{{ review.price }} лв.</div>
+                    <div class="deal-rating">⭐ {{ review.rating }}.0</div>
+                </div>
+                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sticky-mobile">
+                    <i class="bi bi-cart-fill me-1"></i>КУПИ СЕГА
+                </a>
             </div>
-            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sticky-mobile">
-                <i class="bi bi-cart-fill me-1"></i>BUY NOW
-            </a>
         </div>
     </div>
-</div>
 
-<!-- BREADCRUMB -->
-<div class="container-fluid bg-white border-bottom py-3">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ review.title|slice(0, 40) }}...</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-
-<div class="container my-4 my-lg-5">
-    <div class="row g-4">
-        <!-- LEFT COLUMN: MAIN CONTENT -->
-        <div class="col-lg-8">
-            <article class="review-article">
-                <!-- MEGA HEADER -->
-                <header class="article-header">
-                    <!-- Badge -->
-                    {% if review.badge %}
-                    <div class="mega-badge-container mb-3">
-                        <div class="mega-badge">
-                            <i class="bi bi-award-fill me-2"></i>{{ review.badge }}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Title -->
-                    <h1 class="article-title">{{ review.title }}</h1>
-
-                    <!-- Meta Bar -->
-                    <div class="meta-bar">
-                        <div class="meta-item">
-                            <i class="bi bi-calendar-check text-primary"></i>
-                            <span>Updated {{ review.createdAt|date('F j, Y') }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <div class="rating-display">
-                                {% for i in 1..5 %}
-                                    {% if i <= review.rating %}
-                                        ⭐
-                                    {% else %}
-                                        ☆
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <span class="rating-score">{{ review.rating }}.0/5.0</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="bi bi-check-circle-fill text-success"></i>
-                            <span>✅ Expert Verified</span>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- MOBILE QUICK BUY CARD -->
-                <div class="d-lg-none my-4">
-                    <div class="mobile-cta-card">
-                        <div class="text-center">
-                            {% if review.badge %}
-                            <div class="mb-3">
-                                <span class="mobile-badge">
-                                    <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
-                                </span>
-                            </div>
-                            {% endif %}
-                            <div class="mobile-price-mega">${{ review.price }}</div>
-                            <div class="mobile-price-label">🔥 HOT DEAL PRICE</div>
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-mobile-mega">
-                                <i class="bi bi-lightning-charge-fill me-2"></i>GET THIS DEAL NOW
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
-                            <div class="trust-bar-mobile">
-                                🚚 Free Ship • 🔒 Secure • ↩️ 30-Day Returns
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ARTICLE CONTENT -->
-                <div class="article-content">
-                    {{ review.content|raw }}
-                </div>
-
-                <!-- BOTTOM MEGA CTA -->
-                <div class="bottom-mega-cta">
-                    <div class="cta-inner">
-                        <div class="cta-icon">🚀</div>
-                        <div class="cta-content">
-                            <h3 class="cta-heading">Ready to Buy {{ review.title }}?</h3>
-                            <p class="cta-subtext">⚡ Limited stock • 💰 Best price guaranteed • ✅ Expert recommended</p>
-                        </div>
-                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-bottom-cta">
-                            <span class="btn-text">
-                                <i class="bi bi-cart-check-fill me-2"></i>GET DEAL NOW
-                            </span>
-                        </a>
-                    </div>
-                    <div class="cta-footer">
-                        🔒 Secure Checkout • 🚚 Free Shipping • ↩️ 30-Day Returns • ⭐ Rated {{ review.rating }}/5
-                    </div>
-                </div>
-
-                <!-- BACK BUTTON -->
-                <div class="text-center mt-4">
-                    <a href="{{ path('app_home') }}" class="btn-back">
-                        <i class="bi bi-arrow-left me-2"></i>View All Deals
-                    </a>
-                </div>
-            </article>
+    <div class="container-fluid bg-white border-bottom py-3">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>Начало</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ review.title|slice(0, 40) }}...</li>
+                </ol>
+            </nav>
         </div>
+    </div>
 
-        <!-- RIGHT COLUMN: STICKY SIDEBAR -->
-        <div class="col-lg-4">
-            <div class="sticky-sidebar-wrapper">
-                <div class="deal-card">
-                    <!-- Product Image -->
-                    {% if review.imageUrl %}
-                    <div class="deal-image-wrapper">
-                        <img src="{{ review.imageUrl }}" class="deal-image" alt="{{ review.title }}">
-                        <div class="image-badge">🔥 HOT</div>
-                    </div>
-                    {% else %}
-                    <div class="deal-image-wrapper deal-image-placeholder">
-                        <i class="bi bi-image text-white" style="font-size: 4rem;"></i>
-                    </div>
-                    {% endif %}
-
-                    <div class="deal-body">
-                        <!-- Badge -->
+    <div class="container my-4 my-lg-5">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <article class="review-article">
+                    <header class="article-header">
                         {% if review.badge %}
-                        <div class="sidebar-badge-container">
-                            <div class="sidebar-badge">
-                                <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Price Section -->
-                        <div class="price-section">
-                            <div class="price-label">🔥 CURRENT DEAL PRICE</div>
-                            <div class="price-mega">${{ review.price }}</div>
-                            <div class="price-meta">
-                                <i class="bi bi-clock-history me-1"></i>Last updated {{ review.createdAt|date('M j') }}
-                            </div>
-                        </div>
-
-                        <!-- MEGA CTA BUTTON -->
-                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sidebar-mega">
-                            <div class="btn-mega-inner">
-                                <div class="btn-icon">🛒</div>
-                                <div class="btn-text-mega">
-                                    <div class="btn-main-text">BUY NOW</div>
-                                    <div class="btn-sub-text">Get Best Price on eMag</div>
+                            <div class="mega-badge-container mb-3">
+                                <div class="mega-badge">
+                                    <i class="bi bi-award-fill me-2"></i>{{ review.badge }}
                                 </div>
                             </div>
-                            <div class="btn-shine"></div>
-                        </a>
+                        {% endif %}
 
-                        <!-- Trust Badges -->
-                        <div class="trust-section">
-                            <div class="trust-item">
-                                <i class="bi bi-shield-check text-success"></i>
-                                <span>Secure Checkout</span>
+                        <h1 class="article-title">{{ review.title }}</h1>
+
+                        <div class="meta-bar">
+                            <div class="meta-item">
+                                <i class="bi bi-calendar-check text-primary"></i>
+                                <span>Обновено {{ review.createdAt|date('d.m.Y') }}</span>
                             </div>
-                            <div class="trust-item">
-                                <i class="bi bi-truck text-primary"></i>
-                                <span>Free Shipping</span>
+                            <div class="meta-item">
+                                <div class="rating-display">
+                                    {% for i in 1..5 %}
+                                        {% if i <= review.rating %}⭐{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-score">{{ review.rating }}.0/5.0</span>
                             </div>
-                            <div class="trust-item">
-                                <i class="bi bi-arrow-repeat text-info"></i>
-                                <span>30-Day Returns</span>
+                            <div class="meta-item">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                <span>✅ Експертно проверено</span>
                             </div>
                         </div>
+                    </header>
 
-                        <!-- Why Buy Section -->
-                        <div class="why-buy-section">
-                            <h6 class="why-buy-title">
-                                <i class="bi bi-star-fill text-warning me-2"></i>Why This Deal?
-                            </h6>
-                            <ul class="why-buy-list">
-                                <li><i class="bi bi-check2 text-success"></i>Expert tested & verified</li>
-                                <li><i class="bi bi-check2 text-success"></i>Best price in market</li>
-                                <li><i class="bi bi-check2 text-success"></i>Top rated by users</li>
-                                <li><i class="bi bi-check2 text-success"></i>Latest 2025 model</li>
-                            </ul>
-                        </div>
-
-                        <!-- Footer Link -->
-                        <div class="sidebar-footer">
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="footer-link">
-                                <i class="bi bi-box-arrow-up-right me-1"></i>View on eMag
-                                <i class="bi bi-arrow-right ms-1"></i>
+                    <div class="d-lg-none my-4">
+                        <div class="mobile-cta-card text-center">
+                            <div class="mobile-price-mega">{{ review.price }} лв.</div>
+                            <div class="mobile-price-label">🔥 ГОРЕЩА ОФЕРТА</div>
+                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-mobile-mega">
+                                <i class="bi bi-lightning-charge-fill me-2"></i>ВЗЕМИ СЕГА
                             </a>
                         </div>
                     </div>
 
-                    <!-- Urgency Alert -->
-                    <div class="urgency-alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span><strong>🔥 Trending!</strong> 127 people viewing this now</span>
+                    <div class="article-content bg-white p-4 rounded-4 shadow-sm">
+                        {{ review.content|raw }}
+                    </div>
+
+                    <div class="bottom-mega-cta mt-5">
+                        <div class="cta-inner">
+                            <div class="cta-icon">🚀</div>
+                            <div class="cta-content">
+                                <h3 class="cta-heading">Готови ли сте за покупка?</h3>
+                                <p class="cta-subtext">⚡ Ограничени количества • 💰 Най-добра цена • ✅ Препоръчано</p>
+                            </div>
+                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-bottom-cta">
+                                <i class="bi bi-cart-check-fill me-2"></i>КУПИ СЕГА
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ path('app_home') }}" class="btn-back">
+                            <i class="bi bi-arrow-left me-2"></i>Виж всички оферти
+                        </a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="sticky-sidebar-wrapper">
+                    <div class="deal-card">
+                        {% if review.imageUrl %}
+                            <div class="deal-image-wrapper">
+                                <img src="{{ review.imageUrl }}" class="deal-image" alt="{{ review.title }}">
+                                <div class="image-badge">🔥 HOT</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="deal-body">
+                            <div class="price-section">
+                                <div class="price-label">АКТУАЛНА ЦЕНА</div>
+                                <div class="price-mega">{{ review.price }} лв.</div>
+                                <div class="price-meta">Проверено на {{ review.createdAt|date('d M') }}</div>
+                            </div>
+
+                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sidebar-mega">
+                                <div class="btn-mega-inner">
+                                    <div class="btn-icon">🛒</div>
+                                    <div class="btn-text-mega">
+                                        <div class="btn-main-text">КУПИ СЕГА</div>
+                                        <div class="btn-sub-text">Виж офертата в магазина</div>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <div class="trust-section">
+                                <div class="trust-item"><i class="bi bi-shield-check text-success"></i> Сигурно плащане</div>
+                                <div class="trust-item"><i class="bi bi-truck text-primary"></i> Бърза доставка</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-    {# Настройки за логиката #}
-    {% set current = reviews.currentPageNumber %}
-    {% set total = reviews.pageCount %}
-    {% set range = 2 %} {# Колко страници да показва около текущата #}
 
-    {% if total > 1 %}
-        <div class="d-flex flex-wrap justify-content-center gap-2 my-5">
-
-            {# --- БУТОН "НАЗАД" --- #}
-            {% if current > 1 %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': current - 1})) }}"
-                   class="btn btn-outline-primary btn-square">
-                    Назад
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary btn-square disabled">Назад</span>
-            {% endif %}
-
-            {# --- ВИНАГИ ПОКАЗВАЙ ПЪРВА СТРАНИЦА --- #}
-            <a href="{{ path('app_home', app.request.query.all|merge({'page': 1})) }}"
-               class="btn {{ current == 1 ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                1
-            </a>
-
-            {# --- ЛЯВО МНОГОТОЧИЕ (...) --- #}
-            {% if current - range > 2 %}
-                <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
-            {% endif %}
-
-            {# --- СРЕДНИТЕ СТРАНИЦИ (FOR ЦИКЪЛЪТ) --- #}
-            {% for i in (current - range)..(current + range) %}
-                {% if i > 1 and i < total %}
-                    <a href="{{ path('app_home', app.request.query.all|merge({'page': i})) }}"
-                       class="btn {{ current == i ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                        {{ i }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            {# --- ДЯСНО МНОГОТОЧИЕ (...) --- #}
-            {% if current + range < total - 1 %}
-                <span class="btn btn-outline-secondary btn-square disabled border-0">...</span>
-            {% endif %}
-
-            {# --- ПОСЛЕДНА СТРАНИЦА (Ако не е 1-ва) --- #}
-            {% if total > 1 %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': total})) }}"
-                   class="btn {{ current == total ? 'btn-primary' : 'btn-outline-primary' }} btn-square">
-                    {{ total }} {# Или пишеш "Напред" тук, ако искаш #}
-                </a>
-            {% endif %}
-
-            {# --- БУТОН "НАПРЕД" --- #}
-            {% if current < total %}
-                <a href="{{ path('app_home', app.request.query.all|merge({'page': current + 1})) }}"
-                   class="btn btn-outline-primary btn-square">
-                    Напред
-                </a>
-            {% else %}
-                <span class="btn btn-outline-secondary btn-square disabled">Напред</span>
-            {% endif %}
-
-        </div>
-    {% endif %}
-<style>
-/* ============================================
-   ULTRA-MODERN CLICKBAIT PRODUCT PAGE
-   ============================================ */
-
-/* STICKY DEAL BAR (Mobile) */
-.sticky-deal-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-}
-
-.deal-price {
-    font-size: 1.5rem;
-    font-weight: 900;
-    line-height: 1;
-}
-
-.deal-rating {
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.btn-sticky-mobile {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    animation: pulse-btn 2s infinite;
-}
-
-@keyframes pulse-btn {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* ARTICLE HEADER */
-.article-header {
-    margin-bottom: 2rem;
-}
-
-.mega-badge-container {
-    display: inline-block;
-}
-
-.mega-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 28px;
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    display: inline-block;
-}
-
-.article-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #1a202c;
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
-}
-
-.meta-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding-bottom: 1.5rem;
-    border-bottom: 3px solid #e2e8f0;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
-    color: #4a5568;
-    font-weight: 600;
-}
-
-.rating-display {
-    font-size: 1.1rem;
-}
-
-.rating-score {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    color: #333;
-    padding: 4px 12px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.85rem;
-}
-
-/* MOBILE CTA CARD */
-.mobile-cta-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
-}
-
-.mobile-badge {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.85rem;
-    display: inline-block;
-}
-
-.mobile-price-mega {
-    font-size: 4rem;
-    font-weight: 900;
-    color: white;
-    line-height: 1;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.mobile-price-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-.btn-mobile-mega {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 18px 30px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1.15rem;
-    letter-spacing: 1px;
-    text-decoration: none;
-    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-    transition: all 0.3s ease;
-    margin-bottom: 15px;
-}
-
-.btn-mobile-mega:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.6);
-    color: white !important;
-}
-
-.trust-bar-mobile {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-/* ARTICLE CONTENT */
-.article-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #2d3748;
-    margin-bottom: 3rem;
-}
-
-.article-content h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-top: 3rem;
-    margin-bottom: 1.5rem;
-    color: #1a202c;
-    border-bottom: 4px solid #667eea;
-    padding-bottom: 0.75rem;
-}
-
-.article-content h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    color: #2d3748;
-}
-
-.article-content h4 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    color: #4a5568;
-}
-
-.article-content p {
-    margin-bottom: 1.5rem;
-}
-
-.article-content ul, .article-content ol {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-}
-
-.article-content li {
-    margin-bottom: 0.75rem;
-    line-height: 1.7;
-}
-
-/* Pros/Cons Lists */
-.article-content .pros-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.article-content .pros-list li {
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border-left: 5px solid #22c55e;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
-    transition: all 0.3s ease;
-}
-
-.article-content .pros-list li:hover {
-    transform: translateX(10px);
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25);
-}
-
-.article-content .pros-list li::before {
-    content: '✓';
-    color: #22c55e;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-right: 0.75rem;
-}
-
-.article-content .cons-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.article-content .cons-list li {
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-    border-left: 5px solid #ef4444;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
-    transition: all 0.3s ease;
-}
-
-.article-content .cons-list li:hover {
-    transform: translateX(10px);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
-}
-
-.article-content .cons-list li::before {
-    content: '✗';
-    color: #ef4444;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-right: 0.75rem;
-}
-
-/* Pros/Cons Grid Cards */
-.article-content .pros-cons .card {
-    transition: transform 0.3s ease;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.article-content .pros-cons .card:hover {
-    transform: translateY(-5px);
-}
-
-.article-content .pros-cons .card-header {
-    font-weight: 800;
-    font-size: 1.15rem;
-}
-
-.article-content .pros-cons .pros-list li,
-.article-content .pros-cons .cons-list li {
-    padding: 0.5rem 0;
-    margin-bottom: 0.5rem;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-.article-content .pros-cons .pros-list li::before {
-    margin-right: 0.5rem;
-}
-
-.article-content .pros-cons .cons-list li::before {
-    margin-right: 0.5rem;
-}
-
-/* Specifications Table */
-.article-content table {
-    width: 100%;
-    margin-bottom: 2rem;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 2px solid #e2e8f0;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.article-content table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1rem;
-    font-weight: 700;
-    text-align: left;
-    border-bottom: 3px solid #e2e8f0;
-}
-
-.article-content table td {
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.article-content table tr:last-child td {
-    border-bottom: none;
-}
-
-.article-content table tr:hover {
-    background: #f8fafc;
-}
-
-/* Alert Boxes */
-.article-content .alert-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.article-content .alert-heading {
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-
-/* BOTTOM MEGA CTA */
-.bottom-mega-cta {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    border-radius: 25px;
-    padding: 0;
-    margin-bottom: 2rem;
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.3);
-    overflow: hidden;
-}
-
-.cta-inner {
-    padding: 35px;
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.cta-icon {
-    font-size: 4rem;
-    animation: float-icon 3s infinite ease-in-out;
-}
-
-@keyframes float-icon {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.cta-content {
-    flex: 1;
-}
-
-.cta-heading {
-    color: white;
-    font-size: 1.75rem;
-    font-weight: 900;
-    margin-bottom: 0.5rem;
-}
-
-.cta-subtext {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    margin: 0;
-}
-
-.btn-bottom-cta {
-    background: white;
-    color: #ff6b6b !important;
-    padding: 18px 40px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1.15rem;
-    text-decoration: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-bottom-cta:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-    color: #ee5a6f !important;
-}
-
-.cta-footer {
-    background: rgba(0, 0, 0, 0.15);
-    padding: 15px 35px;
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* BACK BUTTON */
-.btn-back {
-    display: inline-block;
-    padding: 12px 30px;
-    background: white;
-    color: #667eea !important;
-    border: 2px solid #667eea;
-    border-radius: 50px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background: #667eea;
-    color: white !important;
-    transform: translateX(-5px);
-}
-
-/* STICKY SIDEBAR */
-.sticky-sidebar-wrapper {
-    position: sticky;
-    top: 20px;
-}
-
-.deal-card {
-    background: white;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.12);
-}
-
-.deal-image-wrapper {
-    position: relative;
-    height: 300px;
-    overflow: hidden;
-}
-
-.deal-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.deal-image-placeholder {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white;
-    padding: 8px 18px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    animation: badge-pulse 2s infinite;
-}
-
-@keyframes badge-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.deal-body {
-    padding: 25px;
-}
-
-.sidebar-badge-container {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.sidebar-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    display: inline-block;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.price-section {
-    text-align: center;
-    padding: 25px 0;
-    border-top: 2px solid #e2e8f0;
-    border-bottom: 2px solid #e2e8f0;
-    margin-bottom: 25px;
-}
-
-.price-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #ff6b6b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-}
-
-.price-mega {
-    font-size: 4rem;
-    font-weight: 900;
-    color: #22c55e;
-    line-height: 1;
-    margin-bottom: 10px;
-}
-
-.price-meta {
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-
-/* MEGA CTA BUTTON */
-.btn-sidebar-mega {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 0;
-    border-radius: 15px;
-    text-decoration: none;
-    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-    transition: all 0.3s ease;
-    margin-bottom: 25px;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-mega-inner {
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: relative;
-    z-index: 2;
-}
-
-.btn-icon {
-    font-size: 3rem;
-}
-
-.btn-text-mega {
-    text-align: left;
-}
-
-.btn-main-text {
-    font-size: 1.5rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    line-height: 1;
-    margin-bottom: 5px;
-}
-
-.btn-sub-text {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    font-weight: 600;
-}
-
-.btn-shine {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s;
-    z-index: 1;
-}
-
-.btn-sidebar-mega:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.6);
-}
-
-.btn-sidebar-mega:hover .btn-shine {
-    left: 100%;
-}
-
-/* TRUST SECTION */
-.trust-section {
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 25px;
-}
-
-.trust-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #4a5568;
-}
-
-.trust-item i {
-    font-size: 1.25rem;
-}
-
-/* WHY BUY SECTION */
-.why-buy-section {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-}
-
-.why-buy-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: #1a202c;
-}
-
-.why-buy-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.why-buy-list li {
-    padding: 8px 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2d3748;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.why-buy-list i {
-    font-size: 1.25rem;
-}
-
-/* SIDEBAR FOOTER */
-.sidebar-footer {
-    text-align: center;
-    padding-top: 15px;
-    border-top: 2px solid #e2e8f0;
-}
-
-.footer-link {
-    color: #667eea !important;
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.footer-link:hover {
-    color: #764ba2 !important;
-}
-
-/* URGENCY ALERT */
-.urgency-alert {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 15px 25px;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #92400e;
-    border-top: 3px solid #fbbf24;
-}
-
-.urgency-alert i {
-    color: #f59e0b;
-}
-
-/* RESPONSIVE */
-@media (max-width: 991px) {
-    .sticky-sidebar-wrapper {
-        position: relative;
-        top: 0;
-    }
-
-    .sticky-deal-bar {
-        display: block;
-    }
-
-    body {
-        padding-top: 70px;
-    }
-
-    .article-title {
-        font-size: 1.75rem;
-    }
-
-    .price-mega {
-        font-size: 3rem;
-    }
-
-    .cta-inner {
-        flex-direction: column;
-        text-align: center;
-        padding: 25px;
-    }
-
-    .cta-heading {
-        font-size: 1.4rem;
-    }
-
-    .btn-bottom-cta {
-        width: 100%;
-    }
-}
-
-@media (min-width: 992px) {
-    .sticky-deal-bar {
-        display: none;
-    }
-}
-</style>
+    <style>
+        /* STICKY DEAL BAR */
+        .sticky-deal-bar { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; z-index: 1000; box-shadow: 0 2px 20px rgba(0,0,0,0.2); }
+        .btn-sticky-mobile { background: #ff6b6b; color: white !important; padding: 10px 20px; border-radius: 25px; font-weight: 800; text-decoration: none; }
+
+        /* HEADER */
+        .article-title { font-size: 2.5rem; font-weight: 900; color: #1a202c; line-height: 1.2; margin-top: 1rem; }
+        .mega-badge { background: #667eea; color: white; padding: 10px 25px; border-radius: 50px; font-weight: 800; }
+        .meta-bar { display: flex; gap: 20px; padding: 1.5rem 0; border-bottom: 2px solid #eee; margin-bottom: 2rem; flex-wrap: wrap; }
+
+        /* CONTENT */
+        .article-content { line-height: 1.8; font-size: 1.1rem; }
+
+        /* CTA BOXES */
+        .bottom-mega-cta { background: #ff6b6b; border-radius: 20px; padding: 30px; color: white; }
+        .cta-inner { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .btn-bottom-cta { background: white; color: #ff6b6b !important; padding: 15px 35px; border-radius: 50px; font-weight: 900; text-decoration: none; }
+
+        /* SIDEBAR */
+        .sticky-sidebar-wrapper { position: sticky; top: 80px; }
+        .deal-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .deal-image { width: 100%; height: 250px; object-fit: contain; padding: 20px; }
+        .price-mega { font-size: 3rem; font-weight: 900; color: #22c55e; }
+        .btn-sidebar-mega { background: #ff6b6b; color: white !important; text-decoration: none; border-radius: 15px; display: block; overflow: hidden; }
+        .btn-mega-inner { padding: 20px; display: flex; align-items: center; gap: 15px; }
+
+        @media (max-width: 991px) {
+            .article-title { font-size: 1.8rem; }
+            .sticky-sidebar-wrapper { position: static; }
+        }
+    </style>
 
 {% endblock %}

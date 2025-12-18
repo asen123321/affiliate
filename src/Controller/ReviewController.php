@@ -14,46 +14,43 @@ use Psr\Log\LoggerInterface;
 
 class ReviewController extends AbstractController
 {
+    /**
+     * Начална страница със списък от оферти и филтриране по магазин.
+     */
     #[Route('/', name: 'app_home')]
     public function index(
         Request $request,
         ReviewRepository $reviewRepository,
         PaginatorInterface $paginator
     ): Response {
-        // 1. Взимаме параметъра "source" от URL-а (ако е кликнат бутон от жълтата лента)
-        // Например: ?source=alleop или ?source=fashion_days
+        // 1. Взимаме параметъра "source" от URL (напр. ?source=fashion_days)
         $source = $request->query->get('source');
 
-        // 2. Създаваме основната заявка
+        // 2. Създаваме QueryBuilder за извличане на публикуваните ревюта
         $qb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :status')
             ->setParameter('status', true)
             ->orderBy('r.createdAt', 'DESC');
 
-        // 3. АКО има избран източник, филтрираме по URL
+        // 3. Филтриране според избрания източник
         if ($source) {
             if ($source === 'alleop') {
-                // Търсим продукти, чийто оригинален линк съдържа 'alleop'
                 $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%alleop%');
-            }
-            elseif ($source === 'fashion_days') {
-                // Търсим продукти от Fashion Days
+                    ->setParameter('sourceUrl', '%alleop.bg%');
+            } elseif ($source === 'fashion_days') {
                 $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%fashiondays%');
-            }
-            elseif ($source === 'emag') {
-                // Ако искаш бутон само за eMAG
+                    ->setParameter('sourceUrl', '%fashiondays.bg%');
+            } elseif ($source === 'emag') {
                 $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%emag%');
+                    ->setParameter('sourceUrl', '%emag.bg%');
             }
         }
 
-        // 4. Пагинация - 60 броя на страница
+        // 4. Пагинация - 60 продукта на страница
         $pagination = $paginator->paginate(
-            $qb, /* заявката с филтрите */
-            $request->query->getInt('page', 1), /* текуща страница */
-            60 /* ЛИМИТ НА СТРАНИЦА */
+            $qb,
+            $request->query->getInt('page', 1),
+            60
         );
 
         return $this->render('review/index.html.twig', [
@@ -61,6 +58,9 @@ class ReviewController extends AbstractController
         ]);
     }
 
+    /**
+     * Детайлна страница за конкретен продукт/ревю.
+     */
     #[Route('/review/{slug}', name: 'app_review_show')]
     public function show(string $slug, ReviewRepository $reviewRepository): Response
     {
@@ -76,8 +76,7 @@ class ReviewController extends AbstractController
     }
 
     /**
-     * Redirect to affiliate link - generates ProfitShare link on-the-fly
-     * Това се ползва, когато потребителят натисне "Купи"
+     * Генерира пресен афилиейт линк в реално време и пренасочва потребителя към магазина.
      */
     #[Route('/buy/{id}', name: 'app_buy_redirect', methods: ['GET'])]
     public function buyRedirect(
@@ -92,32 +91,36 @@ class ReviewController extends AbstractController
             throw $this->createNotFoundException('Review not found');
         }
 
-        // Взимаме оригиналния линк, за да генерираме афилиейт връзка
         $productUrl = $review->getOriginalProductUrl();
 
-        // Ако няма оригинален URL (за стари записи), ползваме текущия affiliateLink като fallback
+        // Fallback: ако няма оригинален URL, използваме кеширания афилиейт линк
         if (!$productUrl) {
             return $this->redirect($review->getAffiliateLink());
         }
 
-        // Определяме ID на рекламодателя спрямо URL-а
-        $advertiserId = '35'; // По подразбиране eMAG
+        // Определяне на Advertiser ID за Profitshare
+        $advertiserId = '35'; // eMAG по подразбиране
         if (str_contains($productUrl, 'fashiondays')) {
-            $advertiserId = '84'; // Fashion Days ID
+            $advertiserId = '84'; // Fashion Days
         } elseif (str_contains($productUrl, 'alleop')) {
-            $advertiserId = '125'; // AlleOp ID (провери го в ProfitShare!)
+            $advertiserId = '125'; // AlleOp
         }
 
-        // Генерираме нов, пресен линк
-        $affiliateLink = $profitShareService->generateAffiliateLink(
-            $advertiserId,
-            $productUrl,
-            'click-' . $review->getId()
-        );
+        // Генериране на нов афилиейт линк чрез API-то на ProfitShare
+        try {
+            $affiliateLink = $profitShareService->generateAffiliateLink(
+                $advertiserId,
+                $productUrl,
+                'click-' . $review->getId()
+            );
+        } catch (\Exception $e) {
+            $logger->error("Profitshare API Error: " . $e->getMessage());
+            $affiliateLink = null;
+        }
 
-        // Ако API-то върне грешка, ползваме записания в базата
+        // Ако API генерирането се провали, използваме стария линк от базата
         if (!$affiliateLink) {
-            $logger->warning("Failed to generate fresh link for #{$id}, using cached.");
+            $logger->warning("Using cached affiliate link for product #{$id}");
             $affiliateLink = $review->getAffiliateLink();
         }
 
