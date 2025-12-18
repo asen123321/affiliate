@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сравнение на {{ category|replace({'-': ' '})|title }} - Най-добрите Оферти{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                📊 Сравнение на Продукти
+            </h1>
+            <p class="lead text-muted">
+                Топ {{ products|length }} оферти от {{ category|replace({'-': ' ', '_': ' '})|title }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center" style="border-radius: 12px;">
+                <i class="bi bi-info-circle me-2" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong>Как работи сравнението?</strong><br>
+                    Сравняваме продуктите по цена, рейтинг и актуалност, за да ти помогнем да направиш най-добрия избор!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" style="border-radius: 16px; overflow: hidden;">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th style="width: 100px;">Снимка</th>
+                    <th>Продукт</th>
+                    <th style="width: 120px;">Рейтинг</th>
+                    <th style="width: 120px;">Цена</th>
+                    <th style="width: 150px;">Дата</th>
+                    <th style="width: 180px;">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr style="transition: all 0.3s ease;">
+                        <td class="fw-bold text-primary">{{ loop.index }}</td>
+                        <td>
+                            <img src="{{ product.imageUrl ?: 'https://via.placeholder.com/80' }}"
+                                 alt="{{ product.title }}"
+                                 class="img-thumbnail"
+                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                        </td>
+                        <td>
+                            <div class="fw-bold mb-1">{{ product.title|length > 80 ? product.title|slice(0, 80) ~ '...' : product.title }}</div>
+                            {% if product.badge %}
+                                <span class="badge bg-danger">{{ product.badge }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div>
+                                    {% for i in 1..5 %}
+                                        <i class="bi bi-star{{ i <= product.rating ? '-fill' : '' }} text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">{{ product.rating }}/5</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-success" style="font-size: 1.2rem;">{{ product.price }} лв.</span>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ product.createdAt|date('d.m.Y') }}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column gap-1">
+                                <a href="{{ path('app_review_show', {'slug': product.slug}) }}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   style="border-radius: 8px; font-size: 0.85rem;">
+                                    <i class="bi bi-eye"></i> Ревю
+                                </a>
+                                <a href="{{ path('app_buy_redirect', {'id': product.id}) }}"
+                                   class="btn btn-sm btn-success"
+                                   style="border-radius: 8px; font-size: 0.85rem;"
+                                   target="_blank" rel="noopener">
+                                    <i class="bi bi-cart-plus"></i> Купи
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0" style="border-radius: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body p-4">
+                    <h3 class="mb-3"><i class="bi bi-lightbulb"></i> SEO Съвети за Избор</h3>
+                    <ul class="mb-0">
+                        <li><strong>Цена vs Качество:</strong> Най-евтиният продукт не винаги е най-добрият. Проверете рейтинга!</li>
+                        <li><strong>Актуалност:</strong> По-новите оферти често имат по-добри промоции.</li>
+                        <li><strong>Прочети ревютата:</strong> Детайлните ревюта ти дават пълна информация за продукта.</li>
+                        <li><strong>Сравни магазини:</strong> Различните магазини предлагат различни цени за същия продукт.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ path('app_home') }}" class="btn btn-lg btn-outline-primary" style="border-radius: 12px;">
+                <i class="bi bi-arrow-left"></i> Обратно към Всички Оферти
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+
+    .table thead th {
+        background: #2d3748;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+</style>
+{% endblock %}

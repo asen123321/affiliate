@@ -2,6 +2,50 @@
 
 {% block title %}{{ review.title }} - 🔥 {{ review.badge ?? 'Expert Review' }} | Best Deal 2025{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <meta name="description" content="{{ review.metaDescription }}">
+    <meta name="keywords" content="{{ review.title }}, оферта, промоция, {{ review.price }} лв, онлайн магазин">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="{{ review.title }}">
+    <meta property="og:description" content="{{ review.metaDescription }}">
+    <meta property="og:image" content="{{ review.imageUrl }}">
+    <meta property="og:url" content="{{ app.request.uri }}">
+    <meta property="product:price:amount" content="{{ review.price }}">
+    <meta property="product:price:currency" content="BGN">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{ review.title }}",
+        "image": "{{ review.imageUrl }}",
+        "description": "{{ review.metaDescription }}",
+        "offers": {
+            "@type": "Offer",
+            "url": "{{ app.request.uri }}",
+            "priceCurrency": "BGN",
+            "price": "{{ review.price }}",
+            "availability": "https://schema.org/InStock",
+            "seller": {
+                "@type": "Organization",
+                "name": "Промоции и Технологични Ревюта"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "{{ review.rating }}",
+            "bestRating": "5",
+            "worstRating": "1",
+            "ratingCount": "1"
+        }
+    }
+    </script>
+{% endblock %}
+
 {% block body %}
 
     <div class="sticky-deal-bar d-lg-none">
@@ -97,6 +141,50 @@
                         </a>
                     </div>
                 </article>
+
+                {% if similarProducts|length > 0 %}
+                    <div class="similar-products-section mt-5">
+                        <h2 class="section-title text-center mb-4">
+                            <i class="bi bi-stars"></i> Подобни Оферти, Които Може Да Харесате
+                        </h2>
+                        <div class="row g-3">
+                            {% for product in similarProducts %}
+                                <div class="col-md-6">
+                                    <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; transition: all 0.3s ease;">
+                                        <div class="row g-0">
+                                            <div class="col-4">
+                                                <img src="{{ product.imageUrl ?: 'https://via.placeholder.com/150' }}"
+                                                     class="img-fluid rounded-start"
+                                                     alt="{{ product.title }}"
+                                                     style="height: 100%; object-fit: cover; border-radius: 12px 0 0 12px;">
+                                            </div>
+                                            <div class="col-8">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title fw-bold mb-2" style="font-size: 0.9rem;">
+                                                        {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
+                                                    </h6>
+                                                    <div class="mb-2">
+                                                        {% for i in 1..5 %}
+                                                            <i class="bi bi-star{{ i <= product.rating ? '-fill' : '' }} text-warning" style="font-size: 0.75rem;"></i>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fw-bold text-success">{{ product.price }} лв.</span>
+                                                        <a href="{{ path('app_review_show', {'slug': product.slug}) }}"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           style="border-radius: 8px; font-size: 0.75rem;">
+                                                            Виж <i class="bi bi-arrow-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="col-lg-4">

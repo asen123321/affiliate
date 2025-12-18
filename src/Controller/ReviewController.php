@@ -70,8 +70,68 @@ class ReviewController extends AbstractController
             throw $this->createNotFoundException('Review not found');
         }
 
+        // Намиране на подобни продукти за препоръки
+        $similarProducts = $reviewRepository->findSimilarProducts($review, 4);
+
         return $this->render('review/show.html.twig', [
             'review' => $review,
+            'similarProducts' => $similarProducts,
+        ]);
+    }
+
+    /**
+     * Търсене на продукти по ключова дума.
+     */
+    #[Route('/search', name: 'app_search')]
+    public function search(
+        Request $request,
+        ReviewRepository $reviewRepository,
+        PaginatorInterface $paginator
+    ): Response {
+        $query = $request->query->get('q', '');
+
+        if (empty($query)) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        // Създаваме QueryBuilder за търсене
+        $qb = $reviewRepository->createQueryBuilder('r')
+            ->where('r.isPublished = :status')
+            ->andWhere('r.title LIKE :query OR r.content LIKE :query OR r.metaDescription LIKE :query')
+            ->setParameter('status', true)
+            ->setParameter('query', '%' . $query . '%')
+            ->orderBy('r.createdAt', 'DESC');
+
+        // Пагинация
+        $pagination = $paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            60
+        );
+
+        return $this->render('review/search.html.twig', [
+            'reviews' => $pagination,
+            'query' => $query,
+        ]);
+    }
+
+    /**
+     * Сравнение на продукти по категория.
+     */
+    #[Route('/compare/{category}', name: 'app_compare')]
+    public function compare(
+        string $category,
+        ReviewRepository $reviewRepository
+    ): Response {
+        $products = $reviewRepository->findBestByCategory($category, 10);
+
+        if (empty($products)) {
+            throw $this->createNotFoundException('No products found for this category');
+        }
+
+        return $this->render('review/compare.html.twig', [
+            'products' => $products,
+            'category' => $category,
         ]);
     }
 

@@ -41,23 +41,37 @@
 </head>
 <body>
 <nav class="top-filter-nav py-2">
-    <div class="container d-flex justify-content-center align-items-center gap-2 flex-wrap">
-        <a href="{{ path('app_home') }}"
-           class="nav-link-custom {{ not app.request.query.get('source') ? 'active' : '' }}">
-            🏠 ВСИЧКИ
-        </a>
-        <a href="{{ path('app_home', {'source': 'emag'}) }}"
-           class="nav-link-custom {{ app.request.query.get('source') == 'emag' ? 'active' : '' }}">
-            🔵 eMAG
-        </a>
-        <a href="{{ path('app_home', {'source': 'fashion_days'}) }}"
-           class="nav-link-custom {{ app.request.query.get('source') == 'fashion_days' ? 'active' : '' }}">
-            👗 FASHION DAYS
-        </a>
-        <a href="{{ path('app_home', {'source': 'alleop'}) }}"
-           class="nav-link-custom {{ app.request.query.get('source') == 'alleop' ? 'active' : '' }}">
-            ⚡ ALLEOP
-        </a>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                    <a href="{{ path('app_home') }}"
+                       class="nav-link-custom {{ not app.request.query.get('source') ? 'active' : '' }}">
+                        🏠 ВСИЧКИ
+                    </a>
+                    <a href="{{ path('app_home', {'source': 'emag'}) }}"
+                       class="nav-link-custom {{ app.request.query.get('source') == 'emag' ? 'active' : '' }}">
+                        🔵 eMAG
+                    </a>
+                    <a href="{{ path('app_home', {'source': 'fashion_days'}) }}"
+                       class="nav-link-custom {{ app.request.query.get('source') == 'fashion_days' ? 'active' : '' }}">
+                        👗 FASHION DAYS
+                    </a>
+                    <a href="{{ path('app_home', {'source': 'alleop'}) }}"
+                       class="nav-link-custom {{ app.request.query.get('source') == 'alleop' ? 'active' : '' }}">
+                        ⚡ ALLEOP
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <form action="{{ path('app_search') }}" method="get" class="d-flex">
+                    <input type="search" name="q" class="form-control form-control-sm"
+                           placeholder="🔍 Търси продукти..."
+                           value="{{ app.request.query.get('q', '') }}"
+                           style="border-radius: 20px; padding: 8px 16px;">
+                </form>
+            </div>
+        </div>
     </div>
 </nav>
 
