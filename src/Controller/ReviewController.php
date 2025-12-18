@@ -74,10 +74,10 @@ class ReviewController extends AbstractController
         $similarProducts = $reviewRepository->findSimilarAcrossPlatforms(
             $review->getTitle(),
             $review->getId(),
-            12  // Get 12 similar products
+            18  // Get up to 18 products (6 per platform max)
         );
 
-        // Group similar products by platform
+        // Group similar products by platform (max 6 per platform)
         $productsByPlatform = [
             'emag' => [],
             'fashiondays' => [],
@@ -86,11 +86,11 @@ class ReviewController extends AbstractController
 
         foreach ($similarProducts as $product) {
             $url = $product->getOriginalProductUrl();
-            if (str_contains($url, 'emag.bg')) {
+            if (str_contains($url, 'emag.bg') && count($productsByPlatform['emag']) < 6) {
                 $productsByPlatform['emag'][] = $product;
-            } elseif (str_contains($url, 'fashiondays')) {
+            } elseif (str_contains($url, 'fashiondays') && count($productsByPlatform['fashiondays']) < 6) {
                 $productsByPlatform['fashiondays'][] = $product;
-            } elseif (str_contains($url, 'alleop')) {
+            } elseif (str_contains($url, 'alleop') && count($productsByPlatform['alleop']) < 6) {
                 $productsByPlatform['alleop'][] = $product;
             }
         }

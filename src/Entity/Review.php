@@ -64,6 +64,9 @@ class Review
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $badge = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $category = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -223,6 +226,17 @@ class Review
     public function setBadge(?string $badge): static
     {
         $this->badge = $badge;
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): static
+    {
+        $this->category = $category;
         return $this;
     }
 }

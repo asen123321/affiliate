@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Service\CategoryDetector;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -164,15 +165,29 @@ class ScrapeAlleopCommand extends Command
                             $productUrl = self::BASE_URL . $productUrl;
                         }
 
-                        // Product image
+                        // Product image - try multiple attributes
                         $imageUrl = '';
-                        $imgNode = $node->filter('img.product-thumbnail, img.product-image, .product-image img');
+                        $imgNode = $node->filter('img');
                         if ($imgNode->count() > 0) {
-                            $imageUrl = $imgNode->attr('src');
-                            // Handle lazy loading
+                            // Try different image attributes in order
+                            $imageUrl = $imgNode->attr('data-src')
+                                     ?: $imgNode->attr('data-original')
+                                     ?: $imgNode->attr('data-lazy-src')
+                                     ?: $imgNode->attr('srcset')
+                                     ?: $imgNode->attr('src')
+                                     ?: '';
+
+                            // Handle lazy loading placeholder
                             if (empty($imageUrl) || $imageUrl === 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==') {
-                                $imageUrl = $imgNode->attr('data-src') ?: $imgNode->attr('data-original') ?: '';
+                                $imageUrl = '';
                             }
+
+                            // Extract first URL from srcset if present
+                            if (str_contains($imageUrl, ' ')) {
+                                $imageUrl = explode(' ', $imageUrl)[0];
+                            }
+
+                            // Make URL absolute
                             if (!empty($imageUrl) && !str_starts_with($imageUrl, 'http')) {
                                 $imageUrl = self::BASE_URL . $imageUrl;
                             }
@@ -209,6 +224,9 @@ class ScrapeAlleopCommand extends Command
                         // Meta description
                         $metaDescription = $this->generateMetaDescription($title, $price);
 
+                        // Detect category automatically
+                        $category = CategoryDetector::detectCategory($title);
+
                         // Insert into database
                         $this->connection->insert('review', [
                             'title' => $title,
@@ -220,6 +238,7 @@ class ScrapeAlleopCommand extends Command
                             'original_product_url' => $productUrl,
                             'price' => $price,
                             'rating' => rand(4, 5),
+                            'category' => $category,
                             'is_published' => true,
                             'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
                             'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),

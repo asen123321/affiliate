@@ -165,6 +165,21 @@
                     <p class="text-muted">Намери най-добрата оферта от различни платформи</p>
                 </div>
 
+                <!-- Price Comparison Chart -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4">
+                                <h4 class="card-title mb-3">
+                                    <i class="bi bi-bar-chart-line text-primary"></i>
+                                    Сравнение на цени
+                                </h4>
+                                <canvas id="priceComparisonChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Platform Tabs -->
                 <ul class="nav nav-pills justify-content-center mb-4" id="similarTabs" role="tablist">
                     {% if similarProducts.emag|length > 0 %}
@@ -1226,5 +1241,124 @@
     }
 }
 </style>
+
+<!-- Chart.js Script for Price Comparison -->
+{% if hasSimilarProducts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('priceComparisonChart');
+
+    if (!ctx) return; // Exit if chart canvas not found
+
+    const emagProducts = {{ similarProducts.emag|json_encode|raw }};
+    const fashionDaysProducts = {{ similarProducts.fashiondays|json_encode|raw }};
+    const alleopProducts = {{ similarProducts.alleop|json_encode|raw }};
+
+    console.log('Price Comparison - eMAG:', emagProducts.length, 'Fashion Days:', fashionDaysProducts.length, 'Alleop:', alleopProducts.length);
+
+    function getAveragePrice(products) {
+        if (!products || products.length === 0) return 0;
+        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price)));
+        if (validPrices.length === 0) return 0;
+        const total = validPrices.reduce((sum, p) => sum + parseFloat(p.price), 0);
+        return parseFloat((total / validPrices.length).toFixed(2));
+    }
+
+    function getMinPrice(products) {
+        if (!products || products.length === 0) return 0;
+        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+        if (validPrices.length === 0) return 0;
+        return parseFloat(Math.min(...validPrices).toFixed(2));
+    }
+
+    function getMaxPrice(products) {
+        if (!products || products.length === 0) return 0;
+        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+        if (validPrices.length === 0) return 0;
+        return parseFloat(Math.max(...validPrices).toFixed(2));
+    }
+
+    const stats = {
+        emag: {
+            min: getMinPrice(emagProducts),
+            avg: getAveragePrice(emagProducts),
+            max: getMaxPrice(emagProducts)
+        },
+        fashiondays: {
+            min: getMinPrice(fashionDaysProducts),
+            avg: getAveragePrice(fashionDaysProducts),
+            max: getMaxPrice(fashionDaysProducts)
+        },
+        alleop: {
+            min: getMinPrice(alleopProducts),
+            avg: getAveragePrice(alleopProducts),
+            max: getMaxPrice(alleopProducts)
+        }
+    };
+
+    console.log('Price Stats:', stats);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['eMAG', 'Fashion Days', 'Alleop'],
+            datasets: [
+                {
+                    label: 'Минимална цена (лв.)',
+                    data: [stats.emag.min, stats.fashiondays.min, stats.alleop.min],
+                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8
+                },
+                {
+                    label: 'Средна цена (лв.)',
+                    data: [stats.emag.avg, stats.fashiondays.avg, stats.alleop.avg],
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8
+                },
+                {
+                    label: 'Максимална цена (лв.)',
+                    data: [stats.emag.max, stats.fashiondays.max, stats.alleop.max],
+                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(2) + ' лв.';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
 
 {% endblock %}

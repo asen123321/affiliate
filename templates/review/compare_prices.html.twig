@@ -165,23 +165,54 @@
                     const fashionDaysProducts = {{ products.fashiondays|json_encode|raw }};
                     const alleopProducts = {{ products.alleop|json_encode|raw }};
 
+                    console.log('eMAG Products:', emagProducts.length);
+                    console.log('Fashion Days Products:', fashionDaysProducts.length);
+                    console.log('Alleop Products:', alleopProducts.length);
+
                     // Calculate average prices
                     function getAveragePrice(products) {
-                        if (products.length === 0) return 0;
-                        const total = products.reduce((sum, p) => sum + parseFloat(p.price || 0), 0);
-                        return (total / products.length).toFixed(2);
+                        if (!products || products.length === 0) return 0;
+                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price)));
+                        if (validPrices.length === 0) return 0;
+                        const total = validPrices.reduce((sum, p) => sum + parseFloat(p.price), 0);
+                        return parseFloat((total / validPrices.length).toFixed(2));
                     }
 
                     // Get min/max prices
                     function getMinPrice(products) {
-                        if (products.length === 0) return 0;
-                        return Math.min(...products.map(p => parseFloat(p.price || 0))).toFixed(2);
+                        if (!products || products.length === 0) return 0;
+                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+                        if (validPrices.length === 0) return 0;
+                        return parseFloat(Math.min(...validPrices).toFixed(2));
                     }
 
                     function getMaxPrice(products) {
-                        if (products.length === 0) return 0;
-                        return Math.max(...products.map(p => parseFloat(p.price || 0))).toFixed(2);
+                        if (!products || products.length === 0) return 0;
+                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+                        if (validPrices.length === 0) return 0;
+                        return parseFloat(Math.max(...validPrices).toFixed(2));
                     }
+
+                    // Calculate stats
+                    const stats = {
+                        emag: {
+                            min: getMinPrice(emagProducts),
+                            avg: getAveragePrice(emagProducts),
+                            max: getMaxPrice(emagProducts)
+                        },
+                        fashiondays: {
+                            min: getMinPrice(fashionDaysProducts),
+                            avg: getAveragePrice(fashionDaysProducts),
+                            max: getMaxPrice(fashionDaysProducts)
+                        },
+                        alleop: {
+                            min: getMinPrice(alleopProducts),
+                            avg: getAveragePrice(alleopProducts),
+                            max: getMaxPrice(alleopProducts)
+                        }
+                    };
+
+                    console.log('Price Stats:', stats);
 
                     const chartData = {
                         labels: ['eMAG', 'Fashion Days', 'Alleop'],
@@ -189,35 +220,38 @@
                             {
                                 label: 'Минимална цена (лв.)',
                                 data: [
-                                    getMinPrice(emagProducts),
-                                    getMinPrice(fashionDaysProducts),
-                                    getMinPrice(alleopProducts)
+                                    stats.emag.min,
+                                    stats.fashiondays.min,
+                                    stats.alleop.min
                                 ],
-                                backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)',
                                 borderColor: 'rgba(34, 197, 94, 1)',
-                                borderWidth: 2
+                                borderWidth: 2,
+                                borderRadius: 8
                             },
                             {
                                 label: 'Средна цена (лв.)',
                                 data: [
-                                    getAveragePrice(emagProducts),
-                                    getAveragePrice(fashionDaysProducts),
-                                    getAveragePrice(alleopProducts)
+                                    stats.emag.avg,
+                                    stats.fashiondays.avg,
+                                    stats.alleop.avg
                                 ],
-                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
                                 borderColor: 'rgba(59, 130, 246, 1)',
-                                borderWidth: 2
+                                borderWidth: 2,
+                                borderRadius: 8
                             },
                             {
                                 label: 'Максимална цена (лв.)',
                                 data: [
-                                    getMaxPrice(emagProducts),
-                                    getMaxPrice(fashionDaysProducts),
-                                    getMaxPrice(alleopProducts)
+                                    stats.emag.max,
+                                    stats.fashiondays.max,
+                                    stats.alleop.max
                                 ],
-                                backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                backgroundColor: 'rgba(239, 68, 68, 0.8)',
                                 borderColor: 'rgba(239, 68, 68, 1)',
-                                borderWidth: 2
+                                borderWidth: 2,
+                                borderRadius: 8
                             }
                         ]
                     };
