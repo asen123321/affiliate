@@ -91,7 +91,7 @@
                         {% if review.imageUrl %}
                             <div class="product-image-wrapper">
                                 <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank">
-                                    <img src="{{ review.imageUrl }}" class="product-image" alt="{{ review.title }}">
+                                    <img src="{{ review.imageUrl }}" class="product-image img-fluid" alt="{{ review.title }}" loading="lazy">
                                 </a>
                                 <div class="image-overlay">
                                     <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="quick-view" style="text-decoration: none; cursor: pointer;">

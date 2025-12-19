@@ -102,7 +102,7 @@ class ReviewController extends AbstractController
     }
 
     /**
-     * Search for products
+     * Search for products with smart keyword matching
      */
     #[Route('/search', name: 'app_search')]
     public function search(
@@ -116,13 +116,44 @@ class ReviewController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Search in title, content, and meta description
+        // Smart search: expand short keywords to full words
+        // тв -> телевизор, ел -> електро, etc.
+        $expandedKeywords = $this->expandSearchKeywords($query);
+
+        // Build query with OR conditions for all keywords
         $qb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :status')
-            ->andWhere('r.title LIKE :query OR r.content LIKE :query OR r.metaDescription LIKE :query')
-            ->setParameter('status', true)
-            ->setParameter('query', '%' . $query . '%')
-            ->orderBy('r.createdAt', 'DESC');
+            ->setParameter('status', true);
+
+        // Add search conditions for each expanded keyword
+        // Use LOWER() for case-insensitive search in PostgreSQL
+        if (!empty($expandedKeywords)) {
+            $orConditions = [];
+
+            foreach ($expandedKeywords as $index => $keyword) {
+                $paramTitle = 'title' . $index;
+                $paramContent = 'content' . $index;
+                $paramMeta = 'meta' . $index;
+                $paramCategory = 'category' . $index;
+
+                // Use LOWER() for case-insensitive matching
+                $orConditions[] = "LOWER(r.title) LIKE LOWER(:$paramTitle)";
+                $orConditions[] = "LOWER(r.content) LIKE LOWER(:$paramContent)";
+                $orConditions[] = "LOWER(r.metaDescription) LIKE LOWER(:$paramMeta)";
+                $orConditions[] = "LOWER(r.category) LIKE LOWER(:$paramCategory)";
+
+                // Add wildcards for partial matching
+                $searchPattern = '%' . mb_strtolower($keyword, 'UTF-8') . '%';
+                $qb->setParameter($paramTitle, $searchPattern);
+                $qb->setParameter($paramContent, $searchPattern);
+                $qb->setParameter($paramMeta, $searchPattern);
+                $qb->setParameter($paramCategory, $searchPattern);
+            }
+
+            $qb->andWhere(implode(' OR ', $orConditions));
+        }
+
+        $qb->orderBy('r.createdAt', 'DESC');
 
         // Pagination
         $pagination = $paginator->paginate(
@@ -135,6 +166,51 @@ class ReviewController extends AbstractController
             'reviews' => $pagination,
             'query' => $query,
         ]);
+    }
+
+    /**
+     * Expand search keywords: тв -> телевизор, laptop -> лаптоп, etc.
+     */
+    private function expandSearchKeywords(string $query): array
+    {
+        $query = mb_strtolower($query, 'UTF-8');
+        $keywords = [$query]; // Always include original query
+
+        // Keyword expansion map
+        $expansions = [
+            'тв' => ['телевизор', 'televizor', 'tv', 'smart tv'],
+            'laptop' => ['лаптоп', 'notebook', 'ноутбук'],
+            'лаптоп' => ['laptop', 'notebook'],
+            'телефон' => ['phone', 'smartphone', 'gsm', 'смартфон'],
+            'phone' => ['телефон', 'smartphone', 'gsm'],
+            'таблет' => ['tablet', 'ipad'],
+            'tablet' => ['таблет', 'ipad'],
+            'кафемашина' => ['coffee machine', 'espresso', 'кафе'],
+            'пералня' => ['washing machine', 'перална'],
+            'хладилник' => ['fridge', 'refrigerator'],
+            'печка' => ['oven', 'фурна'],
+            'миялна' => ['dishwasher', 'съдомиялна'],
+            'климатик' => ['air conditioner', 'ac'],
+            'аспиратор' => ['vacuum cleaner', 'прахосмукачка'],
+            'дрон' => ['drone', 'квадрокоптер'],
+            'слушалки' => ['headphones', 'earphones', 'наушници'],
+            'мишка' => ['mouse', 'геймърска'],
+            'клавиатура' => ['keyboard'],
+            'монитор' => ['monitor', 'display', 'екран'],
+            'принтер' => ['printer', 'скенер'],
+            'роутер' => ['router', 'рутер'],
+            'камера' => ['camera', 'фотоапарат'],
+            'конзола' => ['console', 'playstation', 'xbox', 'ps'],
+        ];
+
+        // Check if query matches any expansion key
+        foreach ($expansions as $key => $values) {
+            if (str_contains($query, $key)) {
+                $keywords = array_merge($keywords, $values);
+            }
+        }
+
+        return array_unique($keywords);
     }
 
     /**

@@ -41,7 +41,7 @@ class ReviewRepository extends ServiceEntityRepository
 
     /**
      * Find similar products across different platforms
-     * Matches by CATEGORY field and similar price (100% accurate!)
+     * Matches by CATEGORY field - returns products from ALL platforms
      * Returns up to 18 products total (6 per platform max)
      */
     public function findSimilarAcrossPlatforms(string $title, int $excludeId = null, int $limit = 18): array
@@ -63,10 +63,11 @@ class ReviewRepository extends ServiceEntityRepository
             return [];
         }
 
-        // Find products by SAME category
+        // Find products by SAME category from ALL platforms
         $qb = $this->createQueryBuilder('r')
             ->where('r.isPublished = :status')
             ->andWhere('r.category = :category')
+            ->andWhere('r.price IS NOT NULL')
             ->setParameter('status', true)
             ->setParameter('category', $category);
 
@@ -75,21 +76,37 @@ class ReviewRepository extends ServiceEntityRepository
                ->setParameter('excludeId', $excludeId);
         }
 
-        // Filter by similar price range (±30%)
-        if ($sourceProduct->getPrice()) {
-            $price = $sourceProduct->getPrice();
-            $minPrice = $price * 0.7;  // -30%
-            $maxPrice = $price * 1.3;  // +30%
-
-            $qb->andWhere('r.price BETWEEN :minPrice AND :maxPrice')
-                ->setParameter('minPrice', $minPrice)
-                ->setParameter('maxPrice', $maxPrice);
-        }
-
-        return $qb->orderBy('r.price', 'ASC')
-            ->setMaxResults($limit)
+        // Get all products from same category, then group by platform manually
+        $allProducts = $qb->orderBy('r.price', 'ASC')
+            ->setMaxResults(200) // Get more products to ensure we have from all platforms
             ->getQuery()
             ->getResult();
+
+        // Group by platform and limit to 6 per platform
+        $grouped = [
+            'emag' => [],
+            'fashiondays' => [],
+            'alleop' => []
+        ];
+
+        foreach ($allProducts as $product) {
+            $url = $product->getOriginalProductUrl();
+            if (str_contains($url, 'emag.bg') && count($grouped['emag']) < 6) {
+                $grouped['emag'][] = $product;
+            } elseif (str_contains($url, 'fashiondays') && count($grouped['fashiondays']) < 6) {
+                $grouped['fashiondays'][] = $product;
+            } elseif (str_contains($url, 'alleop') && count($grouped['alleop']) < 6) {
+                $grouped['alleop'][] = $product;
+            }
+
+            // Stop if we have 6 products from each platform
+            if (count($grouped['emag']) >= 6 && count($grouped['fashiondays']) >= 6 && count($grouped['alleop']) >= 6) {
+                break;
+            }
+        }
+
+        // Flatten back to array
+        return array_merge($grouped['emag'], $grouped['fashiondays'], $grouped['alleop']);
     }
 
     /**

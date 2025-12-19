@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\CategoryDetector;
+use App\Service\HtmlSanitizerService;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -27,7 +28,8 @@ class ScrapeAlleopCommand extends Command
 
     public function __construct(
         private Connection $connection,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
+        private HtmlSanitizerService $htmlSanitizer
     ) {
         parent::__construct();
     }
@@ -218,10 +220,11 @@ class ScrapeAlleopCommand extends Command
                             $counter++;
                         }
 
-                        // Generate content
+                        // Generate content and sanitize it to prevent XSS
                         $content = $this->generateContent($title, $price);
+                        $content = $this->htmlSanitizer->sanitizeForDisplay($content);
 
-                        // Meta description
+                        // Meta description (plain text, but sanitize for safety)
                         $metaDescription = $this->generateMetaDescription($title, $price);
 
                         // Detect category automatically

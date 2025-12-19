@@ -160,7 +160,7 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     const ctx = document.getElementById('priceComparisonChart');
 
-                    // Prepare data for chart
+                    // Prepare data for chart - SHOW ALL INDIVIDUAL PRODUCTS
                     const emagProducts = {{ products.emag|json_encode|raw }};
                     const fashionDaysProducts = {{ products.fashiondays|json_encode|raw }};
                     const alleopProducts = {{ products.alleop|json_encode|raw }};
@@ -169,87 +169,64 @@
                     console.log('Fashion Days Products:', fashionDaysProducts.length);
                     console.log('Alleop Products:', alleopProducts.length);
 
-                    // Calculate average prices
-                    function getAveragePrice(products) {
-                        if (!products || products.length === 0) return 0;
-                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price)));
-                        if (validPrices.length === 0) return 0;
-                        const total = validPrices.reduce((sum, p) => sum + parseFloat(p.price), 0);
-                        return parseFloat((total / validPrices.length).toFixed(2));
+                    // Extract all individual prices from each platform
+                    const emagPrices = emagProducts
+                        .filter(p => p && p.price && !isNaN(parseFloat(p.price)))
+                        .map(p => parseFloat(p.price));
+
+                    const fashionDaysPrices = fashionDaysProducts
+                        .filter(p => p && p.price && !isNaN(parseFloat(p.price)))
+                        .map(p => parseFloat(p.price));
+
+                    const alleopPrices = alleopProducts
+                        .filter(p => p && p.price && !isNaN(parseFloat(p.price)))
+                        .map(p => parseFloat(p.price));
+
+                    console.log('eMAG Prices:', emagPrices);
+                    console.log('Fashion Days Prices:', fashionDaysPrices);
+                    console.log('Alleop Prices:', alleopPrices);
+
+                    // Find the maximum number of products to create labels
+                    const maxProducts = Math.max(
+                        emagPrices.length,
+                        fashionDaysPrices.length,
+                        alleopPrices.length
+                    );
+
+                    const labels = [];
+                    for (let i = 1; i <= maxProducts; i++) {
+                        labels.push('Продукт ' + i);
                     }
 
-                    // Get min/max prices
-                    function getMinPrice(products) {
-                        if (!products || products.length === 0) return 0;
-                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
-                        if (validPrices.length === 0) return 0;
-                        return parseFloat(Math.min(...validPrices).toFixed(2));
-                    }
-
-                    function getMaxPrice(products) {
-                        if (!products || products.length === 0) return 0;
-                        const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
-                        if (validPrices.length === 0) return 0;
-                        return parseFloat(Math.max(...validPrices).toFixed(2));
-                    }
-
-                    // Calculate stats
-                    const stats = {
-                        emag: {
-                            min: getMinPrice(emagProducts),
-                            avg: getAveragePrice(emagProducts),
-                            max: getMaxPrice(emagProducts)
-                        },
-                        fashiondays: {
-                            min: getMinPrice(fashionDaysProducts),
-                            avg: getAveragePrice(fashionDaysProducts),
-                            max: getMaxPrice(fashionDaysProducts)
-                        },
-                        alleop: {
-                            min: getMinPrice(alleopProducts),
-                            avg: getAveragePrice(alleopProducts),
-                            max: getMaxPrice(alleopProducts)
-                        }
-                    };
-
-                    console.log('Price Stats:', stats);
+                    // Pad arrays with null for missing products
+                    while (emagPrices.length < maxProducts) emagPrices.push(null);
+                    while (fashionDaysPrices.length < maxProducts) fashionDaysPrices.push(null);
+                    while (alleopPrices.length < maxProducts) alleopPrices.push(null);
 
                     const chartData = {
-                        labels: ['eMAG', 'Fashion Days', 'Alleop'],
+                        labels: labels,
                         datasets: [
                             {
-                                label: 'Минимална цена (лв.)',
-                                data: [
-                                    stats.emag.min,
-                                    stats.fashiondays.min,
-                                    stats.alleop.min
-                                ],
-                                backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                                borderColor: 'rgba(34, 197, 94, 1)',
-                                borderWidth: 2,
-                                borderRadius: 8
-                            },
-                            {
-                                label: 'Средна цена (лв.)',
-                                data: [
-                                    stats.emag.avg,
-                                    stats.fashiondays.avg,
-                                    stats.alleop.avg
-                                ],
+                                label: 'eMAG (лв.)',
+                                data: emagPrices,
                                 backgroundColor: 'rgba(59, 130, 246, 0.8)',
                                 borderColor: 'rgba(59, 130, 246, 1)',
                                 borderWidth: 2,
                                 borderRadius: 8
                             },
                             {
-                                label: 'Максимална цена (лв.)',
-                                data: [
-                                    stats.emag.max,
-                                    stats.fashiondays.max,
-                                    stats.alleop.max
-                                ],
+                                label: 'Fashion Days (лв.)',
+                                data: fashionDaysPrices,
                                 backgroundColor: 'rgba(239, 68, 68, 0.8)',
                                 borderColor: 'rgba(239, 68, 68, 1)',
+                                borderWidth: 2,
+                                borderRadius: 8
+                            },
+                            {
+                                label: 'Alleop (лв.)',
+                                data: alleopPrices,
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                                borderColor: 'rgba(34, 197, 94, 1)',
                                 borderWidth: 2,
                                 borderRadius: 8
                             }
@@ -268,12 +245,20 @@
                                     position: 'top',
                                 },
                                 title: {
-                                    display: false
+                                    display: true,
+                                    text: 'Сравнение на индивидуални продукти',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    }
                                 },
                                 tooltip: {
                                     callbacks: {
                                         label: function(context) {
-                                            return context.dataset.label + ': ' + context.parsed.y + ' лв.';
+                                            if (context.parsed.y === null) {
+                                                return context.dataset.label + ': Няма продукт';
+                                            }
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
                                         }
                                     }
                                 }
@@ -281,10 +266,20 @@
                             scales: {
                                 y: {
                                     beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Цена (лв.)'
+                                    },
                                     ticks: {
                                         callback: function(value) {
-                                            return value + ' лв.';
+                                            return value.toFixed(2) + ' лв.';
                                         }
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Продукти (подредени по цена)'
                                     }
                                 }
                             }

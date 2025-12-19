@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\ProfitShareService;
+use App\Service\HtmlSanitizerService;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +26,8 @@ class ScrapeEmagHtmlCommand extends Command
         private HttpClientInterface $httpClient,
         private ProfitShareService $ps,
         private Connection $connection,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
+        private HtmlSanitizerService $htmlSanitizer
     ) {
         parent::__construct();
     }
@@ -174,9 +176,16 @@ class ScrapeEmagHtmlCommand extends Command
         $category = $platform . '-deals';
 
         // 2. Генериране на описание на БЪЛГАРСКИ (като в стария файл)
-        $description = "Възползвайте се от страхотната оферта за " . $shortName . ". Този продукт е наличен на топ цена!";
-        $content = "<h2>За продукта</h2><p>Топ оферта за <strong>" . $shortName . "</strong> от " . $platform . "!</p>" .
+        // Sanitize the shortName to prevent XSS attacks
+        $safeShortName = htmlspecialchars($shortName, ENT_QUOTES, 'UTF-8');
+        $safePlatform = htmlspecialchars($platform, ENT_QUOTES, 'UTF-8');
+
+        $description = "Възползвайте се от страхотната оферта за " . $safeShortName . ". Този продукт е наличен на топ цена!";
+        $content = "<h2>За продукта</h2><p>Топ оферта за <strong>" . $safeShortName . "</strong> от " . $safePlatform . "!</p>" .
             "<h3>Защо да изберете това?</h3><ul><li>✅ Гарантирано качество</li><li>✅ Бърза доставка</li></ul>";
+
+        // Sanitize the entire HTML content to remove any potential XSS
+        $content = $this->htmlSanitizer->sanitizeForDisplay($content);
 
         try {
             // Проверка за дубликат в product
