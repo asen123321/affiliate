@@ -10,8 +10,9 @@
 
 1. **Procfile** - Tells Koyeb how to start the web server
 2. **runtime.txt** - Specifies PHP 8.3
-3. **public/.htaccess** - Apache rewrite rules for Symfony
-4. **.koyeb.yml** - Environment variables reference (not used by Koyeb, just documentation)
+3. **.buildpacks** - Forces PHP buildpack (prevents Python detection)
+4. **public/.htaccess** - Apache rewrite rules for Symfony
+5. **.koyeb.yml** - Environment variables reference (not used by Koyeb, just documentation)
 
 ## Key Changes Made
 
@@ -36,6 +37,12 @@ web: heroku-php-apache2 public/
 ```
 php-8.3.x
 ```
+
+### 4. Created .buildpacks file
+```
+https://github.com/heroku/heroku-buildpack-php
+```
+This explicitly tells Koyeb to use the PHP buildpack instead of auto-detecting (which was incorrectly choosing Python).
 
 ## Deployment Steps
 
