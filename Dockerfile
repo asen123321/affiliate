@@ -85,11 +85,27 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 # Update Apache configuration for Symfony public directory
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # Configure Apache to listen on port 8000 (Koyeb default)
 RUN sed -i 's/Listen 80/Listen 8000/g' /etc/apache2/ports.conf \
     && sed -i 's/:80/:8000/g' /etc/apache2/sites-available/*.conf
+
+# Create proper VirtualHost configuration for Symfony
+RUN echo '<VirtualHost *:8000>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+        FallbackResource /index.php\n\
+    </Directory>\n\
+    <Directory /var/www/html/public/bundles>\n\
+        FallbackResource disabled\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Set final permissions
 RUN chown -R www-data:www-data /var/www/html
