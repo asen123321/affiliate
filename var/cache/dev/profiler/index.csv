@@ -40,3 +40,4 @@ c9b46f,172.18.0.1,GET,"http://77.85.205.5/,method:GET",1766152086,,302,request
 3e80d4,172.18.0.1,GET,http://77.85.205.5/SDK/webLanguage,1766152547,,302,request
 8a2559,172.18.0.1,OPTIONS,http://77.85.205.5/,1766152985,,200,request
 e37d8f,172.18.0.1,GET,http://77.85.205.5/SDK/webLanguage,1766152995,,302,request
+9dffc4,172.18.0.1,OPTIONS,http://77.85.205.5/,1766153597,,200,request
