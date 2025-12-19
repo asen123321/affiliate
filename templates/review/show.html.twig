@@ -1,1493 +1,243 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ review.title }} - Сравни цени{% endblock %}
-{% block meta_description %}{{ review.metaDescription }}{% endblock %}
-{% block canonical %}{{ url('app_review_show', {slug: review.slug}) }}{% endblock %}
+{% block title %}{{ review.title }} - Детайли{% endblock %}
 
-{% block og_title %}{{ review.title }}{% endblock %}
-{% block og_description %}{{ review.metaDescription }}{% endblock %}
-{% block og_image %}{% if review.imageUrl %}{{ absolute_url(review.imageUrl) }}{% else %}{{ absolute_url(asset('build/images/default-og.jpg')) }}{% endif %}{% endblock %}
-{% block og_type %}product{% endblock %}
-
-{% block twitter_title %}{{ review.title }}{% endblock %}
-{% block twitter_description %}{{ review.metaDescription }}{% endblock %}
-{% block twitter_image %}{% if review.imageUrl %}{{ absolute_url(review.imageUrl) }}{% else %}{{ absolute_url(asset('build/images/default-og.jpg')) }}{% endif %}{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block body %}
+    <div class="container py-5">
 
-<!-- Schema.org JSON-LD Structured Data for Product and Review -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": {{ review.title|json_encode|raw }},
-  "image": {{ review.imageUrl ? review.imageUrl|json_encode|raw : '""' }},
-  "description": {{ review.metaDescription|json_encode|raw }},
-  {% if review.price %}
-  "offers": {
-    "@type": "Offer",
-    "url": {{ url('app_review_show', {slug: review.slug})|json_encode|raw }},
-    "priceCurrency": "BGN",
-    "price": {{ review.price|json_encode|raw }},
-    "priceValidUntil": {{ "now"|date_modify("+30 days")|date("Y-m-d")|json_encode|raw }},
-    "availability": "https://schema.org/InStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "ОФЕРТИ - Сравни цени"
-    }
-  },
-  {% endif %}
-  {% if review.rating %}
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": {{ review.rating|json_encode|raw }},
-    "bestRating": "5",
-    "worstRating": "1",
-    "ratingCount": {{ random(50, 200) }}
-  },
-  {% endif %}
-  "review": {
-    "@type": "Review",
-    "reviewRating": {
-      "@type": "Rating",
-      "ratingValue": {{ review.rating|default(5)|json_encode|raw }},
-      "bestRating": "5",
-      "worstRating": "1"
-    },
-    "author": {
-      "@type": "Organization",
-      "name": "ОФЕРТИ - Екипът по продуктови ревюта"
-    },
-    "reviewBody": {{ review.metaDescription|json_encode|raw }},
-    "datePublished": {{ review.createdAt|date("Y-m-d")|json_encode|raw }}
-  }
-}
-</script>
-
-<!-- STICKY DEAL BAR (Mobile Top) -->
-<div class="sticky-deal-bar d-lg-none">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between py-2 px-3">
-            <div>
-                <div class="deal-price">${{ review.price }}</div>
-                <div class="deal-rating">⭐ {{ review.rating }}.0</div>
-            </div>
-            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sticky-mobile">
-                <i class="bi bi-cart-fill me-1"></i>BUY NOW
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- BREADCRUMB -->
-<div class="container-fluid bg-white border-bottom py-3">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-decoration-none"><i class="bi bi-house-door-fill me-1"></i>Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ review.title|slice(0, 40) }}...</li>
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Начало</a></li>
+                <li class="breadcrumb-item active">{{ review.title|slice(0, 30) }}...</li>
             </ol>
         </nav>
-    </div>
-</div>
 
-<div class="container my-4 my-lg-5">
-    <div class="row g-4">
-        <!-- LEFT COLUMN: MAIN CONTENT -->
-        <div class="col-lg-8">
-            <article class="review-article">
-                <!-- MEGA HEADER -->
-                <header class="article-header">
-                    <!-- Badge -->
-                    {% if review.badge %}
-                    <div class="mega-badge-container mb-3">
-                        <div class="mega-badge">
-                            <i class="bi bi-award-fill me-2"></i>{{ review.badge }}
-                        </div>
-                    </div>
-                    {% endif %}
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <span class="badge bg-primary mb-2">{{ review.badge ?? 'ОФЕРТА' }}</span>
+                        <h1 class="h4 fw-bold mb-3">{{ review.title }}</h1>
 
-                    <!-- Title -->
-                    <h1 class="article-title">{{ review.title }}</h1>
-
-                    <!-- Meta Bar -->
-                    <div class="meta-bar">
-                        <div class="meta-item">
-                            <i class="bi bi-calendar-check text-primary"></i>
-                            <span>Updated {{ review.createdAt|date('F j, Y') }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <div class="rating-display">
-                                {% for i in 1..5 %}
-                                    {% if i <= review.rating %}
-                                        ⭐
-                                    {% else %}
-                                        ☆
-                                    {% endif %}
-                                {% endfor %}
+                        {% if review.imageUrl %}
+                            <div class="text-center my-4 p-3 bg-white border rounded">
+                                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noreferrer" title="Виж в магазина">
+                                    <img src="{{ review.imageUrl }}" class="img-fluid hover-zoom" style="max-height: 300px;" alt="{{ review.title }}">
+                                </a>
                             </div>
-                            <span class="rating-score">{{ review.rating }}.0/5.0</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="bi bi-check-circle-fill text-success"></i>
-                            <span>✅ Expert Verified</span>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- MOBILE QUICK BUY CARD -->
-                <div class="d-lg-none my-4">
-                    <div class="mobile-cta-card">
-                        <div class="text-center">
-                            {% if review.badge %}
-                            <div class="mb-3">
-                                <span class="mobile-badge">
-                                    <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
-                                </span>
-                            </div>
-                            {% endif %}
-                            <div class="mobile-price-mega">${{ review.price }}</div>
-                            <div class="mobile-price-label">🔥 HOT DEAL PRICE</div>
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-mobile-mega">
-                                <i class="bi bi-lightning-charge-fill me-2"></i>GET THIS DEAL NOW
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
-                            <div class="trust-bar-mobile">
-                                🚚 Free Ship • 🔒 Secure • ↩️ 30-Day Returns
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ARTICLE CONTENT -->
-                <div class="article-content">
-                    {{ review.content|raw }}
-                </div>
-
-                <!-- PRICE COMPARISON BUTTON -->
-                <div class="comparison-cta my-4">
-                    <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                        <div class="card-body p-4 text-center">
-                            <h4 class="mb-3">
-                                <i class="bi bi-graph-up-arrow text-primary"></i>
-                                Сравни цените
-                            </h4>
-                            <p class="text-muted mb-3">
-                                Намери най-добрата оферта за подобни продукти в eMAG, Fashion Days и Alleop
-                            </p>
-                            <a href="{{ path('app_review_compare', {slug: review.slug}) }}"
-                               class="btn btn-primary btn-lg">
-                                <i class="bi bi-bar-chart-line me-2"></i>
-                                Виж сравнение на цени
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BOTTOM MEGA CTA -->
-                <div class="bottom-mega-cta">
-                    <div class="cta-inner">
-                        <div class="cta-icon">🚀</div>
-                        <div class="cta-content">
-                            <h3 class="cta-heading">Ready to Buy {{ review.title }}?</h3>
-                            <p class="cta-subtext">⚡ Limited stock • 💰 Best price guaranteed • ✅ Expert recommended</p>
-                        </div>
-                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-bottom-cta">
-                            <span class="btn-text">
-                                <i class="bi bi-cart-check-fill me-2"></i>GET DEAL NOW
-                            </span>
-                        </a>
-                    </div>
-                    <div class="cta-footer">
-                        🔒 Secure Checkout • 🚚 Free Shipping • ↩️ 30-Day Returns • ⭐ Rated {{ review.rating }}/5
-                    </div>
-                </div>
-
-                <!-- BACK BUTTON -->
-                <div class="text-center mt-4">
-                    <a href="{{ path('app_home') }}" class="btn-back">
-                        <i class="bi bi-arrow-left me-2"></i>View All Deals
-                    </a>
-                </div>
-            </article>
-
-            <!-- SIMILAR PRODUCTS SECTION -->
-            {% set hasSimilarProducts = similarProducts.emag|length > 0 or similarProducts.fashiondays|length > 0 or similarProducts.alleop|length > 0 %}
-
-            {% if hasSimilarProducts %}
-            <div class="similar-products-section mt-5">
-                <div class="section-header text-center mb-4">
-                    <h2 class="h3 fw-bold">
-                        <i class="bi bi-graph-up text-primary"></i>
-                        Подобни продукти
-                    </h2>
-                    <p class="text-muted">Намери най-добрата оферта от различни платформи</p>
-                </div>
-
-                <!-- Platform Tabs -->
-                <ul class="nav nav-pills justify-content-center mb-4" id="similarTabs" role="tablist">
-                    {% if similarProducts.emag|length > 0 %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active"
-                                id="similar-emag-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#similar-emag"
-                                type="button">
-                            <i class="bi bi-laptop"></i> eMAG
-                            <span class="badge bg-white text-primary ms-1">{{ similarProducts.emag|length }}</span>
-                        </button>
-                    </li>
-                    {% endif %}
-
-                    {% if similarProducts.fashiondays|length > 0 %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if similarProducts.emag|length == 0 %}active{% endif %}"
-                                id="similar-fashiondays-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#similar-fashiondays"
-                                type="button">
-                            <i class="bi bi-bag-heart"></i> Fashion Days
-                            <span class="badge bg-white text-danger ms-1">{{ similarProducts.fashiondays|length }}</span>
-                        </button>
-                    </li>
-                    {% endif %}
-
-                    {% if similarProducts.alleop|length > 0 %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if similarProducts.emag|length == 0 and similarProducts.fashiondays|length == 0 %}active{% endif %}"
-                                id="similar-alleop-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#similar-alleop"
-                                type="button">
-                            <i class="bi bi-basket"></i> Alleop
-                            <span class="badge bg-white text-success ms-1">{{ similarProducts.alleop|length }}</span>
-                        </button>
-                    </li>
-                    {% endif %}
-                </ul>
-
-                <!-- Tab Content -->
-                <div class="tab-content" id="similarTabContent">
-                    <!-- eMAG Products -->
-                    {% if similarProducts.emag|length > 0 %}
-                    <div class="tab-pane fade show active" id="similar-emag" role="tabpanel">
-                        <div class="row g-3">
-                            {% for product in similarProducts.emag|slice(0, 6) %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card h-100 shadow-sm similar-card">
-                                    {% if product.imageUrl %}
-                                    <img src="{{ product.imageUrl }}"
-                                         class="card-img-top img-fluid p-3"
-                                         alt="{{ product.title }}"
-                                         style="height: 200px; object-fit: contain; background: white;"
-                                         loading="lazy">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <span class="badge bg-primary mb-2">eMAG</span>
-                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
-                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
-                                        </h6>
-                                        {% if product.rating %}
-                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
-                                            {% for i in 1..5 %}
-                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                        {% if product.price %}
-                                        <div class="h5 text-primary fw-bold mb-3">{{ product.price }} лв.</div>
-                                        {% endif %}
-                                        <div class="d-grid gap-2">
-                                            <button onclick="compareProducts('{{ review.title|e('js') }}', {{ review.price }}, '{{ product.title|e('js') }}', {{ product.price }}, 'eMAG')"
-                                                    class="btn btn-success btn-sm">
-                                                <i class="bi bi-graph-up"></i> Сравни цените
-                                            </button>
-                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-eye"></i> Детайли
-                                            </a>
-                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
-                                               class="btn btn-primary btn-sm"
-                                               target="_blank"
-                                               rel="noopener noreferrer">
-                                                <i class="bi bi-cart-plus"></i> Купи
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Fashion Days Products -->
-                    {% if similarProducts.fashiondays|length > 0 %}
-                    <div class="tab-pane fade {% if similarProducts.emag|length == 0 %}show active{% endif %}" id="similar-fashiondays" role="tabpanel">
-                        <div class="row g-3">
-                            {% for product in similarProducts.fashiondays|slice(0, 6) %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card h-100 shadow-sm similar-card">
-                                    {% if product.imageUrl %}
-                                    <img src="{{ product.imageUrl }}"
-                                         class="card-img-top img-fluid p-3"
-                                         alt="{{ product.title }}"
-                                         style="height: 200px; object-fit: contain; background: white;"
-                                         loading="lazy">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <span class="badge bg-danger mb-2">Fashion Days</span>
-                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
-                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
-                                        </h6>
-                                        {% if product.rating %}
-                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
-                                            {% for i in 1..5 %}
-                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                        {% if product.price %}
-                                        <div class="h5 text-danger fw-bold mb-3">{{ product.price }} лв.</div>
-                                        {% endif %}
-                                        <div class="d-grid gap-2">
-                                            <button onclick="compareProducts('{{ review.title|e('js') }}', {{ review.price }}, '{{ product.title|e('js') }}', {{ product.price }}, 'Fashion Days')"
-                                                    class="btn btn-success btn-sm">
-                                                <i class="bi bi-graph-up"></i> Сравни цените
-                                            </button>
-                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-danger btn-sm">
-                                                <i class="bi bi-eye"></i> Детайли
-                                            </a>
-                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
-                                               class="btn btn-danger btn-sm"
-                                               target="_blank"
-                                               rel="noopener noreferrer">
-                                                <i class="bi bi-cart-plus"></i> Купи
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Alleop Products -->
-                    {% if similarProducts.alleop|length > 0 %}
-                    <div class="tab-pane fade {% if similarProducts.emag|length == 0 and similarProducts.fashiondays|length == 0 %}show active{% endif %}" id="similar-alleop" role="tabpanel">
-                        <div class="row g-3">
-                            {% for product in similarProducts.alleop|slice(0, 6) %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card h-100 shadow-sm similar-card">
-                                    {% if product.imageUrl %}
-                                    <img src="{{ product.imageUrl }}"
-                                         class="card-img-top img-fluid p-3"
-                                         alt="{{ product.title }}"
-                                         style="height: 200px; object-fit: contain; background: white;"
-                                         loading="lazy">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <span class="badge bg-success mb-2">Alleop</span>
-                                        <h6 class="card-title" style="min-height: 2.5rem; font-size: 0.9rem;">
-                                            {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
-                                        </h6>
-                                        {% if product.rating %}
-                                        <div class="text-warning mb-2" style="font-size: 0.8rem;">
-                                            {% for i in 1..5 %}
-                                                <i class="bi bi-star-fill{% if i > product.rating %} text-muted{% endif %}"></i>
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                        {% if product.price %}
-                                        <div class="h5 text-success fw-bold mb-3">{{ product.price }} лв.</div>
-                                        {% endif %}
-                                        <div class="d-grid gap-2">
-                                            <button onclick="compareProducts('{{ review.title|e('js') }}', {{ review.price }}, '{{ product.title|e('js') }}', {{ product.price }}, 'Alleop')"
-                                                    class="btn btn-warning btn-sm">
-                                                <i class="bi bi-graph-up"></i> Сравни цените
-                                            </button>
-                                            <a href="{{ path('app_review_show', {slug: product.slug}) }}" class="btn btn-outline-success btn-sm">
-                                                <i class="bi bi-eye"></i> Детайли
-                                            </a>
-                                            <a href="{{ path('app_buy_redirect', {id: product.id}) }}"
-                                               class="btn btn-success btn-sm"
-                                               target="_blank"
-                                               rel="noopener noreferrer">
-                                                <i class="bi bi-cart-plus"></i> Купи
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Hidden Chart Section - Shows when "Сравни цените" is clicked -->
-            <div id="chartSection" class="row mb-4 mt-4" style="display: none;">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body p-4">
-                            <h4 class="card-title mb-3">
-                                <i class="bi bi-bar-chart-line text-primary"></i>
-                                Сравнение на цените
-                            </h4>
-                            <canvas id="priceComparisonChart" height="80"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <style>
-                .similar-products-section {
-                    background: #f8f9fa;
-                    padding: 3rem 2rem;
-                    border-radius: 20px;
-                    margin-top: 3rem;
-                }
-                .similar-card {
-                    transition: all 0.3s ease;
-                    border: 1px solid #e9ecef;
-                }
-                .similar-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
-                }
-                .nav-pills .nav-link {
-                    font-weight: 600;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 50px;
-                    margin: 0 0.25rem;
-                }
-                .nav-pills .nav-link:not(.active) {
-                    background: white;
-                    color: #6c757d;
-                }
-                .nav-pills .nav-link.active {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                }
-            </style>
-            {% endif %}
-        </div>
-
-        <!-- RIGHT COLUMN: STICKY SIDEBAR -->
-        <div class="col-lg-4">
-            <div class="sticky-sidebar-wrapper">
-                <div class="deal-card">
-                    <!-- Product Image -->
-                    {% if review.imageUrl %}
-                    <div class="deal-image-wrapper">
-                        <img src="{{ review.imageUrl }}" class="deal-image img-fluid" alt="{{ review.title }}" loading="lazy">
-                        <div class="image-badge">🔥 HOT</div>
-                    </div>
-                    {% else %}
-                    <div class="deal-image-wrapper deal-image-placeholder">
-                        <i class="bi bi-image text-white" style="font-size: 4rem;"></i>
-                    </div>
-                    {% endif %}
-
-                    <div class="deal-body">
-                        <!-- Badge -->
-                        {% if review.badge %}
-                        <div class="sidebar-badge-container">
-                            <div class="sidebar-badge">
-                                <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
-                            </div>
-                        </div>
                         {% endif %}
 
-                        <!-- Price Section -->
-                        <div class="price-section">
-                            <div class="price-label">🔥 CURRENT DEAL PRICE</div>
-                            <div class="price-mega">${{ review.price }}</div>
-                            <div class="price-meta">
-                                <i class="bi bi-clock-history me-1"></i>Last updated {{ review.createdAt|date('M j') }}
-                            </div>
-                        </div>
-
-                        <!-- MEGA CTA BUTTON -->
-                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="btn-sidebar-mega">
-                            <div class="btn-mega-inner">
-                                <div class="btn-icon">🛒</div>
-                                <div class="btn-text-mega">
-                                    <div class="btn-main-text">BUY NOW</div>
-                                    <div class="btn-sub-text">Get Best Price on eMag</div>
-                                </div>
-                            </div>
-                            <div class="btn-shine"></div>
-                        </a>
-
-                        <!-- Trust Badges -->
-                        <div class="trust-section">
-                            <div class="trust-item">
-                                <i class="bi bi-shield-check text-success"></i>
-                                <span>Secure Checkout</span>
-                            </div>
-                            <div class="trust-item">
-                                <i class="bi bi-truck text-primary"></i>
-                                <span>Free Shipping</span>
-                            </div>
-                            <div class="trust-item">
-                                <i class="bi bi-arrow-repeat text-info"></i>
-                                <span>30-Day Returns</span>
-                            </div>
-                        </div>
-
-                        <!-- Why Buy Section -->
-                        <div class="why-buy-section">
-                            <h6 class="why-buy-title">
-                                <i class="bi bi-star-fill text-warning me-2"></i>Why This Deal?
-                            </h6>
-                            <ul class="why-buy-list">
-                                <li><i class="bi bi-check2 text-success"></i>Expert tested & verified</li>
-                                <li><i class="bi bi-check2 text-success"></i>Best price in market</li>
-                                <li><i class="bi bi-check2 text-success"></i>Top rated by users</li>
-                                <li><i class="bi bi-check2 text-success"></i>Latest 2025 model</li>
-                            </ul>
-                        </div>
-
-                        <!-- Footer Link -->
-                        <div class="sidebar-footer">
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noopener" class="footer-link">
-                                <i class="bi bi-box-arrow-up-right me-1"></i>View on eMag
-                                <i class="bi bi-arrow-right ms-1"></i>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="h2 text-primary fw-bold mb-0">{{ review.price|number_format(2, '.', ' ') }} лв.</span>
+                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="btn btn-primary px-4 py-2">
+                                <i class="bi bi-cart-check"></i> ВИЖ В МАГАЗИНА
                             </a>
                         </div>
-                    </div>
 
-                    <!-- Urgency Alert -->
-                    <div class="urgency-alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <span><strong>🔥 Trending!</strong> 127 people viewing this now</span>
+                        <hr>
+                        <div class="text-muted small">
+                            {{ review.content|striptags|slice(0, 300) }}...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm" style="min-height: 600px; background: #f8f9fa;">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="fw-bold m-0"><i class="bi bi-speedometer2 text-primary"></i> Център за сравнение</h5>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column" id="chart-container">
+
+                        <div style="height: 250px; width: 100%;">
+                            <canvas id="priceComparisonChart"></canvas>
+                        </div>
+
+                        <div id="comparison-analysis" class="mt-4 flex-grow-1">
+                            <div class="alert alert-secondary text-center py-5">
+                                <i class="bi bi-arrow-down-up fs-1 mb-3"></i>
+                                <h5>Избери продукт за сравнение</h5>
+                                <p class="mb-0">Кликни бутона <strong>"Сравни с този"</strong> на продуктите по-долу, за да видиш прилики, разлики и анализ на цената.</p>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="mt-5 pt-4 border-top">
+            <h3 class="fw-bold mb-4">Подобни оферти</h3>
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+
+                {# Събираме всички продукти #}
+                {% set allSimilar = [] %}
+                {% for p in similarProducts.emag %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'eMAG', 'color': 'primary'}]) %}{% endfor %}
+                {% for p in similarProducts.fashiondays %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Fashion Days', 'color': 'dark'}]) %}{% endfor %}
+                {% for p in similarProducts.alleop %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Alleop', 'color': 'success'}]) %}{% endfor %}
+
+                {% for item in allSimilar %}
+                    {% set product = item.p %}
+                    {% if product.price > 0 %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <div class="text-center mb-3" style="height: 120px;">
+                                        <a href="{{ path('app_buy_redirect', {id: product.id}) }}" target="_blank" rel="nofollow noreferrer" class="d-block h-100">
+                                            <img src="{{ product.imageUrl }}" style="height: 100%; object-fit: contain;" class="hover-zoom" alt="{{ product.title }}">
+                                        </a>
+                                    </div>
+                                    <h6 class="card-title text-truncate mb-2">
+                                        <a href="{{ path('app_buy_redirect', {id: product.id}) }}" target="_blank" class="text-decoration-none text-dark">
+                                            {{ product.title }}
+                                        </a>
+                                    </h6>
+                                    <div class="fw-bold text-{{ item.color }} mb-3">{{ product.price }} лв.</div>
+
+                                    <div class="mt-auto">
+                                        <button type="button"
+                                                class="btn btn-outline-{{ item.color }} w-100 js-compare-btn"
+                                                data-title="{{ product.title }}"
+                                                data-price="{{ product.price }}"
+                                                data-source="{{ item.source }}"
+                                                data-url="{{ path('app_buy_redirect', {id: product.id}) }}">
+                                            <i class="bi bi-bar-chart"></i> Сравни с този
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</div>
 
-<style>
-/* ============================================
-   ULTRA-MODERN CLICKBAIT PRODUCT PAGE
-   ============================================ */
-
-/* STICKY DEAL BAR (Mobile) */
-.sticky-deal-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-}
-
-.deal-price {
-    font-size: 1.5rem;
-    font-weight: 900;
-    line-height: 1;
-}
-
-.deal-rating {
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.btn-sticky-mobile {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    animation: pulse-btn 2s infinite;
-}
-
-@keyframes pulse-btn {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* ARTICLE HEADER */
-.article-header {
-    margin-bottom: 2rem;
-}
-
-.mega-badge-container {
-    display: inline-block;
-}
-
-.mega-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 28px;
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    display: inline-block;
-}
-
-.article-title {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #1a202c;
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
-}
-
-.meta-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding-bottom: 1.5rem;
-    border-bottom: 3px solid #e2e8f0;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
-    color: #4a5568;
-    font-weight: 600;
-}
-
-.rating-display {
-    font-size: 1.1rem;
-}
-
-.rating-score {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    color: #333;
-    padding: 4px 12px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 0.85rem;
-}
-
-/* MOBILE CTA CARD */
-.mobile-cta-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
-}
-
-.mobile-badge {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.85rem;
-    display: inline-block;
-}
-
-.mobile-price-mega {
-    font-size: 4rem;
-    font-weight: 900;
-    color: white;
-    line-height: 1;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.mobile-price-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-.btn-mobile-mega {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 18px 30px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1.15rem;
-    letter-spacing: 1px;
-    text-decoration: none;
-    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-    transition: all 0.3s ease;
-    margin-bottom: 15px;
-}
-
-.btn-mobile-mega:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.6);
-    color: white !important;
-}
-
-.trust-bar-mobile {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-/* ARTICLE CONTENT */
-.article-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #2d3748;
-    margin-bottom: 3rem;
-}
-
-.article-content h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-top: 3rem;
-    margin-bottom: 1.5rem;
-    color: #1a202c;
-    border-bottom: 4px solid #667eea;
-    padding-bottom: 0.75rem;
-}
-
-.article-content h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    color: #2d3748;
-}
-
-.article-content h4 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    color: #4a5568;
-}
-
-.article-content p {
-    margin-bottom: 1.5rem;
-}
-
-.article-content ul, .article-content ol {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-}
-
-.article-content li {
-    margin-bottom: 0.75rem;
-    line-height: 1.7;
-}
-
-/* Pros/Cons Lists */
-.article-content .pros-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.article-content .pros-list li {
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border-left: 5px solid #22c55e;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
-    transition: all 0.3s ease;
-}
-
-.article-content .pros-list li:hover {
-    transform: translateX(10px);
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25);
-}
-
-.article-content .pros-list li::before {
-    content: '✓';
-    color: #22c55e;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-right: 0.75rem;
-}
-
-.article-content .cons-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.article-content .cons-list li {
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-    border-left: 5px solid #ef4444;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
-    transition: all 0.3s ease;
-}
-
-.article-content .cons-list li:hover {
-    transform: translateX(10px);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
-}
-
-.article-content .cons-list li::before {
-    content: '✗';
-    color: #ef4444;
-    font-weight: bold;
-    font-size: 1.5rem;
-    margin-right: 0.75rem;
-}
-
-/* Pros/Cons Grid Cards */
-.article-content .pros-cons .card {
-    transition: transform 0.3s ease;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.article-content .pros-cons .card:hover {
-    transform: translateY(-5px);
-}
-
-.article-content .pros-cons .card-header {
-    font-weight: 800;
-    font-size: 1.15rem;
-}
-
-.article-content .pros-cons .pros-list li,
-.article-content .pros-cons .cons-list li {
-    padding: 0.5rem 0;
-    margin-bottom: 0.5rem;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-.article-content .pros-cons .pros-list li::before {
-    margin-right: 0.5rem;
-}
-
-.article-content .pros-cons .cons-list li::before {
-    margin-right: 0.5rem;
-}
-
-/* Specifications Table */
-.article-content table {
-    width: 100%;
-    margin-bottom: 2rem;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 2px solid #e2e8f0;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.article-content table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1rem;
-    font-weight: 700;
-    text-align: left;
-    border-bottom: 3px solid #e2e8f0;
-}
-
-.article-content table td {
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.article-content table tr:last-child td {
-    border-bottom: none;
-}
-
-.article-content table tr:hover {
-    background: #f8fafc;
-}
-
-/* Alert Boxes */
-.article-content .alert-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-}
-
-.article-content .alert-heading {
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-
-/* BOTTOM MEGA CTA */
-.bottom-mega-cta {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    border-radius: 25px;
-    padding: 0;
-    margin-bottom: 2rem;
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.3);
-    overflow: hidden;
-}
-
-.cta-inner {
-    padding: 35px;
-    display: flex;
-    align-items: center;
-    gap: 25px;
-}
-
-.cta-icon {
-    font-size: 4rem;
-    animation: float-icon 3s infinite ease-in-out;
-}
-
-@keyframes float-icon {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.cta-content {
-    flex: 1;
-}
-
-.cta-heading {
-    color: white;
-    font-size: 1.75rem;
-    font-weight: 900;
-    margin-bottom: 0.5rem;
-}
-
-.cta-subtext {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    margin: 0;
-}
-
-.btn-bottom-cta {
-    background: white;
-    color: #ff6b6b !important;
-    padding: 18px 40px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1.15rem;
-    text-decoration: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-bottom-cta:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-    color: #ee5a6f !important;
-}
-
-.cta-footer {
-    background: rgba(0, 0, 0, 0.15);
-    padding: 15px 35px;
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* BACK BUTTON */
-.btn-back {
-    display: inline-block;
-    padding: 12px 30px;
-    background: white;
-    color: #667eea !important;
-    border: 2px solid #667eea;
-    border-radius: 50px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background: #667eea;
-    color: white !important;
-    transform: translateX(-5px);
-}
-
-/* STICKY SIDEBAR */
-.sticky-sidebar-wrapper {
-    position: sticky;
-    top: 20px;
-}
-
-.deal-card {
-    background: white;
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.12);
-}
-
-.deal-image-wrapper {
-    position: relative;
-    height: 300px;
-    overflow: hidden;
-}
-
-.deal-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.deal-image-placeholder {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white;
-    padding: 8px 18px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    animation: badge-pulse 2s infinite;
-}
-
-@keyframes badge-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.deal-body {
-    padding: 25px;
-}
-
-.sidebar-badge-container {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.sidebar-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    display: inline-block;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.price-section {
-    text-align: center;
-    padding: 25px 0;
-    border-top: 2px solid #e2e8f0;
-    border-bottom: 2px solid #e2e8f0;
-    margin-bottom: 25px;
-}
-
-.price-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #ff6b6b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-}
-
-.price-mega {
-    font-size: 4rem;
-    font-weight: 900;
-    color: #22c55e;
-    line-height: 1;
-    margin-bottom: 10px;
-}
-
-.price-meta {
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-
-/* MEGA CTA BUTTON */
-.btn-sidebar-mega {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    color: white !important;
-    padding: 0;
-    border-radius: 15px;
-    text-decoration: none;
-    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
-    transition: all 0.3s ease;
-    margin-bottom: 25px;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-mega-inner {
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    position: relative;
-    z-index: 2;
-}
-
-.btn-icon {
-    font-size: 3rem;
-}
-
-.btn-text-mega {
-    text-align: left;
-}
-
-.btn-main-text {
-    font-size: 1.5rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    line-height: 1;
-    margin-bottom: 5px;
-}
-
-.btn-sub-text {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    font-weight: 600;
-}
-
-.btn-shine {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s;
-    z-index: 1;
-}
-
-.btn-sidebar-mega:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.6);
-}
-
-.btn-sidebar-mega:hover .btn-shine {
-    left: 100%;
-}
-
-/* TRUST SECTION */
-.trust-section {
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 25px;
-}
-
-.trust-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #4a5568;
-}
-
-.trust-item i {
-    font-size: 1.25rem;
-}
-
-/* WHY BUY SECTION */
-.why-buy-section {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-}
-
-.why-buy-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: #1a202c;
-}
-
-.why-buy-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.why-buy-list li {
-    padding: 8px 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2d3748;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.why-buy-list i {
-    font-size: 1.25rem;
-}
-
-/* SIDEBAR FOOTER */
-.sidebar-footer {
-    text-align: center;
-    padding-top: 15px;
-    border-top: 2px solid #e2e8f0;
-}
-
-.footer-link {
-    color: #667eea !important;
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.footer-link:hover {
-    color: #764ba2 !important;
-}
-
-/* URGENCY ALERT */
-.urgency-alert {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 15px 25px;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #92400e;
-    border-top: 3px solid #fbbf24;
-}
-
-.urgency-alert i {
-    color: #f59e0b;
-}
-
-/* RESPONSIVE */
-@media (max-width: 991px) {
-    .sticky-sidebar-wrapper {
-        position: relative;
-        top: 0;
-    }
-
-    .sticky-deal-bar {
-        display: block;
-    }
-
-    body {
-        padding-top: 70px;
-    }
-
-    .article-title {
-        font-size: 1.75rem;
-    }
-
-    .price-mega {
-        font-size: 3rem;
-    }
-
-    .cta-inner {
-        flex-direction: column;
-        text-align: center;
-        padding: 25px;
-    }
-
-    .cta-heading {
-        font-size: 1.4rem;
-    }
-
-    .btn-bottom-cta {
-        width: 100%;
-    }
-}
-
-@media (min-width: 992px) {
-    .sticky-deal-bar {
-        display: none;
-    }
-}
-</style>
-
-<!-- Chart.js Script for Price Comparison - Dynamic comparison -->
-{% if hasSimilarProducts %}
-<script>
-let priceChart = null; // Global chart instance
-
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('priceComparisonChart');
-    if (!ctx) return;
-
-    // Initialize with default view (all products)
-    const emagProducts = {{ similarProducts.emag|json_encode|raw }};
-    const fashionDaysProducts = {{ similarProducts.fashiondays|json_encode|raw }};
-    const alleopProducts = {{ similarProducts.alleop|json_encode|raw }};
-
-    const emagPrices = emagProducts.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
-    const fashionDaysPrices = fashionDaysProducts.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
-    const alleopPrices = alleopProducts.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
-
-    const maxProducts = Math.max(emagPrices.length, fashionDaysPrices.length, alleopPrices.length);
-    const labels = [];
-    for (let i = 1; i <= maxProducts; i++) {
-        labels.push('Продукт ' + i);
-    }
-
-    while (emagPrices.length < maxProducts) emagPrices.push(null);
-    while (fashionDaysPrices.length < maxProducts) fashionDaysPrices.push(null);
-    while (alleopPrices.length < maxProducts) alleopPrices.push(null);
-
-    priceChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'eMAG (лв.)',
-                    data: emagPrices,
-                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 2,
-                    borderRadius: 8
+    <script>
+        let myChart = null;
+        // Безопасно кодиране на данните за JS
+        const mainTitle = {{ review.title|json_encode|raw }};
+        const mainPrice = {{ review.price }};
+        const mainSource = "{{ review.badge ?? 'ТОЗИ САЙТ' }}";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ТОЗИ ПРОДУКТ', 'СРАВНЕН С...'],
+                    datasets: [{
+                        label: 'Цена (лв.)',
+                        data: [mainPrice, 0],
+                        backgroundColor: ['#0d6efd', '#e9ecef'],
+                        borderRadius: 8,
+                        barPercentage: 0.6
+                    }]
                 },
-                {
-                    label: 'Fashion Days (лв.)',
-                    data: fashionDaysPrices,
-                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                    borderColor: 'rgba(239, 68, 68, 1)',
-                    borderWidth: 2,
-                    borderRadius: 8
-                },
-                {
-                    label: 'Alleop (лв.)',
-                    data: alleopPrices,
-                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                    borderColor: 'rgba(34, 197, 94, 1)',
-                    borderWidth: 2,
-                    borderRadius: 8
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                },
-                title: {
-                    display: true,
-                    text: 'Сравнение на цените за подобни продукти',
-                    font: {
-                        size: 16,
-                        weight: 'bold'
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            if (context.parsed.y === null) {
-                                return context.dataset.label + ': Няма продукт';
-                            }
-                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Цена (лв.)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(2) + ' лв.';
-                        }
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Продукти'
-                    }
-                }
+            });
+
+            // Слушаме за кликове
+            document.querySelectorAll('.js-compare-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    updateComparison(
+                        this.getAttribute('data-title'),
+                        parseFloat(this.getAttribute('data-price')),
+                        this.getAttribute('data-source'),
+                        this.getAttribute('data-url')
+                    );
+                });
+            });
+        });
+
+        function updateComparison(compareTitle, comparePrice, source, url) {
+            // 1. Обновяваме Графиката
+            myChart.data.datasets[0].data[1] = comparePrice;
+
+            let color = '#6c757d';
+            if(source === 'eMAG') color = '#0d6efd';
+            if(source === 'Alleop') color = '#198754';
+            if(source === 'Fashion Days') color = '#212529';
+
+            myChart.data.datasets[0].backgroundColor[1] = color;
+            myChart.update();
+
+            // 2. Генерираме АНАЛИЗ (Текст)
+            const diff = mainPrice - comparePrice;
+            const diffAbs = Math.abs(diff).toFixed(2);
+
+            let analysisHtml = `
+            <div class="card border-0 bg-white p-3 shadow-sm animation-fade-in">
+                <h6 class="border-bottom pb-2 fw-bold text-uppercase text-muted small">Резултат от сравнението</h6>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <small class="d-block text-muted">По какво си ПРИЛИЧАТ:</small>
+                            <ul class="mb-0 ps-3 small">
+                                <li>Основна категория</li>
+                                <li>Сходна функционалност</li>
+                                <li>Популярни модели</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 bg-light rounded">
+                            <small class="d-block text-muted">По какво се РАЗЛИЧАВАТ:</small>
+                            <ul class="mb-0 ps-3 small">
+                                <li>Търговец: <strong>${source}</strong></li>
+                                <li>Цена (разлика: ${diffAbs} лв.)</li>
+                                <li>Наличност и доставка</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 rounded ${diff > 0 ? 'bg-success-subtle text-success-emphasis' : 'bg-primary-subtle text-primary-emphasis'}">
+                    <h5 class="fw-bold mb-1"><i class="bi bi-lightbulb"></i> ЗАЩО ДА ИЗБЕРЕШ ${diff > 0 ? 'СРАВНЕНИЯ' : 'ТОЗИ'} ПРОДУКТ?</h5>
+                    <p class="mb-0">
+                        ${diff > 0
+                ? `Избирайки офертата от <strong>${source}</strong>, ти <strong>СПЕСТЯВАШ ${diffAbs} лв.</strong> спрямо текущата цена!`
+                : `Въпреки че е по-скъп с ${diffAbs} лв., <strong>${source}</strong> може да предлага по-бърза доставка или удължена гаранция.`
             }
+                    </p>
+                </div>
+
+                <div class="mt-3 text-end">
+                    <a href="${url}" target="_blank" class="btn btn-sm btn-${diff > 0 ? 'success' : 'outline-primary'}">
+                        Виж офертата на ${source} <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+
+            document.getElementById('comparison-analysis').innerHTML = analysisHtml;
+
+            // Скрол до сравнението
+            document.getElementById('chart-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    });
-});
+    </script>
 
-// Function to compare two products
-function compareProducts(currentTitle, currentPrice, compareTitle, comparePrice, platform) {
-    if (!priceChart) {
-        console.error('Chart not initialized');
-        return;
-    }
+    <style>
+        .animation-fade-in { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    // Show the chart section
-    const chartSection = document.getElementById('chartSection');
-    if (chartSection) {
-        chartSection.style.display = 'block';
-    }
-
-    // Truncate titles if too long
-    const maxLength = 30;
-    const shortCurrentTitle = currentTitle.length > maxLength ? currentTitle.substring(0, maxLength) + '...' : currentTitle;
-    const shortCompareTitle = compareTitle.length > maxLength ? compareTitle.substring(0, maxLength) + '...' : compareTitle;
-
-    // Update chart with only these two products
-    priceChart.data.labels = [shortCurrentTitle, shortCompareTitle];
-
-    // Determine colors based on platform
-    let compareColor = 'rgba(34, 197, 94, 0.8)'; // Default green for Alleop
-    let compareBorderColor = 'rgba(34, 197, 94, 1)';
-
-    if (platform === 'eMAG') {
-        compareColor = 'rgba(59, 130, 246, 0.8)'; // Blue
-        compareBorderColor = 'rgba(59, 130, 246, 1)';
-    } else if (platform === 'Fashion Days') {
-        compareColor = 'rgba(239, 68, 68, 0.8)'; // Red
-        compareBorderColor = 'rgba(239, 68, 68, 1)';
-    }
-
-    priceChart.data.datasets = [
-        {
-            label: 'Текущ продукт',
-            data: [parseFloat(currentPrice), null],
-            backgroundColor: 'rgba(255, 193, 7, 0.8)', // Yellow/Orange for current
-            borderColor: 'rgba(255, 193, 7, 1)',
-            borderWidth: 2,
-            borderRadius: 8
-        },
-        {
-            label: platform,
-            data: [null, parseFloat(comparePrice)],
-            backgroundColor: compareColor,
-            borderColor: compareBorderColor,
-            borderWidth: 2,
-            borderRadius: 8
+        .hover-zoom {
+            transition: transform 0.3s ease;
         }
-    ];
-
-    priceChart.options.plugins.title.text = 'Директно сравнение на цените';
-    priceChart.update();
-
-    // Scroll to chart
-    setTimeout(() => {
-        chartSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-}
-</script>
-{% endif %}
-
+        .hover-zoom:hover {
+            transform: scale(1.05);
+        }
+    </style>
 {% endblock %}

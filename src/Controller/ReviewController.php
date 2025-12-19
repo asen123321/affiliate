@@ -9,51 +9,50 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 
 class ReviewController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
+    #[Cache(public: true, smaxage: 3600)] // <--- Кеширай за 1 час (3600 сек)
     public function index(
         Request $request,
         ReviewRepository $reviewRepository,
         PaginatorInterface $paginator
     ): Response {
-        // 1. Взимаме параметъра "source" от URL-а (ако е кликнат бутон от жълтата лента)
-        // Например: ?source=alleop или ?source=fashion_days
         $source = $request->query->get('source');
 
-        // 2. Създаваме основната заявка
         $qb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :status')
             ->setParameter('status', true)
+            // 1. СКРИВАМЕ ПРОДУКТИ БЕЗ ЦЕНА
+            ->andWhere('r.price IS NOT NULL')
+            ->andWhere('r.price > 0')
             ->orderBy('r.createdAt', 'DESC');
 
-        // 3. АКО има избран източник, филтрираме по URL
         if ($source) {
+            // Тук също ползваме Badge за по-сигурно
             if ($source === 'alleop') {
-                // Търсим продукти, чийто оригинален линк съдържа 'alleop'
-                $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%alleop%');
-            }
-            elseif ($source === 'fashion_days') {
-                // Търсим продукти от Fashion Days
-                $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%fashiondays%');
-            }
-            elseif ($source === 'emag') {
-                // Ако искаш бутон само за eMAG
-                $qb->andWhere('r.originalProductUrl LIKE :sourceUrl')
-                    ->setParameter('sourceUrl', '%emag%');
+                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
+                    ->setParameter('badge', 'ALLEOP')
+                    ->setParameter('url', '%alleop%');
+            } elseif ($source === 'emag') {
+                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
+                    ->setParameter('badge', 'EMAG')
+                    ->setParameter('url', '%emag%');
+            } elseif ($source === 'fashion_days') {
+                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
+                    ->setParameter('badge', 'FASHION DAYS')
+                    ->setParameter('url', '%fashiondays%');
             }
         }
 
-        // 4. Пагинация - 60 броя на страница
         $pagination = $paginator->paginate(
-            $qb, /* заявката с филтрите */
-            $request->query->getInt('page', 1), /* текуща страница */
-            60 /* ЛИМИТ НА СТРАНИЦА */
+            $qb,
+            $request->query->getInt('page', 1),
+            60
         );
 
         return $this->render('review/index.html.twig', [
@@ -70,14 +69,12 @@ class ReviewController extends AbstractController
             throw $this->createNotFoundException('Review not found');
         }
 
-        // Find similar products across all platforms
         $similarProducts = $reviewRepository->findSimilarAcrossPlatforms(
             $review->getTitle(),
             $review->getId(),
-            18  // Get up to 18 products (6 per platform max)
+            18
         );
 
-        // Group similar products by platform (max 6 per platform)
         $productsByPlatform = [
             'emag' => [],
             'fashiondays' => [],
@@ -85,13 +82,23 @@ class ReviewController extends AbstractController
         ];
 
         foreach ($similarProducts as $product) {
-            $url = $product->getOriginalProductUrl();
-            if (str_contains($url, 'emag.bg') && count($productsByPlatform['emag']) < 6) {
-                $productsByPlatform['emag'][] = $product;
-            } elseif (str_contains($url, 'fashiondays') && count($productsByPlatform['fashiondays']) < 6) {
-                $productsByPlatform['fashiondays'][] = $product;
-            } elseif (str_contains($url, 'alleop') && count($productsByPlatform['alleop']) < 6) {
-                $productsByPlatform['alleop'][] = $product;
+            // 1. Проверка за цена
+            if (!$product->getPrice() || $product->getPrice() <= 0) {
+                continue;
+            }
+
+            // 2. СИГУРНА ПРОВЕРКА ЗА МАГАЗИН (Badge + URL)
+            $url = strtolower($product->getOriginalProductUrl() ?? '');
+            $badge = strtoupper($product->getBadge() ?? '');
+
+            if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
+                if (count($productsByPlatform['emag']) < 6) $productsByPlatform['emag'][] = $product;
+            }
+            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
+                if (count($productsByPlatform['fashiondays']) < 6) $productsByPlatform['fashiondays'][] = $product;
+            }
+            elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {
+                if (count($productsByPlatform['alleop']) < 6) $productsByPlatform['alleop'][] = $product;
             }
         }
 
@@ -101,9 +108,6 @@ class ReviewController extends AbstractController
         ]);
     }
 
-    /**
-     * Search for products with smart keyword matching
-     */
     #[Route('/search', name: 'app_search')]
     public function search(
         Request $request,
@@ -116,46 +120,39 @@ class ReviewController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Smart search: expand short keywords to full words
-        // тв -> телевизор, ел -> електро, etc.
         $expandedKeywords = $this->expandSearchKeywords($query);
 
-        // Build query with OR conditions for all keywords
         $qb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :status')
-            ->setParameter('status', true);
+            ->setParameter('status', true)
+            // СКРИВАМЕ ПРОДУКТИ БЕЗ ЦЕНА И ТУК
+            ->andWhere('r.price IS NOT NULL')
+            ->andWhere('r.price > 0');
 
-        // Add search conditions for each expanded keyword
-        // Use LOWER() for case-insensitive search in PostgreSQL
         if (!empty($expandedKeywords)) {
             $orConditions = [];
-
             foreach ($expandedKeywords as $index => $keyword) {
                 $paramTitle = 'title' . $index;
                 $paramContent = 'content' . $index;
                 $paramMeta = 'meta' . $index;
                 $paramCategory = 'category' . $index;
 
-                // Use LOWER() for case-insensitive matching
                 $orConditions[] = "LOWER(r.title) LIKE LOWER(:$paramTitle)";
                 $orConditions[] = "LOWER(r.content) LIKE LOWER(:$paramContent)";
                 $orConditions[] = "LOWER(r.metaDescription) LIKE LOWER(:$paramMeta)";
                 $orConditions[] = "LOWER(r.category) LIKE LOWER(:$paramCategory)";
 
-                // Add wildcards for partial matching
                 $searchPattern = '%' . mb_strtolower($keyword, 'UTF-8') . '%';
                 $qb->setParameter($paramTitle, $searchPattern);
                 $qb->setParameter($paramContent, $searchPattern);
                 $qb->setParameter($paramMeta, $searchPattern);
                 $qb->setParameter($paramCategory, $searchPattern);
             }
-
             $qb->andWhere(implode(' OR ', $orConditions));
         }
 
         $qb->orderBy('r.createdAt', 'DESC');
 
-        // Pagination
         $pagination = $paginator->paginate(
             $qb,
             $request->query->getInt('page', 1),
@@ -168,15 +165,10 @@ class ReviewController extends AbstractController
         ]);
     }
 
-    /**
-     * Expand search keywords: тв -> телевизор, laptop -> лаптоп, etc.
-     */
     private function expandSearchKeywords(string $query): array
     {
         $query = mb_strtolower($query, 'UTF-8');
-        $keywords = [$query]; // Always include original query
-
-        // Keyword expansion map
+        $keywords = [$query];
         $expansions = [
             'тв' => ['телевизор', 'televizor', 'tv', 'smart tv'],
             'laptop' => ['лаптоп', 'notebook', 'ноутбук'],
@@ -203,133 +195,98 @@ class ReviewController extends AbstractController
             'конзола' => ['console', 'playstation', 'xbox', 'ps'],
         ];
 
-        // Check if query matches any expansion key
         foreach ($expansions as $key => $values) {
             if (str_contains($query, $key)) {
                 $keywords = array_merge($keywords, $values);
             }
         }
-
         return array_unique($keywords);
     }
 
-    /**
-     * Redirect to affiliate link - generates ProfitShare link on-the-fly
-     * Това се ползва, когато потребителят натисне "Купи"
-     */
     #[Route('/buy/{id}', name: 'app_buy_redirect', methods: ['GET'])]
-    public function buyRedirect(
-        int $id,
-        ReviewRepository $reviewRepository,
-        ProfitShareService $profitShareService,
-        LoggerInterface $logger
-    ): RedirectResponse {
+    public function buyRedirect(int $id, ReviewRepository $reviewRepository, ProfitShareService $profitShareService, LoggerInterface $logger): RedirectResponse
+    {
         $review = $reviewRepository->find($id);
+        if (!$review) throw $this->createNotFoundException('Review not found');
 
-        if (!$review) {
-            throw $this->createNotFoundException('Review not found');
-        }
-
-        // Взимаме оригиналния линк, за да генерираме афилиейт връзка
         $productUrl = $review->getOriginalProductUrl();
+        if (!$productUrl) return $this->redirect($review->getAffiliateLink());
 
-        // Ако няма оригинален URL (за стари записи), ползваме текущия affiliateLink като fallback
-        if (!$productUrl) {
-            return $this->redirect($review->getAffiliateLink());
-        }
+        $advertiserId = '35';
+        if (str_contains($productUrl, 'fashiondays')) $advertiserId = '84';
+        elseif (str_contains($productUrl, 'alleop')) $advertiserId = '125';
 
-        // Определяме ID на рекламодателя спрямо URL-а
-        $advertiserId = '35'; // По подразбиране eMAG
-        if (str_contains($productUrl, 'fashiondays')) {
-            $advertiserId = '84'; // Fashion Days ID
-        } elseif (str_contains($productUrl, 'alleop')) {
-            $advertiserId = '125'; // AlleOp ID (провери го в ProfitShare!)
-        }
-
-        // Генерираме нов, пресен линк
-        $affiliateLink = $profitShareService->generateAffiliateLink(
-            $advertiserId,
-            $productUrl,
-            'click-' . $review->getId()
-        );
-
-        // Ако API-то върне грешка, ползваме записания в базата
+        $affiliateLink = $profitShareService->generateAffiliateLink($advertiserId, $productUrl, 'click-' . $review->getId());
         if (!$affiliateLink) {
             $logger->warning("Failed to generate fresh link for #{$id}, using cached.");
             $affiliateLink = $review->getAffiliateLink();
         }
-
         return $this->redirect($affiliateLink);
     }
 
-    /**
-     * Price comparison across platforms
-     */
     #[Route('/compare-prices', name: 'app_compare_prices')]
-    public function comparePrices(
-        Request $request,
-        ReviewRepository $reviewRepository
-    ): Response {
+    public function comparePrices(Request $request, ReviewRepository $reviewRepository): Response
+    {
         $query = $request->query->get('q', '');
-
         if (empty($query)) {
-            return $this->render('review/compare_prices.html.twig', [
-                'query' => '',
-                'products' => [],
-            ]);
+            return $this->render('review/compare_prices.html.twig', ['query' => '', 'products' => []]);
         }
 
-        // Get products grouped by platform
-        $productsByPlatform = $reviewRepository->findForPriceComparison($query);
+        // За по-сложно сравнение можеш да ползваш findForPriceComparison,
+        // но тук ще направим същото филтриране ръчно за сигурност
+        $products = $reviewRepository->findSimilarAcrossPlatforms($query, null, 50);
 
-        return $this->render('review/compare_prices.html.twig', [
-            'query' => $query,
-            'products' => $productsByPlatform,
-        ]);
-    }
+        $productsByPlatform = ['emag' => [], 'fashiondays' => [], 'alleop' => []];
 
-    /**
-     * Compare similar products on single product page
-     */
-    #[Route('/review/{slug}/compare', name: 'app_review_compare')]
-    public function compareProduct(
-        string $slug,
-        ReviewRepository $reviewRepository
-    ): Response {
-        $review = $reviewRepository->findOneBy(['slug' => $slug, 'isPublished' => true]);
+        foreach ($products as $product) {
+            if (!$product->getPrice() || $product->getPrice() <= 0) continue;
 
-        if (!$review) {
-            throw $this->createNotFoundException('Review not found');
-        }
+            $url = strtolower($product->getOriginalProductUrl() ?? '');
+            $badge = strtoupper($product->getBadge() ?? '');
 
-        // Find similar products across platforms
-        $similarProducts = $reviewRepository->findSimilarAcrossPlatforms(
-            $review->getTitle(),
-            $review->getId(),
-            20
-        );
-
-        // Group by platform
-        $productsByPlatform = [
-            'emag' => [],
-            'fashiondays' => [],
-            'alleop' => []
-        ];
-
-        foreach ($similarProducts as $product) {
-            $url = $product->getOriginalProductUrl();
-            if (str_contains($url, 'emag.bg')) {
+            if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
                 $productsByPlatform['emag'][] = $product;
-            } elseif (str_contains($url, 'fashiondays')) {
+            }
+            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
                 $productsByPlatform['fashiondays'][] = $product;
-            } elseif (str_contains($url, 'alleop')) {
+            }
+            elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {
                 $productsByPlatform['alleop'][] = $product;
             }
         }
 
-        return $this->render('review/compare_product.html.twig', [
-            'review' => $review,
-            'products' => $productsByPlatform,
-        ]);
+        return $this->render('review/compare_prices.html.twig', ['query' => $query, 'products' => $productsByPlatform]);
+    }
+
+    #[Route('/review/{slug}/compare', name: 'app_review_compare')]
+    public function compareProduct(string $slug, ReviewRepository $reviewRepository): Response
+    {
+        $review = $reviewRepository->findOneBy(['slug' => $slug, 'isPublished' => true]);
+        if (!$review) throw $this->createNotFoundException('Review not found');
+
+        $similarProducts = $reviewRepository->findSimilarAcrossPlatforms($review->getTitle(), $review->getId(), 20);
+
+        $productsByPlatform = ['emag' => [], 'fashiondays' => [], 'alleop' => []];
+
+        foreach ($similarProducts as $product) {
+            // 1. Проверка за цена
+            if (!$product->getPrice() || $product->getPrice() <= 0) continue;
+
+            // 2. Сигурна проверка за магазин
+            $url = strtolower($product->getOriginalProductUrl() ?? '');
+            $badge = strtoupper($product->getBadge() ?? '');
+
+            if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
+                $productsByPlatform['emag'][] = $product;
+            }
+            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
+                $productsByPlatform['fashiondays'][] = $product;
+            }
+            elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {
+                $productsByPlatform['alleop'][] = $product;
+            }
+        }
+
+        return $this->render('review/compare_product.html.twig', ['review' => $review, 'products' => $productsByPlatform]);
     }
 }
