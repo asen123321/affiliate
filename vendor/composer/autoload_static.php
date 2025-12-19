@@ -23,6 +23,7 @@ class ComposerStaticInit75e7f8d848176580e9902a32f6f14640
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        '2a3c2110e8e0295330dc3d11a4cbc4cb' => __DIR__ . '/..' . '/php-webdriver/webdriver/lib/Exception/TimeoutException.php',
         '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
@@ -80,6 +81,7 @@ class ComposerStaticInit75e7f8d848176580e9902a32f6f14640
             'Symfony\\Component\\PropertyAccess\\' => 33,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\PasswordHasher\\' => 33,
+            'Symfony\\Component\\Panther\\' => 26,
             'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\Notifier\\' => 27,
             'Symfony\\Component\\Mime\\' => 23,
@@ -144,6 +146,10 @@ class ComposerStaticInit75e7f8d848176580e9902a32f6f14640
         array (
             'Knp\\Component\\' => 14,
             'Knp\\Bundle\\PaginatorBundle\\' => 27,
+        ),
+        'F' =>
+        array (
+            'Facebook\\WebDriver\\' => 19,
         ),
         'E' =>
         array (
@@ -341,6 +347,10 @@ class ComposerStaticInit75e7f8d848176580e9902a32f6f14640
         'Symfony\\Component\\PasswordHasher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/password-hasher',
+        ),
+        'Symfony\\Component\\Panther\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/symfony/panther/src',
         ),
         'Symfony\\Component\\OptionsResolver\\' =>
         array (
@@ -551,6 +561,10 @@ class ComposerStaticInit75e7f8d848176580e9902a32f6f14640
         'Knp\\Bundle\\PaginatorBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/knplabs/knp-paginator-bundle/src',
+        ),
+        'Facebook\\WebDriver\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-webdriver/webdriver/lib',
         ),
         'Egulias\\EmailValidator\\' =>
         array (

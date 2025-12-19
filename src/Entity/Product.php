@@ -57,4 +57,9 @@ class Product
     public function setCategory(?string $category): static { $this->category = $category; return $this; }
 
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
 }

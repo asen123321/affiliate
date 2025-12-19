@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository; // <--- ВАЖНО: Добавихме това
 use App\Repository\ReviewRepository;
 use App\Service\ProfitShareService;
 use Knp\Component\Pager\PaginatorInterface;
@@ -16,36 +17,46 @@ use Psr\Log\LoggerInterface;
 class ReviewController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    #[Cache(public: true, smaxage: 3600)] // <--- Кеширай за 1 час (3600 сек)
+    #[Cache(public: true, smaxage: 3600)]
     public function index(
         Request $request,
         ReviewRepository $reviewRepository,
+        ProductRepository $productRepository, // <--- ВАЖНО: Инжектираме репото за продукти
         PaginatorInterface $paginator
     ): Response {
         $source = $request->query->get('source');
 
-        $qb = $reviewRepository->createQueryBuilder('r')
-            ->where('r.isPublished = :status')
-            ->setParameter('status', true)
-            // 1. СКРИВАМЕ ПРОДУКТИ БЕЗ ЦЕНА
-            ->andWhere('r.price IS NOT NULL')
-            ->andWhere('r.price > 0')
-            ->orderBy('r.createdAt', 'DESC');
+        // --- ЛОГИКА ЗА ПРЕВКЛЮЧВАНЕ НА ТАБЛИЦИТЕ ---
 
-        if ($source) {
-            // Тук също ползваме Badge за по-сигурно
-            if ($source === 'alleop') {
-                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
-                    ->setParameter('badge', 'ALLEOP')
-                    ->setParameter('url', '%alleop%');
-            } elseif ($source === 'emag') {
-                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
-                    ->setParameter('badge', 'EMAG')
-                    ->setParameter('url', '%emag%');
-            } elseif ($source === 'fashion_days') {
-                $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
-                    ->setParameter('badge', 'FASHION DAYS')
-                    ->setParameter('url', '%fashiondays%');
+        if ($source === 'fashion_days') {
+            // 1. АКО Е FASHION DAYS -> Търсим в PRODUCT таблицата (където скрейпърът записва)
+            $qb = $productRepository->createQueryBuilder('p')
+                ->where('p.category = :fd_name')
+                ->setParameter('fd_name', 'FashionDays')
+                // Продуктите нямат isPublished, така че не го проверяваме тук
+                // Подреждаме по най-нови (updatedAt или createdAt)
+                ->orderBy('p.updatedAt', 'DESC');
+
+        } else {
+            // 2. АКО Е ВСИЧКО ДРУГО -> Търсим в REVIEW таблицата (старата логика)
+            $qb = $reviewRepository->createQueryBuilder('r')
+                ->where('r.isPublished = :status')
+                ->setParameter('status', true)
+                // Скриваме продукти без цена
+                ->andWhere('r.price IS NOT NULL')
+                ->andWhere('r.price > 0')
+                ->orderBy('r.createdAt', 'DESC');
+
+            if ($source) {
+                if ($source === 'alleop') {
+                    $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
+                        ->setParameter('badge', 'ALLEOP')
+                        ->setParameter('url', '%alleop%');
+                } elseif ($source === 'emag') {
+                    $qb->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
+                        ->setParameter('badge', 'EMAG')
+                        ->setParameter('url', '%emag%');
+                }
             }
         }
 
@@ -91,10 +102,14 @@ class ReviewController extends AbstractController
             $url = strtolower($product->getOriginalProductUrl() ?? '');
             $badge = strtoupper($product->getBadge() ?? '');
 
+            // Проверка за категория, ако скрейпърът записва там
+            $category = strtoupper($product->getCategory() ?? '');
+
             if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
                 if (count($productsByPlatform['emag']) < 6) $productsByPlatform['emag'][] = $product;
             }
-            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
+            // Тук добавяме и проверка на категорията за по-сигурно визуализиране
+            elseif (str_contains($badge, 'FASHION') || str_contains($category, 'FASHION') || str_contains($url, 'fashiondays')) {
                 if (count($productsByPlatform['fashiondays']) < 6) $productsByPlatform['fashiondays'][] = $product;
             }
             elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {
@@ -232,8 +247,6 @@ class ReviewController extends AbstractController
             return $this->render('review/compare_prices.html.twig', ['query' => '', 'products' => []]);
         }
 
-        // За по-сложно сравнение можеш да ползваш findForPriceComparison,
-        // но тук ще направим същото филтриране ръчно за сигурност
         $products = $reviewRepository->findSimilarAcrossPlatforms($query, null, 50);
 
         $productsByPlatform = ['emag' => [], 'fashiondays' => [], 'alleop' => []];
@@ -243,11 +256,12 @@ class ReviewController extends AbstractController
 
             $url = strtolower($product->getOriginalProductUrl() ?? '');
             $badge = strtoupper($product->getBadge() ?? '');
+            $category = strtoupper($product->getCategory() ?? '');
 
             if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
                 $productsByPlatform['emag'][] = $product;
             }
-            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
+            elseif (str_contains($badge, 'FASHION') || str_contains($category, 'FASHION') || str_contains($url, 'fashiondays')) {
                 $productsByPlatform['fashiondays'][] = $product;
             }
             elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {
@@ -269,17 +283,16 @@ class ReviewController extends AbstractController
         $productsByPlatform = ['emag' => [], 'fashiondays' => [], 'alleop' => []];
 
         foreach ($similarProducts as $product) {
-            // 1. Проверка за цена
             if (!$product->getPrice() || $product->getPrice() <= 0) continue;
 
-            // 2. Сигурна проверка за магазин
             $url = strtolower($product->getOriginalProductUrl() ?? '');
             $badge = strtoupper($product->getBadge() ?? '');
+            $category = strtoupper($product->getCategory() ?? '');
 
             if ($badge === 'EMAG' || str_contains($url, 'emag.bg')) {
                 $productsByPlatform['emag'][] = $product;
             }
-            elseif (str_contains($badge, 'FASHION') || str_contains($url, 'fashiondays')) {
+            elseif (str_contains($badge, 'FASHION') || str_contains($category, 'FASHION') || str_contains($url, 'fashiondays')) {
                 $productsByPlatform['fashiondays'][] = $product;
             }
             elseif ($badge === 'ALLEOP' || str_contains($url, 'alleop')) {

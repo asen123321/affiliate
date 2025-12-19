@@ -73,14 +73,51 @@
         </div>
 
         <div class="row g-4">
-            {% for review in reviews %}
+            {% for item in reviews %}
+                {# --- 1. НОРМАЛИЗИРАНЕ НА ДАННИТЕ (Smart Logic) --- #}
+
+                {# Име #}
+                {% set displayName = item.title is defined ? item.title : (item.name is defined ? item.name : 'Без име') %}
+
+                {# Снимка #}
+                {# Проверяваме различни варианти за снимка според Entity-то #}
+                {% set displayImage = '' %}
+                {% if item.imageUrl is defined %}{% set displayImage = item.imageUrl %}
+                {% elseif item.image is defined %}{% set displayImage = item.image %}
+                {% elseif item.mainImage is defined %}{% set displayImage = item.mainImage %}
+                {% endif %}
+
+                {# Бадж / Категория #}
+                {% set displayBadge = null %}
+                {% if item.badge is defined and item.badge %}{% set displayBadge = item.badge %}
+                {% elseif item.category is defined and item.category %}{% set displayBadge = item.category %}
+                {% endif %}
+
+                {# Рейтинг (Продуктите нямат, слагаме 5.0 по подразбиране или скриваме) #}
+                {% set displayRating = item.rating is defined ? item.rating : 5 %}
+
+                {# Линк (Ревютата водят към вътрешна страница, Продуктите директно към магазина) #}
+                {% set detailUrl = '#' %}
+                {% set isExternal = false %}
+
+                {% if item.slug is defined %}
+                    {# Това е Ревю -> Вътрешна страница #}
+                    {% set detailUrl = path('app_review_show', {slug: item.slug}) %}
+                {% elseif item.link is defined %}
+                    {# Това е Продукт -> Директен линк #}
+                    {% set detailUrl = item.link %}
+                    {% set isExternal = true %}
+                {% endif %}
+
+                {# --- 2. ВИЗУАЛИЗАЦИЯ --- #}
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="product-card h-100">
-                        {% if review.badge %}
+                        {# БАДЖ #}
+                        {% if displayBadge %}
                             <div class="product-badge">
-                    <span class="badge-premium">
-                        <i class="bi bi-award-fill me-1"></i>{{ review.badge }}
-                    </span>
+                                <span class="badge-premium">
+                                    <i class="bi bi-award-fill me-1"></i>{{ displayBadge }}
+                                </span>
                             </div>
                         {% endif %}
 
@@ -88,14 +125,15 @@
                             <div class="hot-label">🔥 HOT</div>
                         </div>
 
-                        {% if review.imageUrl %}
+                        {# СНИМКА #}
+                        {% if displayImage %}
                             <div class="product-image-wrapper">
-                                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank">
-                                    <img src="{{ review.imageUrl }}" class="product-image img-fluid" alt="{{ review.title }}" loading="lazy">
+                                <a href="{{ detailUrl }}" {% if isExternal %}target="_blank"{% endif %}>
+                                    <img src="{{ displayImage }}" class="product-image img-fluid" alt="{{ displayName }}" loading="lazy">
                                 </a>
                                 <div class="image-overlay">
-                                    <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="quick-view" style="text-decoration: none; cursor: pointer;">
-                                        👁️ QUICK VIEW
+                                    <a href="{{ detailUrl }}" {% if isExternal %}target="_blank"{% endif %} class="quick-view" style="text-decoration: none; cursor: pointer;">
+                                        👁️ {{ isExternal ? 'ВИЖ В МАГАЗИНА' : 'QUICK VIEW' }}
                                     </a>
                                 </div>
                             </div>
@@ -111,25 +149,27 @@
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <div class="rating-stars">
                                     {% for i in 1..5 %}
-                                        {% if i <= review.rating %}⭐{% endif %}
+                                        {% if i <= displayRating %}⭐{% endif %}
                                     {% endfor %}
                                 </div>
-                                <span class="rating-number">{{ review.rating }}.0</span>
+                                <span class="rating-number">{{ displayRating }}.0</span>
                             </div>
 
-                            <h3 class="product-title">{{ review.title|slice(0, 50) }}{% if review.title|length > 50 %}...{% endif %}</h3>
+                            <h3 class="product-title">{{ displayName|slice(0, 50) }}{% if displayName|length > 50 %}...{% endif %}</h3>
 
                             <div class="product-price-section">
-                                <div class="current-price">{{ review.price }} лв.</div>
+                                <div class="current-price">
+                                    {% if item.price is defined %}{{ item.price }} лв.{% endif %}
+                                </div>
                                 <div class="price-tag">💰 BEST PRICE</div>
                             </div>
 
-                            <a href="{{ path('app_review_show', {slug: review.slug}) }}" class="btn-product-cta">
-                        <span class="cta-text">
-                            <i class="bi bi-lightning-charge-fill me-1"></i>
-                            VIEW DEAL
-                            <i class="bi bi-arrow-right ms-1"></i>
-                        </span>
+                            <a href="{{ detailUrl }}" class="btn-product-cta" {% if isExternal %}target="_blank"{% endif %}>
+                                <span class="cta-text">
+                                    <i class="bi bi-lightning-charge-fill me-1"></i>
+                                    {{ isExternal ? 'КУПИ СЕГА' : 'VIEW DEAL' }}
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </span>
                                 <span class="cta-glow"></span>
                             </a>
 

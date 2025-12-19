@@ -564,6 +564,18 @@
         <argument>Универсален скрейпър за eMAG, FashionDays и Alleop (SQL версия)</argument>
       </call>
     </service>
+    <service id="App\Command\ScrapeFashionDaysCommand" class="App\Command\ScrapeFashionDaysCommand" autowire="true" autoconfigure="true">
+      <tag name="console.command" command="app:scrape-fashion" description="Scrapes FashionDays (Final Fix with Link Cleaner)" help=""/>
+      <tag name="console.command"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="doctrine.orm.default_entity_manager"/>
+      <call method="setName">
+        <argument>app:scrape-fashion</argument>
+      </call>
+      <call method="setDescription">
+        <argument>Scrapes FashionDays (Final Fix with Link Cleaner)</argument>
+      </call>
+    </service>
     <service id="App\Command\ScrapeProductCommand" class="App\Command\ScrapeProductCommand" autowire="true" autoconfigure="true">
       <tag name="console.command" command="app:scrape-product" description="Скрейпва продукт от eMAG и създава подробно ревю тип Wirecutter" help=""/>
       <tag name="console.command"/>
@@ -728,7 +740,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.IhA4eUd"/>
+      <argument type="service" id=".service_locator.LXjQiaa"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -3921,7 +3933,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.IhA4eUd"/>
+      <argument type="service" id=".service_locator.LXjQiaa"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -8173,6 +8185,9 @@
     <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\ScrapeEmagHtmlCommand" class="App\Command\ScrapeEmagHtmlCommand" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Command\ScrapeEmagHtmlCommand.0.App\Command\ScrapeEmagHtmlCommand" class="App\Command\ScrapeEmagHtmlCommand" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Command\ScrapeEmagHtmlCommand" class="App\Command\ScrapeEmagHtmlCommand" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\ScrapeFashionDaysCommand" class="App\Command\ScrapeFashionDaysCommand" autowire="true" abstract="true"/>
+    <service id=".instanceof.App\Command\ScrapeFashionDaysCommand.0.App\Command\ScrapeFashionDaysCommand" class="App\Command\ScrapeFashionDaysCommand" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Command\ScrapeFashionDaysCommand" class="App\Command\ScrapeFashionDaysCommand" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\ScrapeProductCommand" class="App\Command\ScrapeProductCommand" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Command\ScrapeProductCommand.0.App\Command\ScrapeProductCommand" class="App\Command\ScrapeProductCommand" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Command\ScrapeProductCommand" class="App\Command\ScrapeProductCommand" autowire="true" autoconfigure="true" abstract="true"/>
@@ -8736,18 +8751,19 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.1vYpZ1B" method="withContext"/>
     </service>
-    <service id=".service_locator.iVeQ29l" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.18a9E3e" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="reviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
+        <argument key="productRepository" type="service_closure" id="App\Repository\ProductRepository"/>
         <argument key="paginator" type="service_closure" id="knp_paginator"/>
       </argument>
     </service>
-    <service id=".service_locator.iVeQ29l.App\Controller\ReviewController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.18a9E3e.App\Controller\ReviewController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\ReviewController::index()"/>
       <argument>App\Controller\ReviewController::index()</argument>
       <argument type="service" id="service_container"/>
-      <factory service=".service_locator.iVeQ29l" method="withContext"/>
+      <factory service=".service_locator.18a9E3e" method="withContext"/>
     </service>
     <service id=".service_locator.mMnVkcL" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8760,6 +8776,13 @@
       <argument>App\Controller\ReviewController::show()</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.mMnVkcL" method="withContext"/>
+    </service>
+    <service id=".service_locator.iVeQ29l" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="reviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
+        <argument key="paginator" type="service_closure" id="knp_paginator"/>
+      </argument>
     </service>
     <service id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\ReviewController::search()"/>
@@ -8805,14 +8828,14 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator..TL8LKF" method="withContext"/>
     </service>
-    <service id=".service_locator.IhA4eUd" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.LXjQiaa" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\ReviewController::index" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController::index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
         <argument key="App\Controller\ReviewController::show" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController::search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
         <argument key="App\Controller\ReviewController::buyRedirect" type="service_closure" id=".service_locator.T6qA044.App\Controller\ReviewController::buyRedirect()"/>
@@ -8821,7 +8844,7 @@
         <argument key="App\Controller\WebhookController::profitshareWebhook" type="service_closure" id=".service_locator..TL8LKF.App\Controller\WebhookController::profitshareWebhook()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\ReviewController:index" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController:index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
         <argument key="App\Controller\ReviewController:show" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController:search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
         <argument key="App\Controller\ReviewController:buyRedirect" type="service_closure" id=".service_locator.T6qA044.App\Controller\ReviewController::buyRedirect()"/>
@@ -9972,6 +9995,13 @@
       <argument>false</argument>
       <argument type="service_closure" id="App\Command\ScrapeEmagHtmlCommand"/>
     </service>
+    <service id=".App\Command\ScrapeFashionDaysCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
+      <argument>app:scrape-fashion</argument>
+      <argument type="collection"/>
+      <argument>Scrapes FashionDays (Final Fix with Link Cleaner)</argument>
+      <argument>false</argument>
+      <argument type="service_closure" id="App\Command\ScrapeFashionDaysCommand"/>
+    </service>
     <service id=".App\Command\ScrapeProductCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>app:scrape-product</argument>
       <argument type="collection"/>
@@ -10721,7 +10751,7 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.34rLSoz"/>
+      <argument type="service" id=".service_locator._QVJxTR"/>
       <argument type="collection">
         <argument key="app:add-product">App\Command\AddProductCommand</argument>
         <argument key="app:discover-profitshare">App\Command\DiscoverProfitShareCommand</argument>
@@ -10732,6 +10762,7 @@
         <argument key="app:scrape-campaign">App\Command\ScrapeCampaignCommand</argument>
         <argument key="app:scrape-emag">App\Command\ScrapeEmagCommand</argument>
         <argument key="app:scrape-html">App\Command\ScrapeEmagHtmlCommand</argument>
+        <argument key="app:scrape-fashion">App\Command\ScrapeFashionDaysCommand</argument>
         <argument key="app:scrape-product">App\Command\ScrapeProductCommand</argument>
         <argument key="app:test-affiliate-link">App\Command\TestAffiliateLinkCommand</argument>
         <argument key="app:test-api">App\Command\TestApiCommand</argument>
@@ -10861,7 +10892,7 @@
         <argument key="make:webhook">maker.auto_command.make_webhook</argument>
       </argument>
     </service>
-    <service id=".service_locator.34rLSoz" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator._QVJxTR" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Command\AddProductCommand" type="service_closure" id=".App\Command\AddProductCommand.lazy"/>
@@ -10873,6 +10904,7 @@
         <argument key="App\Command\ScrapeCampaignCommand" type="service_closure" id=".App\Command\ScrapeCampaignCommand.lazy"/>
         <argument key="App\Command\ScrapeEmagCommand" type="service_closure" id=".App\Command\ScrapeEmagCommand.lazy"/>
         <argument key="App\Command\ScrapeEmagHtmlCommand" type="service_closure" id=".App\Command\ScrapeEmagHtmlCommand.lazy"/>
+        <argument key="App\Command\ScrapeFashionDaysCommand" type="service_closure" id=".App\Command\ScrapeFashionDaysCommand.lazy"/>
         <argument key="App\Command\ScrapeProductCommand" type="service_closure" id=".App\Command\ScrapeProductCommand.lazy"/>
         <argument key="App\Command\TestAffiliateLinkCommand" type="service_closure" id=".App\Command\TestAffiliateLinkCommand.lazy"/>
         <argument key="App\Command\TestApiCommand" type="service_closure" id=".App\Command\TestApiCommand.lazy"/>
@@ -11269,7 +11301,7 @@
     <service id="Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface" alias="Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.IhA4eUd"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.LXjQiaa"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -11329,8 +11361,9 @@
     <service id=".signing.messenger.default_serializer.inner" alias="messenger.transport.native_php_serializer"/>
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
-    <service id=".service_locator.88imcB2" alias=".service_locator.iVeQ29l"/>
+    <service id=".service_locator.6dGoynW" alias=".service_locator.18a9E3e"/>
     <service id=".service_locator.Q7xTCxa" alias=".service_locator.mMnVkcL"/>
+    <service id=".service_locator.88imcB2" alias=".service_locator.iVeQ29l"/>
     <service id=".service_locator.3TbiFTD" alias=".service_locator.T6qA044"/>
     <service id=".service_locator.3gZfU1F" alias=".service_locator..TL8LKF"/>
     <service id=".service_locator.iZeF6Yn" alias=".service_locator.DweWeAE"/>

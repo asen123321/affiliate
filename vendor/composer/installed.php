@@ -172,6 +172,12 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'facebook/webdriver' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
         'knplabs/knp-components' => array(
             'pretty_version' => 'v5.2.0',
             'version' => '5.2.0.0',
@@ -273,6 +279,15 @@
             'provided' => array(
                 0 => '*',
             ),
+        ),
+        'php-webdriver/webdriver' => array(
+            'pretty_version' => '1.15.2',
+            'version' => '1.15.2.0',
+            'reference' => '998e499b786805568deaf8cbf06f4044f05d91bf',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../php-webdriver/webdriver',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'phpdocumentor/reflection-common' => array(
             'pretty_version' => '2.2.0',
@@ -636,7 +651,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/browser-kit',
             'aliases' => array(),
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'symfony/cache' => array(
             'pretty_version' => 'v7.4.1',
@@ -977,6 +992,15 @@
             'reference' => 'b38026df55197f9e39a44f3215788edf83187b80',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/options-resolver',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'symfony/panther' => array(
+            'pretty_version' => 'v2.3.0',
+            'version' => '2.3.0.0',
+            'reference' => '7d96ff386394ffc02ff320253e7fb6585e3cb76e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/panther',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
