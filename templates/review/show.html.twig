@@ -1,6 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ review.title }} - Детайли{% endblock %}
+{% block title %}{{ review.title }} - Ревю и Сравнение{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* HEADER STYLES */
+        .product-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .main-product-image {
+            max-height: 400px; object-fit: contain; border-radius: 12px;
+            background: white; padding: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .price-badge { font-size: 2rem; font-weight: 800; color: #0d6efd; }
+
+        /* CHART & CARDS */
+        .chart-container {
+            background: white; border-radius: 15px; padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 3rem;
+        }
+        .similar-card {
+            transition: transform 0.2s, box-shadow 0.2s; height: 100%; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
+        }
+        .similar-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* CHECKBOX STYLES */
+        .compare-checkbox-wrapper {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+        }
+        .form-check-input.compare-checkbox {
+            width: 1.5em; height: 1.5em; cursor: pointer; border: 2px solid #0d6efd;
+        }
+
+        /* STICKY COMPARE BAR */
+        #compareBar {
+            position: fixed; bottom: -100px; left: 0; width: 100%;
+            background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+            padding: 15px 0; z-index: 1050; transition: bottom 0.4s ease;
+        }
+        #compareBar.visible { bottom: 0; }
+        .selected-thumb { width: 40px; height: 40px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* COMPARISON TABLE */
+        .table-compare th { width: 30%; background: #f8f9fa; vertical-align: middle; }
+        .table-compare td { vertical-align: middle; text-align: center; }
+        .pro-item { color: green; font-size: 0.9rem; }
+        .con-item { color: #dc3545; font-size: 0.9rem; }
+    </style>
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -8,236 +60,345 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container py-5">
 
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Начало</a></li>
-                <li class="breadcrumb-item active">{{ review.title|slice(0, 30) }}...</li>
-            </ol>
-        </nav>
-
-        <div class="row g-4">
-            <div class="col-lg-5">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <span class="badge bg-primary mb-2">{{ review.badge ?? 'ОФЕРТА' }}</span>
-                        <h1 class="h4 fw-bold mb-3">{{ review.title }}</h1>
-
-                        {% if review.imageUrl %}
-                            <div class="text-center my-4 p-3 bg-white border rounded">
-                                <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="nofollow noreferrer" title="Виж в магазина">
-                                    <img src="{{ review.imageUrl }}" class="img-fluid hover-zoom" style="max-height: 300px;" alt="{{ review.title }}">
-                                </a>
-                            </div>
-                        {% endif %}
-
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <span class="h2 text-primary fw-bold mb-0">{{ review.price|number_format(2, '.', ' ') }} лв.</span>
-                            <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="btn btn-primary px-4 py-2">
-                                <i class="bi bi-cart-check"></i> ВИЖ В МАГАЗИНА
-                            </a>
-                        </div>
-
-                        <hr>
-                        <div class="text-muted small">
-                            {{ review.content|striptags|slice(0, 300) }}...
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-7">
-                <div class="card border-0 shadow-sm" style="min-height: 600px; background: #f8f9fa;">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h5 class="fw-bold m-0"><i class="bi bi-speedometer2 text-primary"></i> Център за сравнение</h5>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column" id="chart-container">
-
-                        <div style="height: 250px; width: 100%;">
-                            <canvas id="priceComparisonChart"></canvas>
-                        </div>
-
-                        <div id="comparison-analysis" class="mt-4 flex-grow-1">
-                            <div class="alert alert-secondary text-center py-5">
-                                <i class="bi bi-arrow-down-up fs-1 mb-3"></i>
-                                <h5>Избери продукт за сравнение</h5>
-                                <p class="mb-0">Кликни бутона <strong>"Сравни с този"</strong> на продуктите по-долу, за да видиш прилики, разлики и анализ на цената.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-5 pt-4 border-top">
-            <h3 class="fw-bold mb-4">Подобни оферти</h3>
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-
-                {# Събираме всички продукти #}
-                {% set allSimilar = [] %}
-                {% for p in similarProducts.emag %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'eMAG', 'color': 'primary'}]) %}{% endfor %}
-                {% for p in similarProducts.fashiondays %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Fashion Days', 'color': 'dark'}]) %}{% endfor %}
-                {% for p in similarProducts.alleop %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Alleop', 'color': 'success'}]) %}{% endfor %}
-
-                {% for item in allSimilar %}
-                    {% set product = item.p %}
-                    {% if product.price > 0 %}
-                        <div class="col">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body p-3 d-flex flex-column">
-                                    <div class="text-center mb-3" style="height: 120px;">
-                                        <a href="{{ path('app_buy_redirect', {id: product.id}) }}" target="_blank" rel="nofollow noreferrer" class="d-block h-100">
-                                            <img src="{{ product.imageUrl }}" style="height: 100%; object-fit: contain;" class="hover-zoom" alt="{{ product.title }}">
-                                        </a>
-                                    </div>
-                                    <h6 class="card-title text-truncate mb-2">
-                                        <a href="{{ path('app_buy_redirect', {id: product.id}) }}" target="_blank" class="text-decoration-none text-dark">
-                                            {{ product.title }}
-                                        </a>
-                                    </h6>
-                                    <div class="fw-bold text-{{ item.color }} mb-3">{{ product.price }} лв.</div>
-
-                                    <div class="mt-auto">
-                                        <button type="button"
-                                                class="btn btn-outline-{{ item.color }} w-100 js-compare-btn"
-                                                data-title="{{ product.title }}"
-                                                data-price="{{ product.price }}"
-                                                data-source="{{ item.source }}"
-                                                data-url="{{ path('app_buy_redirect', {id: product.id}) }}">
-                                            <i class="bi bi-bar-chart"></i> Сравни с този
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+    {# --- 1. ГЛАВНА СЕКЦИЯ С ПРОДУКТА --- #}
+    <div class="product-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-5 text-center mb-4 mb-lg-0">
+                    {% if review.imageUrl %}
+                        <img src="{{ review.imageUrl }}" alt="{{ review.title }}" class="img-fluid main-product-image">
+                    {% else %}
+                        <div class="main-product-image d-flex align-items-center justify-content-center" style="height: 300px;">
+                            <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
                         </div>
                     {% endif %}
-                {% endfor %}
+                </div>
+                <div class="col-lg-7">
+                    <span class="badge bg-primary mb-2">РЕВЮ</span>
+                    {% if review.badge %}
+                        <span class="badge bg-danger mb-2">{{ review.badge }}</span>
+                    {% endif %}
+
+                    <h1 class="display-5 fw-bold mb-3">{{ review.title }}</h1>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="text-warning me-2">
+                            {% for i in 1..5 %}
+                                {% if i <= review.rating %} <i class="bi bi-star-fill"></i> {% else %} <i class="bi bi-star"></i> {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-muted">({{ review.rating }}/5 Оценка)</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="text-muted d-block mb-1">Актуална цена:</span>
+                        <div class="price-badge">{{ review.price|number_format(2, '.', ' ') }} лв.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-cart-check me-2"></i> ВИЖ ОФЕРТАТА
+                        </a>
+                        {# Бутонът Сравни цени скролва надолу #}
+                        <a href="#similar-offers" class="btn btn-outline-dark btn-lg px-4">
+                            <i class="bi bi-arrow-down-circle me-2"></i> Виж алтернативи
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class="container mb-5">
+
+        {# --- 2. ГРАФИКА ЗА ЦЕНИТЕ (Chart.js) --- #}
+        <div class="row mb-5" id="comparison">
+            <div class="col-lg-8 mx-auto">
+                <div class="chart-container">
+                    <h3 class="text-center mb-4">📊 Анализ на цената</h3>
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {# --- 3. ПОДОБНИ ОФЕРТИ (С ЧЕКБОКСОВЕ) --- #}
+        <div class="row" id="similar-offers">
+            <div class="col-12 mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
+                <h3 class="fw-bold m-0">
+                    <i class="bi bi-tags text-primary me-2"></i> Най-добри алтернативи
+                </h3>
+                <span class="text-muted small"><i class="bi bi-info-circle"></i> Избери продукти за сравнение</span>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            {# Добавяме и текущия продукт в списъка за сравнение, за да можеш да го сравниш с другите #}
+            {% set allProducts = [{
+                'title': review.title,
+                'price': review.price,
+                'image': review.imageUrl,
+                'link': path('app_buy_redirect', {id: review.id}),
+                'platform': review.badge ? review.badge : 'Main',
+                'badge_class': 'bg-primary'
+            }]|merge(similarProducts) %}
+
+            {# Показваме само similarProducts в Grid-а, но ползваме logic за сравнение #}
+            {% for product in similarProducts %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card h-100 similar-card">
+
+                        {# ЧЕКБОКС ЗА СРАВНЕНИЕ #}
+                        <div class="compare-checkbox-wrapper">
+                            <input class="form-check-input compare-checkbox shadow-sm"
+                                   type="checkbox"
+                                   data-title="{{ product.title }}"
+                                   data-price="{{ product.price }}"
+                                   data-image="{{ product.image }}"
+                                   data-platform="{{ product.platform }}"
+                                   data-link="{{ product.link }}"
+                                   id="compare_{{ loop.index }}">
+                        </div>
+
+                        <div class="position-relative text-center p-3" style="height: 200px; overflow: hidden; background: #fff;">
+                            <a href="{{ product.link }}" target="_blank">
+                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                            </a>
+                            <span class="position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm">
+                                {{ product.platform }}
+                            </span>
+                        </div>
+
+                        <div class="card-body d-flex flex-column bg-light bg-opacity-10">
+                            <h6 class="card-title mb-2" style="font-size: 0.95rem; line-height: 1.4;">
+                                <a href="{{ product.link }}" target="_blank" class="text-decoration-none text-dark">
+                                    {{ product.title|length > 40 ? product.title|slice(0, 40) ~ '...' : product.title }}
+                                </a>
+                            </h6>
+
+                            <div class="mt-auto pt-3 border-top">
+                                <h5 class="text-primary fw-bold mb-2">{{ product.price|number_format(2, '.', ' ') }} лв.</h5>
+
+                                <a href="{{ product.link }}" target="_blank" class="btn btn-outline-primary w-100 btn-sm rounded-pill">
+                                    Виж оферта <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-secondary">Няма намерени подобни продукти.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# --- 4. ПЛАВАЩА ЛЕНТА ЗА СРАВНЕНИЕ (Sticky Bottom Bar) --- #}
+    <div id="compareBar">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fw-bold text-dark">Избрани за сравнение:</span>
+                    <div id="compareThumbs" class="d-flex gap-2">
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-danger btn-sm me-2" onclick="clearComparison()">Изчисти</button>
+                    <button class="btn btn-primary px-4" onclick="openCompareModal()">
+                        <i class="bi bi-columns-gap me-2"></i> СРАВНИ СЕГА
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- 5. МОДАЛЕН ПРОЗОРЕЦ ЗА СРАВНЕНИЕ --- #}
+    <div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-bar-chart-steps"></i> Сравнение на продуктите</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-compare m-0">
+                            <tbody id="compareTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Затвори</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- СКРИПТОВЕ --- #}
     <script>
-        let myChart = null;
-        // Безопасно кодиране на данните за JS
-        const mainTitle = {{ review.title|json_encode|raw }};
-        const mainPrice = {{ review.price }};
-        const mainSource = "{{ review.badge ?? 'ТОЗИ САЙТ' }}";
-
+        // 1. Chart.js Логика
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+            const ctx = document.getElementById('priceChart');
+            const currentPrice = {{ review.price }};
+            const similarPrices = [
+                {% for p in similarProducts %}
+                {{ p.price }},
+                {% endfor %}
+            ];
+            let avgPrice = currentPrice;
+            if (similarPrices.length > 0) {
+                const sum = similarPrices.reduce((a, b) => a + b, 0) + currentPrice;
+                avgPrice = sum / (similarPrices.length + 1);
+            }
 
-            myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['ТОЗИ ПРОДУКТ', 'СРАВНЕН С...'],
+                    labels: ['ТОЗИ ПРОДУКТ', 'СРЕДНА ЦЕНА'],
                     datasets: [{
                         label: 'Цена (лв.)',
-                        data: [mainPrice, 0],
-                        backgroundColor: ['#0d6efd', '#e9ecef'],
-                        borderRadius: 8,
-                        barPercentage: 0.6
+                        data: [currentPrice, avgPrice],
+                        backgroundColor: ['rgba(13, 110, 253, 0.7)', 'rgba(108, 117, 125, 0.5)'],
+                        borderColor: ['rgb(13, 110, 253)', 'rgb(108, 117, 125)'],
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true } }
                 }
             });
+        });
 
-            // Слушаме за кликове
-            document.querySelectorAll('.js-compare-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    updateComparison(
-                        this.getAttribute('data-title'),
-                        parseFloat(this.getAttribute('data-price')),
-                        this.getAttribute('data-source'),
-                        this.getAttribute('data-url')
-                    );
-                });
+        // 2. Логика за Сравнението
+        let selectedProducts = [];
+
+        // Вкарваме текущия продукт автоматично като първа опция (невидим в масива, но може да се добави)
+        const mainProduct = {
+            title: "{{ review.title|e('js') }}",
+            price: {{ review.price }},
+            image: "{{ review.imageUrl }}",
+            platform: "{{ review.badge ? review.badge : 'Ревю' }}",
+            link: "{{ path('app_buy_redirect', {id: review.id}) }}"
+        };
+
+        const checkboxes = document.querySelectorAll('.compare-checkbox');
+        const compareBar = document.getElementById('compareBar');
+        const compareThumbs = document.getElementById('compareThumbs');
+        const compareTableBody = document.getElementById('compareTableBody');
+        const compareModal = new bootstrap.Modal(document.getElementById('compareModal'));
+
+        checkboxes.forEach(box => {
+            box.addEventListener('change', function() {
+                const product = {
+                    title: this.dataset.title,
+                    price: parseFloat(this.dataset.price),
+                    image: this.dataset.image,
+                    platform: this.dataset.platform,
+                    link: this.dataset.link
+                };
+
+                if (this.checked) {
+                    if (selectedProducts.length >= 3) {
+                        alert("Можете да сравнявате максимум 3 допълнителни продукта!");
+                        this.checked = false;
+                        return;
+                    }
+                    selectedProducts.push(product);
+                } else {
+                    selectedProducts = selectedProducts.filter(p => p.title !== product.title);
+                }
+                updateCompareUI();
             });
         });
 
-        function updateComparison(compareTitle, comparePrice, source, url) {
-            // 1. Обновяваме Графиката
-            myChart.data.datasets[0].data[1] = comparePrice;
+        function updateCompareUI() {
+            compareThumbs.innerHTML = '';
 
-            let color = '#6c757d';
-            if(source === 'eMAG') color = '#0d6efd';
-            if(source === 'Alleop') color = '#198754';
-            if(source === 'Fashion Days') color = '#212529';
-
-            myChart.data.datasets[0].backgroundColor[1] = color;
-            myChart.update();
-
-            // 2. Генерираме АНАЛИЗ (Текст)
-            const diff = mainPrice - comparePrice;
-            const diffAbs = Math.abs(diff).toFixed(2);
-
-            let analysisHtml = `
-            <div class="card border-0 bg-white p-3 shadow-sm animation-fade-in">
-                <h6 class="border-bottom pb-2 fw-bold text-uppercase text-muted small">Резултат от сравнението</h6>
-
-                <div class="row g-3 mt-1">
-                    <div class="col-6">
-                        <div class="p-2 bg-light rounded">
-                            <small class="d-block text-muted">По какво си ПРИЛИЧАТ:</small>
-                            <ul class="mb-0 ps-3 small">
-                                <li>Основна категория</li>
-                                <li>Сходна функционалност</li>
-                                <li>Популярни модели</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="p-2 bg-light rounded">
-                            <small class="d-block text-muted">По какво се РАЗЛИЧАВАТ:</small>
-                            <ul class="mb-0 ps-3 small">
-                                <li>Търговец: <strong>${source}</strong></li>
-                                <li>Цена (разлика: ${diffAbs} лв.)</li>
-                                <li>Наличност и доставка</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-3 p-3 rounded ${diff > 0 ? 'bg-success-subtle text-success-emphasis' : 'bg-primary-subtle text-primary-emphasis'}">
-                    <h5 class="fw-bold mb-1"><i class="bi bi-lightbulb"></i> ЗАЩО ДА ИЗБЕРЕШ ${diff > 0 ? 'СРАВНЕНИЯ' : 'ТОЗИ'} ПРОДУКТ?</h5>
-                    <p class="mb-0">
-                        ${diff > 0
-                ? `Избирайки офертата от <strong>${source}</strong>, ти <strong>СПЕСТЯВАШ ${diffAbs} лв.</strong> спрямо текущата цена!`
-                : `Въпреки че е по-скъп с ${diffAbs} лв., <strong>${source}</strong> може да предлага по-бърза доставка или удължена гаранция.`
+            if (selectedProducts.length > 0) {
+                compareBar.classList.add('visible');
+                selectedProducts.forEach(p => {
+                    compareThumbs.innerHTML += `<img src="${p.image}" class="selected-thumb" title="${p.title}">`;
+                });
+            } else {
+                compareBar.classList.remove('visible');
             }
-                    </p>
-                </div>
+        }
 
-                <div class="mt-3 text-end">
-                    <a href="${url}" target="_blank" class="btn btn-sm btn-${diff > 0 ? 'success' : 'outline-primary'}">
-                        Виж офертата на ${source} <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        `;
+        function clearComparison() {
+            selectedProducts = [];
+            checkboxes.forEach(box => box.checked = false);
+            updateCompareUI();
+        }
 
-            document.getElementById('comparison-analysis').innerHTML = analysisHtml;
+        function openCompareModal() {
+            // Винаги добавяме и основния продукт за сравнение в началото
+            const comparisonList = [mainProduct, ...selectedProducts];
 
-            // Скрол до сравнението
-            document.getElementById('chart-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Намираме най-ниската цена за highlight
+            const minPrice = Math.min(...comparisonList.map(p => p.price));
+
+            let html = '';
+
+            // Ред 1: Снимки
+            html += `<tr><th>Продукт</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class="p-3"><img src="${p.image}" style="height: 100px; object-fit: contain;"></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 2: Заглавия
+            html += `<tr><th>Име</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class="fw-bold"><small>${p.title}</small></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 3: Цена
+            html += `<tr><th>Цена</th>`;
+            comparisonList.forEach(p => {
+                const isCheapest = p.price === minPrice;
+                const colorClass = isCheapest ? 'text-success fw-bold' : 'text-dark';
+                const badge = isCheapest ? '<br><span class="badge bg-success mt-1">НАЙ-ИЗГОДНО</span>' : '';
+                html += `<td class="${colorClass} fs-5">${p.price.toFixed(2)} лв.${badge}</td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 4: Платформа
+            html += `<tr><th>Магазин</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><span class="badge bg-secondary">${p.platform}</span></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 5: Плюсове (Автоматично генерирани)
+            html += `<tr><th>Плюсове</th>`;
+            comparisonList.forEach(p => {
+                let pros = [];
+                if (p.price === minPrice) pros.push('<i class="bi bi-check-circle-fill me-1"></i> Най-ниска цена');
+                if (p.platform === 'eMAG') pros.push('<i class="bi bi-truck me-1"></i> Бърза доставка (обикновено)');
+                if (p.platform === 'Fashion Days') pros.push('<i class="bi bi-arrow-return-left me-1"></i> Лесно връщане');
+                if (p.platform === 'Alleop') pros.push('<i class="bi bi-shield-check me-1"></i> Директен вносител');
+
+                if (pros.length === 0) pros.push('<i class="bi bi-star me-1"></i> Добър избор');
+
+                html += `<td><div class="d-flex flex-column gap-1 align-items-center pro-item">${pros.join('<br>')}</div></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 6: Действие
+            html += `<tr><th>Действие</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><a href="${p.link}" target="_blank" class="btn btn-primary btn-sm">Купи</a></td>`;
+            });
+            html += `</tr>`;
+
+            compareTableBody.innerHTML = html;
+            compareModal.show();
         }
     </script>
-
-    <style>
-        .animation-fade-in { animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hover-zoom {
-            transition: transform 0.3s ease;
-        }
-        .hover-zoom:hover {
-            transform: scale(1.05);
-        }
-    </style>
 {% endblock %}
