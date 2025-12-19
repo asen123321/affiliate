@@ -740,7 +740,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.LXjQiaa"/>
+      <argument type="service" id=".service_locator.GW0Oobs"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -3933,7 +3933,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.LXjQiaa"/>
+      <argument type="service" id=".service_locator.GW0Oobs"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -8765,17 +8765,18 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.18a9E3e" method="withContext"/>
     </service>
-    <service id=".service_locator.mMnVkcL" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.rq1PEF6" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="reviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
+        <argument key="productRepository" type="service_closure" id="App\Repository\ProductRepository"/>
       </argument>
     </service>
-    <service id=".service_locator.mMnVkcL.App\Controller\ReviewController::show()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.rq1PEF6.App\Controller\ReviewController::show()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\ReviewController::show()"/>
       <argument>App\Controller\ReviewController::show()</argument>
       <argument type="service" id="service_container"/>
-      <factory service=".service_locator.mMnVkcL" method="withContext"/>
+      <factory service=".service_locator.rq1PEF6" method="withContext"/>
     </service>
     <service id=".service_locator.iVeQ29l" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8789,6 +8790,12 @@
       <argument>App\Controller\ReviewController::search()</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.iVeQ29l" method="withContext"/>
+    </service>
+    <service id=".service_locator.rq1PEF6.App\Controller\ReviewController::comparePrices()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\ReviewController::comparePrices()"/>
+      <argument>App\Controller\ReviewController::comparePrices()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.rq1PEF6" method="withContext"/>
     </service>
     <service id=".service_locator.T6qA044" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8804,18 +8811,6 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.T6qA044" method="withContext"/>
     </service>
-    <service id=".service_locator.mMnVkcL.App\Controller\ReviewController::comparePrices()" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\ReviewController::comparePrices()"/>
-      <argument>App\Controller\ReviewController::comparePrices()</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.mMnVkcL" method="withContext"/>
-    </service>
-    <service id=".service_locator.mMnVkcL.App\Controller\ReviewController::compareProduct()" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\ReviewController::compareProduct()"/>
-      <argument>App\Controller\ReviewController::compareProduct()</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.mMnVkcL" method="withContext"/>
-    </service>
     <service id=".service_locator..TL8LKF" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -8828,7 +8823,7 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator..TL8LKF" method="withContext"/>
     </service>
-    <service id=".service_locator.LXjQiaa" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.GW0Oobs" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
@@ -8836,20 +8831,18 @@
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Controller\ReviewController::index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
-        <argument key="App\Controller\ReviewController::show" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::show()"/>
+        <argument key="App\Controller\ReviewController::show" type="service_closure" id=".service_locator.rq1PEF6.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController::search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
+        <argument key="App\Controller\ReviewController::comparePrices" type="service_closure" id=".service_locator.rq1PEF6.App\Controller\ReviewController::comparePrices()"/>
         <argument key="App\Controller\ReviewController::buyRedirect" type="service_closure" id=".service_locator.T6qA044.App\Controller\ReviewController::buyRedirect()"/>
-        <argument key="App\Controller\ReviewController::comparePrices" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::comparePrices()"/>
-        <argument key="App\Controller\ReviewController::compareProduct" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::compareProduct()"/>
         <argument key="App\Controller\WebhookController::profitshareWebhook" type="service_closure" id=".service_locator..TL8LKF.App\Controller\WebhookController::profitshareWebhook()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Controller\ReviewController:index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
-        <argument key="App\Controller\ReviewController:show" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::show()"/>
+        <argument key="App\Controller\ReviewController:show" type="service_closure" id=".service_locator.rq1PEF6.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController:search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
+        <argument key="App\Controller\ReviewController:comparePrices" type="service_closure" id=".service_locator.rq1PEF6.App\Controller\ReviewController::comparePrices()"/>
         <argument key="App\Controller\ReviewController:buyRedirect" type="service_closure" id=".service_locator.T6qA044.App\Controller\ReviewController::buyRedirect()"/>
-        <argument key="App\Controller\ReviewController:comparePrices" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::comparePrices()"/>
-        <argument key="App\Controller\ReviewController:compareProduct" type="service_closure" id=".service_locator.mMnVkcL.App\Controller\ReviewController::compareProduct()"/>
         <argument key="App\Controller\WebhookController:profitshareWebhook" type="service_closure" id=".service_locator..TL8LKF.App\Controller\WebhookController::profitshareWebhook()"/>
       </argument>
     </service>
@@ -11301,7 +11294,7 @@
     <service id="Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface" alias="Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.LXjQiaa"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.GW0Oobs"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -11362,7 +11355,7 @@
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
     <service id=".service_locator.6dGoynW" alias=".service_locator.18a9E3e"/>
-    <service id=".service_locator.Q7xTCxa" alias=".service_locator.mMnVkcL"/>
+    <service id=".service_locator._sEmkqt" alias=".service_locator.rq1PEF6"/>
     <service id=".service_locator.88imcB2" alias=".service_locator.iVeQ29l"/>
     <service id=".service_locator.3TbiFTD" alias=".service_locator.T6qA044"/>
     <service id=".service_locator.3gZfU1F" alias=".service_locator..TL8LKF"/>

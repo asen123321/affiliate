@@ -31,6 +31,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
 
         $this->blocks = [
             'title' => [$this, 'block_title'],
+            'stylesheets' => [$this, 'block_stylesheets'],
             'javascripts' => [$this, 'block_javascripts'],
             'body' => [$this, 'block_body'],
         ];
@@ -75,7 +76,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "title"));
 
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 3, $this->source); })()), "title", [], "any", false, false, false, 3), "html", null, true);
-        yield " - Детайли";
+        yield " - Ревю и Сравнение";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
 
@@ -89,6 +90,81 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
     /**
      * @return iterable<null|scalar|\Stringable>
      */
+    public function block_stylesheets(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "stylesheets"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "stylesheets"));
+
+        // line 6
+        yield "    ";
+        yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
+        yield "
+    <style>
+        /* HEADER STYLES */
+        .product-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .main-product-image {
+            max-height: 400px; object-fit: contain; border-radius: 12px;
+            background: white; padding: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .price-badge { font-size: 2rem; font-weight: 800; color: #0d6efd; }
+
+        /* CHART & CARDS */
+        .chart-container {
+            background: white; border-radius: 15px; padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 3rem;
+        }
+        .similar-card {
+            transition: transform 0.2s, box-shadow 0.2s; height: 100%; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
+        }
+        .similar-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* CHECKBOX STYLES */
+        .compare-checkbox-wrapper {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+        }
+        .form-check-input.compare-checkbox {
+            width: 1.5em; height: 1.5em; cursor: pointer; border: 2px solid #0d6efd;
+        }
+
+        /* STICKY COMPARE BAR */
+        #compareBar {
+            position: fixed; bottom: -100px; left: 0; width: 100%;
+            background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+            padding: 15px 0; z-index: 1050; transition: bottom 0.4s ease;
+        }
+        #compareBar.visible { bottom: 0; }
+        .selected-thumb { width: 40px; height: 40px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* COMPARISON TABLE */
+        .table-compare th { width: 30%; background: #f8f9fa; vertical-align: middle; }
+        .table-compare td { vertical-align: middle; text-align: center; }
+        .pro-item { color: green; font-size: 0.9rem; }
+        .con-item { color: #dc3545; font-size: 0.9rem; }
+    </style>
+";
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        yield from [];
+    }
+
+    // line 57
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
@@ -98,7 +174,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 6
+        // line 58
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -113,7 +189,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         yield from [];
     }
 
-    // line 10
+    // line 62
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -126,362 +202,515 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
 
-        // line 11
-        yield "    <div class=\"container py-5\">
-
-        <nav aria-label=\"breadcrumb\" class=\"mb-4\">
-            <ol class=\"breadcrumb\">
-                <li class=\"breadcrumb-item\"><a href=\"";
-        // line 15
-        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home");
-        yield "\">Начало</a></li>
-                <li class=\"breadcrumb-item active\">";
-        // line 16
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::slice($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 16, $this->source); })()), "title", [], "any", false, false, false, 16), 0, 30), "html", null, true);
-        yield "...</li>
-            </ol>
-        </nav>
-
-        <div class=\"row g-4\">
-            <div class=\"col-lg-5\">
-                <div class=\"card border-0 shadow-sm h-100\">
-                    <div class=\"card-body p-4\">
-                        <span class=\"badge bg-primary mb-2\">";
-        // line 24
-        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["review"] ?? null), "badge", [], "any", true, true, false, 24) &&  !(null === CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 24, $this->source); })()), "badge", [], "any", false, false, false, 24)))) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 24, $this->source); })()), "badge", [], "any", false, false, false, 24), "html", null, true)) : ("ОФЕРТА"));
-        yield "</span>
-                        <h1 class=\"h4 fw-bold mb-3\">";
-        // line 25
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 25, $this->source); })()), "title", [], "any", false, false, false, 25), "html", null, true);
-        yield "</h1>
-
-                        ";
-        // line 27
-        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 27, $this->source); })()), "imageUrl", [], "any", false, false, false, 27)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
-            // line 28
-            yield "                            <div class=\"text-center my-4 p-3 bg-white border rounded\">
-                                <a href=\"";
-            // line 29
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 29, $this->source); })()), "id", [], "any", false, false, false, 29)]), "html", null, true);
-            yield "\" target=\"_blank\" rel=\"nofollow noreferrer\" title=\"Виж в магазина\">
-                                    <img src=\"";
-            // line 30
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 30, $this->source); })()), "imageUrl", [], "any", false, false, false, 30), "html", null, true);
-            yield "\" class=\"img-fluid hover-zoom\" style=\"max-height: 300px;\" alt=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 30, $this->source); })()), "title", [], "any", false, false, false, 30), "html", null, true);
-            yield "\">
-                                </a>
-                            </div>
-                        ";
-        }
-        // line 34
+        // line 63
         yield "
-                        <div class=\"d-flex justify-content-between align-items-center mb-4\">
-                            <span class=\"h2 text-primary fw-bold mb-0\">";
-        // line 36
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 36, $this->source); })()), "price", [], "any", false, false, false, 36), 2, ".", " "), "html", null, true);
-        yield " лв.</span>
-                            <a href=\"";
-        // line 37
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 37, $this->source); })()), "id", [], "any", false, false, false, 37)]), "html", null, true);
-        yield "\" target=\"_blank\" class=\"btn btn-primary px-4 py-2\">
-                                <i class=\"bi bi-cart-check\"></i> ВИЖ В МАГАЗИНА
-                            </a>
-                        </div>
-
-                        <hr>
-                        <div class=\"text-muted small\">
-                            ";
-        // line 44
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::slice($this->env->getCharset(), Twig\Extension\CoreExtension::striptags(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 44, $this->source); })()), "content", [], "any", false, false, false, 44)), 0, 300), "html", null, true);
-        yield "...
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class=\"col-lg-7\">
-                <div class=\"card border-0 shadow-sm\" style=\"min-height: 600px; background: #f8f9fa;\">
-                    <div class=\"card-header bg-white border-0 py-3\">
-                        <h5 class=\"fw-bold m-0\"><i class=\"bi bi-speedometer2 text-primary\"></i> Център за сравнение</h5>
-                    </div>
-                    <div class=\"card-body p-4 d-flex flex-column\" id=\"chart-container\">
-
-                        <div style=\"height: 250px; width: 100%;\">
-                            <canvas id=\"priceComparisonChart\"></canvas>
-                        </div>
-
-                        <div id=\"comparison-analysis\" class=\"mt-4 flex-grow-1\">
-                            <div class=\"alert alert-secondary text-center py-5\">
-                                <i class=\"bi bi-arrow-down-up fs-1 mb-3\"></i>
-                                <h5>Избери продукт за сравнение</h5>
-                                <p class=\"mb-0\">Кликни бутона <strong>\"Сравни с този\"</strong> на продуктите по-долу, за да видиш прилики, разлики и анализ на цената.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class=\"mt-5 pt-4 border-top\">
-            <h3 class=\"fw-bold mb-4\">Подобни оферти</h3>
-            <div class=\"row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4\">
-
-                ";
-        // line 79
-        yield "                ";
-        $context["allSimilar"] = [];
-        // line 80
-        yield "                ";
-        $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 80, $this->source); })()), "emag", [], "any", false, false, false, 80));
-        foreach ($context['_seq'] as $context["_key"] => $context["p"]) {
-            $context["allSimilar"] = Twig\Extension\CoreExtension::merge((isset($context["allSimilar"]) || array_key_exists("allSimilar", $context) ? $context["allSimilar"] : (function () { throw new RuntimeError('Variable "allSimilar" does not exist.', 80, $this->source); })()), [["p" => $context["p"], "source" => "eMAG", "color" => "primary"]]);
-        }
-        $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_key'], $context['p'], $context['_parent']);
-        $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 81
-        yield "                ";
-        $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 81, $this->source); })()), "fashiondays", [], "any", false, false, false, 81));
-        foreach ($context['_seq'] as $context["_key"] => $context["p"]) {
-            $context["allSimilar"] = Twig\Extension\CoreExtension::merge((isset($context["allSimilar"]) || array_key_exists("allSimilar", $context) ? $context["allSimilar"] : (function () { throw new RuntimeError('Variable "allSimilar" does not exist.', 81, $this->source); })()), [["p" => $context["p"], "source" => "Fashion Days", "color" => "dark"]]);
-        }
-        $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_key'], $context['p'], $context['_parent']);
-        $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 82
-        yield "                ";
-        $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, (isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 82, $this->source); })()), "alleop", [], "any", false, false, false, 82));
-        foreach ($context['_seq'] as $context["_key"] => $context["p"]) {
-            $context["allSimilar"] = Twig\Extension\CoreExtension::merge((isset($context["allSimilar"]) || array_key_exists("allSimilar", $context) ? $context["allSimilar"] : (function () { throw new RuntimeError('Variable "allSimilar" does not exist.', 82, $this->source); })()), [["p" => $context["p"], "source" => "Alleop", "color" => "success"]]);
-        }
-        $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_key'], $context['p'], $context['_parent']);
-        $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 83
-        yield "
-                ";
-        // line 84
-        $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["allSimilar"]) || array_key_exists("allSimilar", $context) ? $context["allSimilar"] : (function () { throw new RuntimeError('Variable "allSimilar" does not exist.', 84, $this->source); })()));
-        foreach ($context['_seq'] as $context["_key"] => $context["item"]) {
-            // line 85
-            yield "                    ";
-            $context["product"] = CoreExtension::getAttribute($this->env, $this->source, $context["item"], "p", [], "any", false, false, false, 85);
-            // line 86
-            yield "                    ";
-            if ((CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 86, $this->source); })()), "price", [], "any", false, false, false, 86) > 0)) {
-                // line 87
-                yield "                        <div class=\"col\">
-                            <div class=\"card h-100 shadow-sm border-0\">
-                                <div class=\"card-body p-3 d-flex flex-column\">
-                                    <div class=\"text-center mb-3\" style=\"height: 120px;\">
-                                        <a href=\"";
-                // line 91
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 91, $this->source); })()), "id", [], "any", false, false, false, 91)]), "html", null, true);
-                yield "\" target=\"_blank\" rel=\"nofollow noreferrer\" class=\"d-block h-100\">
-                                            <img src=\"";
-                // line 92
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 92, $this->source); })()), "imageUrl", [], "any", false, false, false, 92), "html", null, true);
-                yield "\" style=\"height: 100%; object-fit: contain;\" class=\"hover-zoom\" alt=\"";
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 92, $this->source); })()), "title", [], "any", false, false, false, 92), "html", null, true);
-                yield "\">
-                                        </a>
-                                    </div>
-                                    <h6 class=\"card-title text-truncate mb-2\">
-                                        <a href=\"";
-                // line 96
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 96, $this->source); })()), "id", [], "any", false, false, false, 96)]), "html", null, true);
-                yield "\" target=\"_blank\" class=\"text-decoration-none text-dark\">
-                                            ";
-                // line 97
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 97, $this->source); })()), "title", [], "any", false, false, false, 97), "html", null, true);
-                yield "
-                                        </a>
-                                    </h6>
-                                    <div class=\"fw-bold text-";
-                // line 100
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["item"], "color", [], "any", false, false, false, 100), "html", null, true);
-                yield " mb-3\">";
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 100, $this->source); })()), "price", [], "any", false, false, false, 100), "html", null, true);
-                yield " лв.</div>
-
-                                    <div class=\"mt-auto\">
-                                        <button type=\"button\"
-                                                class=\"btn btn-outline-";
-                // line 104
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["item"], "color", [], "any", false, false, false, 104), "html", null, true);
-                yield " w-100 js-compare-btn\"
-                                                data-title=\"";
-                // line 105
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 105, $this->source); })()), "title", [], "any", false, false, false, 105), "html", null, true);
-                yield "\"
-                                                data-price=\"";
-                // line 106
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 106, $this->source); })()), "price", [], "any", false, false, false, 106), "html", null, true);
-                yield "\"
-                                                data-source=\"";
-                // line 107
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["item"], "source", [], "any", false, false, false, 107), "html", null, true);
-                yield "\"
-                                                data-url=\"";
-                // line 108
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["product"]) || array_key_exists("product", $context) ? $context["product"] : (function () { throw new RuntimeError('Variable "product" does not exist.', 108, $this->source); })()), "id", [], "any", false, false, false, 108)]), "html", null, true);
-                yield "\">
-                                            <i class=\"bi bi-bar-chart\"></i> Сравни с този
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+    ";
+        // line 65
+        yield "    <div class=\"product-header\">
+        <div class=\"container\">
+            <div class=\"row align-items-center\">
+                <div class=\"col-lg-5 text-center mb-4 mb-lg-0\">
+                    ";
+        // line 69
+        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 69, $this->source); })()), "imageUrl", [], "any", false, false, false, 69)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 70
+            yield "                        <img src=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 70, $this->source); })()), "imageUrl", [], "any", false, false, false, 70), "html", null, true);
+            yield "\" alt=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 70, $this->source); })()), "title", [], "any", false, false, false, 70), "html", null, true);
+            yield "\" class=\"img-fluid main-product-image\">
+                    ";
+        } else {
+            // line 72
+            yield "                        <div class=\"main-product-image d-flex align-items-center justify-content-center\" style=\"height: 300px;\">
+                            <i class=\"bi bi-image text-muted\" style=\"font-size: 4rem;\"></i>
                         </div>
                     ";
+        }
+        // line 76
+        yield "                </div>
+                <div class=\"col-lg-7\">
+                    <span class=\"badge bg-primary mb-2\">РЕВЮ</span>
+                    ";
+        // line 79
+        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 79, $this->source); })()), "badge", [], "any", false, false, false, 79)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 80
+            yield "                        <span class=\"badge bg-danger mb-2\">";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 80, $this->source); })()), "badge", [], "any", false, false, false, 80), "html", null, true);
+            yield "</span>
+                    ";
+        }
+        // line 82
+        yield "
+                    <h1 class=\"display-5 fw-bold mb-3\">";
+        // line 83
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 83, $this->source); })()), "title", [], "any", false, false, false, 83), "html", null, true);
+        yield "</h1>
+
+                    <div class=\"d-flex align-items-center mb-4\">
+                        <div class=\"text-warning me-2\">
+                            ";
+        // line 87
+        $context['_parent'] = $context;
+        $context['_seq'] = CoreExtension::ensureTraversable(range(1, 5));
+        foreach ($context['_seq'] as $context["_key"] => $context["i"]) {
+            // line 88
+            yield "                                ";
+            if (($context["i"] <= CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 88, $this->source); })()), "rating", [], "any", false, false, false, 88))) {
+                yield " <i class=\"bi bi-star-fill\"></i> ";
+            } else {
+                yield " <i class=\"bi bi-star\"></i> ";
             }
-            // line 116
-            yield "                ";
+            // line 89
+            yield "                            ";
         }
         $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_key'], $context['item'], $context['_parent']);
+        unset($context['_seq'], $context['_key'], $context['i'], $context['_parent']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 117
-        yield "            </div>
+        // line 90
+        yield "                        </div>
+                        <span class=\"text-muted\">(";
+        // line 91
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 91, $this->source); })()), "rating", [], "any", false, false, false, 91), "html", null, true);
+        yield "/5 Оценка)</span>
+                    </div>
+
+                    <div class=\"mb-4\">
+                        <span class=\"text-muted d-block mb-1\">Актуална цена:</span>
+                        <div class=\"price-badge\">";
+        // line 96
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 96, $this->source); })()), "price", [], "any", false, false, false, 96), 2, ".", " "), "html", null, true);
+        yield " лв.</div>
+                    </div>
+
+                    <div class=\"d-grid gap-2 d-md-block\">
+                        <a href=\"";
+        // line 100
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 100, $this->source); })()), "id", [], "any", false, false, false, 100)]), "html", null, true);
+        yield "\" target=\"_blank\" class=\"btn btn-primary btn-lg px-5\">
+                            <i class=\"bi bi-cart-check me-2\"></i> ВИЖ ОФЕРТАТА
+                        </a>
+                        ";
+        // line 104
+        yield "                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\">
+                            <i class=\"bi bi-arrow-down-circle me-2\"></i> Виж алтернативи
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        let myChart = null;
-        // Безопасно кодиране на данните за JS
-        const mainTitle = ";
-        // line 124
-        yield json_encode(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 124, $this->source); })()), "title", [], "any", false, false, false, 124));
-        yield ";
-        const mainPrice = ";
-        // line 125
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 125, $this->source); })()), "price", [], "any", false, false, false, 125), "html", null, true);
-        yield ";
-        const mainSource = \"";
+    <div class=\"container mb-5\">
+
+        ";
+        // line 116
+        yield "        <div class=\"row mb-5\" id=\"comparison\">
+            <div class=\"col-lg-8 mx-auto\">
+                <div class=\"chart-container\">
+                    <h3 class=\"text-center mb-4\">📊 Анализ на цената</h3>
+                    <canvas id=\"priceChart\"></canvas>
+                </div>
+            </div>
+        </div>
+
+        ";
         // line 126
-        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["review"] ?? null), "badge", [], "any", true, true, false, 126) &&  !(null === CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 126, $this->source); })()), "badge", [], "any", false, false, false, 126)))) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 126, $this->source); })()), "badge", [], "any", false, false, false, 126), "html", null, true)) : ("ТОЗИ САЙТ"));
-        yield "\";
+        yield "        <div class=\"row\" id=\"similar-offers\">
+            <div class=\"col-12 mb-4 d-flex justify-content-between align-items-center border-bottom pb-3\">
+                <h3 class=\"fw-bold m-0\">
+                    <i class=\"bi bi-tags text-primary me-2\"></i> Най-добри алтернативи
+                </h3>
+                <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+            </div>
+        </div>
 
+        <div class=\"row g-3\">
+            ";
+        // line 137
+        yield "            ";
+        $context["allProducts"] = Twig\Extension\CoreExtension::merge([["title" => CoreExtension::getAttribute($this->env, $this->source,         // line 138
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 138, $this->source); })()), "title", [], "any", false, false, false, 138), "price" => CoreExtension::getAttribute($this->env, $this->source,         // line 139
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 139, $this->source); })()), "price", [], "any", false, false, false, 139), "image" => CoreExtension::getAttribute($this->env, $this->source,         // line 140
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 140, $this->source); })()), "imageUrl", [], "any", false, false, false, 140), "link" => $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source,         // line 141
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 141, $this->source); })()), "id", [], "any", false, false, false, 141)]), "platform" => (((($tmp = CoreExtension::getAttribute($this->env, $this->source,         // line 142
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 142, $this->source); })()), "badge", [], "any", false, false, false, 142)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? (CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 142, $this->source); })()), "badge", [], "any", false, false, false, 142)) : ("Main")), "badge_class" => "bg-primary"]],         // line 144
+(isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 144, $this->source); })()));
+        // line 145
+        yield "
+            ";
+        // line 147
+        yield "            ";
+        $context['_parent'] = $context;
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 147, $this->source); })()));
+        $context['_iterated'] = false;
+        $context['loop'] = [
+          'parent' => $context['_parent'],
+          'index0' => 0,
+          'index'  => 1,
+          'first'  => true,
+        ];
+        if (is_array($context['_seq']) || (is_object($context['_seq']) && $context['_seq'] instanceof \Countable)) {
+            $length = count($context['_seq']);
+            $context['loop']['revindex0'] = $length - 1;
+            $context['loop']['revindex'] = $length;
+            $context['loop']['length'] = $length;
+            $context['loop']['last'] = 1 === $length;
+        }
+        foreach ($context['_seq'] as $context["_key"] => $context["product"]) {
+            // line 148
+            yield "                <div class=\"col-6 col-md-4 col-lg-3\">
+                    <div class=\"card h-100 similar-card\">
+
+                        ";
+            // line 152
+            yield "                        <div class=\"compare-checkbox-wrapper\">
+                            <input class=\"form-check-input compare-checkbox shadow-sm\"
+                                   type=\"checkbox\"
+                                   data-title=\"";
+            // line 155
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 155), "html", null, true);
+            yield "\"
+                                   data-price=\"";
+            // line 156
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 156), "html", null, true);
+            yield "\"
+                                   data-image=\"";
+            // line 157
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 157), "html", null, true);
+            yield "\"
+                                   data-platform=\"";
+            // line 158
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 158), "html", null, true);
+            yield "\"
+                                   data-link=\"";
+            // line 159
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 159), "html", null, true);
+            yield "\"
+                                   id=\"compare_";
+            // line 160
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["loop"], "index", [], "any", false, false, false, 160), "html", null, true);
+            yield "\">
+                        </div>
+
+                        <div class=\"position-relative text-center p-3\" style=\"height: 200px; overflow: hidden; background: #fff;\">
+                            <a href=\"";
+            // line 164
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 164), "html", null, true);
+            yield "\" target=\"_blank\">
+                                <img src=\"";
+            // line 165
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 165), "html", null, true);
+            yield "\" alt=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 165), "html", null, true);
+            yield "\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\">
+                            </a>
+                            <span class=\"position-absolute top-0 start-0 badge ";
+            // line 167
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "badge_class", [], "any", false, false, false, 167), "html", null, true);
+            yield " m-2 shadow-sm\">
+                                ";
+            // line 168
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 168), "html", null, true);
+            yield "
+                            </span>
+                        </div>
+
+                        <div class=\"card-body d-flex flex-column bg-light bg-opacity-10\">
+                            <h6 class=\"card-title mb-2\" style=\"font-size: 0.95rem; line-height: 1.4;\">
+                                <a href=\"";
+            // line 174
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 174), "html", null, true);
+            yield "\" target=\"_blank\" class=\"text-decoration-none text-dark\">
+                                    ";
+            // line 175
+            yield (((Twig\Extension\CoreExtension::length($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175)) > 40)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((Twig\Extension\CoreExtension::slice($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175), 0, 40) . "..."), "html", null, true)) : ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175), "html", null, true)));
+            yield "
+                                </a>
+                            </h6>
+
+                            <div class=\"mt-auto pt-3 border-top\">
+                                <h5 class=\"text-primary fw-bold mb-2\">";
+            // line 180
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 180), 2, ".", " "), "html", null, true);
+            yield " лв.</h5>
+
+                                <a href=\"";
+            // line 182
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 182), "html", null, true);
+            yield "\" target=\"_blank\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\">
+                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ";
+            $context['_iterated'] = true;
+            ++$context['loop']['index0'];
+            ++$context['loop']['index'];
+            $context['loop']['first'] = false;
+            if (isset($context['loop']['revindex0'], $context['loop']['revindex'])) {
+                --$context['loop']['revindex0'];
+                --$context['loop']['revindex'];
+                $context['loop']['last'] = 0 === $context['loop']['revindex0'];
+            }
+        }
+        // line 189
+        if (!$context['_iterated']) {
+            // line 190
+            yield "                <div class=\"col-12 text-center py-5\">
+                    <div class=\"alert alert-secondary\">Няма намерени подобни продукти.</div>
+                </div>
+            ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_key'], $context['product'], $context['_parent'], $context['_iterated'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 194
+        yield "        </div>
+    </div>
+
+    ";
+        // line 198
+        yield "    <div id=\"compareBar\">
+        <div class=\"container\">
+            <div class=\"d-flex align-items-center justify-content-between\">
+                <div class=\"d-flex align-items-center gap-3\">
+                    <span class=\"fw-bold text-dark\">Избрани за сравнение:</span>
+                    <div id=\"compareThumbs\" class=\"d-flex gap-2\">
+                    </div>
+                </div>
+                <div>
+                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\">Изчисти</button>
+                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\">
+                        <i class=\"bi bi-columns-gap me-2\"></i> СРАВНИ СЕГА
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    ";
+        // line 217
+        yield "    <div class=\"modal fade\" id=\"compareModal\" tabindex=\"-1\" aria-hidden=\"true\">
+        <div class=\"modal-dialog modal-xl modal-dialog-centered\">
+            <div class=\"modal-content\">
+                <div class=\"modal-header bg-light\">
+                    <h5 class=\"modal-title fw-bold\"><i class=\"bi bi-bar-chart-steps\"></i> Сравнение на продуктите</h5>
+                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>
+                </div>
+                <div class=\"modal-body p-0\">
+                    <div class=\"table-responsive\">
+                        <table class=\"table table-bordered table-compare m-0\">
+                            <tbody id=\"compareTableBody\">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class=\"modal-footer bg-light\">
+                    <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Затвори</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    ";
+        // line 240
+        yield "    <script>
+        // 1. Chart.js Логика
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+            const ctx = document.getElementById('priceChart');
+            const currentPrice = ";
+        // line 244
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 244, $this->source); })()), "price", [], "any", false, false, false, 244), "html", null, true);
+        yield ";
+            const similarPrices = [
+                ";
+        // line 246
+        $context['_parent'] = $context;
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 246, $this->source); })()));
+        foreach ($context['_seq'] as $context["_key"] => $context["p"]) {
+            // line 247
+            yield "                ";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["p"], "price", [], "any", false, false, false, 247), "html", null, true);
+            yield ",
+                ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_key'], $context['p'], $context['_parent']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 249
+        yield "            ];
+            let avgPrice = currentPrice;
+            if (similarPrices.length > 0) {
+                const sum = similarPrices.reduce((a, b) => a + b, 0) + currentPrice;
+                avgPrice = sum / (similarPrices.length + 1);
+            }
 
-            myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['ТОЗИ ПРОДУКТ', 'СРАВНЕН С...'],
+                    labels: ['ТОЗИ ПРОДУКТ', 'СРЕДНА ЦЕНА'],
                     datasets: [{
                         label: 'Цена (лв.)',
-                        data: [mainPrice, 0],
-                        backgroundColor: ['#0d6efd', '#e9ecef'],
-                        borderRadius: 8,
-                        barPercentage: 0.6
+                        data: [currentPrice, avgPrice],
+                        backgroundColor: ['rgba(13, 110, 253, 0.7)', 'rgba(108, 117, 125, 0.5)'],
+                        borderColor: ['rgb(13, 110, 253)', 'rgb(108, 117, 125)'],
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true } }
                 }
             });
+        });
 
-            // Слушаме за кликове
-            document.querySelectorAll('.js-compare-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    updateComparison(
-                        this.getAttribute('data-title'),
-                        parseFloat(this.getAttribute('data-price')),
-                        this.getAttribute('data-source'),
-                        this.getAttribute('data-url')
-                    );
-                });
+        // 2. Логика за Сравнението
+        let selectedProducts = [];
+
+        // Вкарваме текущия продукт автоматично като първа опция (невидим в масива, но може да се добави)
+        const mainProduct = {
+            title: \"";
+        // line 282
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 282, $this->source); })()), "title", [], "any", false, false, false, 282), "js"), "html", null, true);
+        yield "\",
+            price: ";
+        // line 283
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 283, $this->source); })()), "price", [], "any", false, false, false, 283), "html", null, true);
+        yield ",
+            image: \"";
+        // line 284
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 284, $this->source); })()), "imageUrl", [], "any", false, false, false, 284), "html", null, true);
+        yield "\",
+            platform: \"";
+        // line 285
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 285, $this->source); })()), "badge", [], "any", false, false, false, 285)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 285, $this->source); })()), "badge", [], "any", false, false, false, 285), "html", null, true)) : ("Ревю"));
+        yield "\",
+            link: \"";
+        // line 286
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 286, $this->source); })()), "id", [], "any", false, false, false, 286)]), "html", null, true);
+        yield "\"
+        };
+
+        const checkboxes = document.querySelectorAll('.compare-checkbox');
+        const compareBar = document.getElementById('compareBar');
+        const compareThumbs = document.getElementById('compareThumbs');
+        const compareTableBody = document.getElementById('compareTableBody');
+        const compareModal = new bootstrap.Modal(document.getElementById('compareModal'));
+
+        checkboxes.forEach(box => {
+            box.addEventListener('change', function() {
+                const product = {
+                    title: this.dataset.title,
+                    price: parseFloat(this.dataset.price),
+                    image: this.dataset.image,
+                    platform: this.dataset.platform,
+                    link: this.dataset.link
+                };
+
+                if (this.checked) {
+                    if (selectedProducts.length >= 3) {
+                        alert(\"Можете да сравнявате максимум 3 допълнителни продукта!\");
+                        this.checked = false;
+                        return;
+                    }
+                    selectedProducts.push(product);
+                } else {
+                    selectedProducts = selectedProducts.filter(p => p.title !== product.title);
+                }
+                updateCompareUI();
             });
         });
 
-        function updateComparison(compareTitle, comparePrice, source, url) {
-            // 1. Обновяваме Графиката
-            myChart.data.datasets[0].data[1] = comparePrice;
+        function updateCompareUI() {
+            compareThumbs.innerHTML = '';
 
-            let color = '#6c757d';
-            if(source === 'eMAG') color = '#0d6efd';
-            if(source === 'Alleop') color = '#198754';
-            if(source === 'Fashion Days') color = '#212529';
-
-            myChart.data.datasets[0].backgroundColor[1] = color;
-            myChart.update();
-
-            // 2. Генерираме АНАЛИЗ (Текст)
-            const diff = mainPrice - comparePrice;
-            const diffAbs = Math.abs(diff).toFixed(2);
-
-            let analysisHtml = `
-            <div class=\"card border-0 bg-white p-3 shadow-sm animation-fade-in\">
-                <h6 class=\"border-bottom pb-2 fw-bold text-uppercase text-muted small\">Резултат от сравнението</h6>
-
-                <div class=\"row g-3 mt-1\">
-                    <div class=\"col-6\">
-                        <div class=\"p-2 bg-light rounded\">
-                            <small class=\"d-block text-muted\">По какво си ПРИЛИЧАТ:</small>
-                            <ul class=\"mb-0 ps-3 small\">
-                                <li>Основна категория</li>
-                                <li>Сходна функционалност</li>
-                                <li>Популярни модели</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class=\"col-6\">
-                        <div class=\"p-2 bg-light rounded\">
-                            <small class=\"d-block text-muted\">По какво се РАЗЛИЧАВАТ:</small>
-                            <ul class=\"mb-0 ps-3 small\">
-                                <li>Търговец: <strong>\${source}</strong></li>
-                                <li>Цена (разлика: \${diffAbs} лв.)</li>
-                                <li>Наличност и доставка</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class=\"mt-3 p-3 rounded \${diff > 0 ? 'bg-success-subtle text-success-emphasis' : 'bg-primary-subtle text-primary-emphasis'}\">
-                    <h5 class=\"fw-bold mb-1\"><i class=\"bi bi-lightbulb\"></i> ЗАЩО ДА ИЗБЕРЕШ \${diff > 0 ? 'СРАВНЕНИЯ' : 'ТОЗИ'} ПРОДУКТ?</h5>
-                    <p class=\"mb-0\">
-                        \${diff > 0
-                ? `Избирайки офертата от <strong>\${source}</strong>, ти <strong>СПЕСТЯВАШ \${diffAbs} лв.</strong> спрямо текущата цена!`
-                : `Въпреки че е по-скъп с \${diffAbs} лв., <strong>\${source}</strong> може да предлага по-бърза доставка или удължена гаранция.`
+            if (selectedProducts.length > 0) {
+                compareBar.classList.add('visible');
+                selectedProducts.forEach(p => {
+                    compareThumbs.innerHTML += `<img src=\"\${p.image}\" class=\"selected-thumb\" title=\"\${p.title}\">`;
+                });
+            } else {
+                compareBar.classList.remove('visible');
             }
-                    </p>
-                </div>
+        }
 
-                <div class=\"mt-3 text-end\">
-                    <a href=\"\${url}\" target=\"_blank\" class=\"btn btn-sm btn-\${diff > 0 ? 'success' : 'outline-primary'}\">
-                        Виж офертата на \${source} <i class=\"bi bi-arrow-right\"></i>
-                    </a>
-                </div>
-            </div>
-        `;
+        function clearComparison() {
+            selectedProducts = [];
+            checkboxes.forEach(box => box.checked = false);
+            updateCompareUI();
+        }
 
-            document.getElementById('comparison-analysis').innerHTML = analysisHtml;
+        function openCompareModal() {
+            // Винаги добавяме и основния продукт за сравнение в началото
+            const comparisonList = [mainProduct, ...selectedProducts];
 
-            // Скрол до сравнението
-            document.getElementById('chart-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Намираме най-ниската цена за highlight
+            const minPrice = Math.min(...comparisonList.map(p => p.price));
+
+            let html = '';
+
+            // Ред 1: Снимки
+            html += `<tr><th>Продукт</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class=\"p-3\"><img src=\"\${p.image}\" style=\"height: 100px; object-fit: contain;\"></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 2: Заглавия
+            html += `<tr><th>Име</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class=\"fw-bold\"><small>\${p.title}</small></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 3: Цена
+            html += `<tr><th>Цена</th>`;
+            comparisonList.forEach(p => {
+                const isCheapest = p.price === minPrice;
+                const colorClass = isCheapest ? 'text-success fw-bold' : 'text-dark';
+                const badge = isCheapest ? '<br><span class=\"badge bg-success mt-1\">НАЙ-ИЗГОДНО</span>' : '';
+                html += `<td class=\"\${colorClass} fs-5\">\${p.price.toFixed(2)} лв.\${badge}</td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 4: Платформа
+            html += `<tr><th>Магазин</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><span class=\"badge bg-secondary\">\${p.platform}</span></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 5: Плюсове (Автоматично генерирани)
+            html += `<tr><th>Плюсове</th>`;
+            comparisonList.forEach(p => {
+                let pros = [];
+                if (p.price === minPrice) pros.push('<i class=\"bi bi-check-circle-fill me-1\"></i> Най-ниска цена');
+                if (p.platform === 'eMAG') pros.push('<i class=\"bi bi-truck me-1\"></i> Бърза доставка (обикновено)');
+                if (p.platform === 'Fashion Days') pros.push('<i class=\"bi bi-arrow-return-left me-1\"></i> Лесно връщане');
+                if (p.platform === 'Alleop') pros.push('<i class=\"bi bi-shield-check me-1\"></i> Директен вносител');
+
+                if (pros.length === 0) pros.push('<i class=\"bi bi-star me-1\"></i> Добър избор');
+
+                html += `<td><div class=\"d-flex flex-column gap-1 align-items-center pro-item\">\${pros.join('<br>')}</div></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 6: Действие
+            html += `<tr><th>Действие</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><a href=\"\${p.link}\" target=\"_blank\" class=\"btn btn-primary btn-sm\">Купи</a></td>`;
+            });
+            html += `</tr>`;
+
+            compareTableBody.innerHTML = html;
+            compareModal.show();
         }
     </script>
-
-    <style>
-        .animation-fade-in { animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hover-zoom {
-            transition: transform 0.3s ease;
-        }
-        .hover-zoom:hover {
-            transform: scale(1.05);
-        }
-    </style>
 ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -513,14 +742,66 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  367 => 126,  363 => 125,  359 => 124,  350 => 117,  344 => 116,  333 => 108,  329 => 107,  325 => 106,  321 => 105,  317 => 104,  308 => 100,  302 => 97,  298 => 96,  289 => 92,  285 => 91,  279 => 87,  276 => 86,  273 => 85,  269 => 84,  266 => 83,  256 => 82,  246 => 81,  236 => 80,  233 => 79,  196 => 44,  186 => 37,  182 => 36,  178 => 34,  169 => 30,  165 => 29,  162 => 28,  160 => 27,  155 => 25,  151 => 24,  140 => 16,  136 => 15,  130 => 11,  117 => 10,  102 => 6,  89 => 5,  65 => 3,  42 => 1,);
+        return array (  595 => 286,  591 => 285,  587 => 284,  583 => 283,  579 => 282,  544 => 249,  535 => 247,  531 => 246,  526 => 244,  520 => 240,  496 => 217,  476 => 198,  471 => 194,  462 => 190,  460 => 189,  440 => 182,  435 => 180,  427 => 175,  423 => 174,  414 => 168,  410 => 167,  403 => 165,  399 => 164,  392 => 160,  388 => 159,  384 => 158,  380 => 157,  376 => 156,  372 => 155,  367 => 152,  362 => 148,  343 => 147,  340 => 145,  338 => 144,  337 => 142,  336 => 141,  335 => 140,  334 => 139,  333 => 138,  331 => 137,  319 => 126,  308 => 116,  295 => 104,  289 => 100,  282 => 96,  274 => 91,  271 => 90,  265 => 89,  258 => 88,  254 => 87,  247 => 83,  244 => 82,  238 => 80,  236 => 79,  231 => 76,  225 => 72,  217 => 70,  215 => 69,  209 => 65,  206 => 63,  193 => 62,  178 => 58,  165 => 57,  103 => 6,  90 => 5,  66 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
     {
         return new Source("{% extends 'base.html.twig' %}
 
-{% block title %}{{ review.title }} - Детайли{% endblock %}
+{% block title %}{{ review.title }} - Ревю и Сравнение{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* HEADER STYLES */
+        .product-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .main-product-image {
+            max-height: 400px; object-fit: contain; border-radius: 12px;
+            background: white; padding: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .price-badge { font-size: 2rem; font-weight: 800; color: #0d6efd; }
+
+        /* CHART & CARDS */
+        .chart-container {
+            background: white; border-radius: 15px; padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 3rem;
+        }
+        .similar-card {
+            transition: transform 0.2s, box-shadow 0.2s; height: 100%; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
+        }
+        .similar-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* CHECKBOX STYLES */
+        .compare-checkbox-wrapper {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+        }
+        .form-check-input.compare-checkbox {
+            width: 1.5em; height: 1.5em; cursor: pointer; border: 2px solid #0d6efd;
+        }
+
+        /* STICKY COMPARE BAR */
+        #compareBar {
+            position: fixed; bottom: -100px; left: 0; width: 100%;
+            background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+            padding: 15px 0; z-index: 1050; transition: bottom 0.4s ease;
+        }
+        #compareBar.visible { bottom: 0; }
+        .selected-thumb { width: 40px; height: 40px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; }
+
+        /* COMPARISON TABLE */
+        .table-compare th { width: 30%; background: #f8f9fa; vertical-align: middle; }
+        .table-compare td { vertical-align: middle; text-align: center; }
+        .pro-item { color: green; font-size: 0.9rem; }
+        .con-item { color: #dc3545; font-size: 0.9rem; }
+    </style>
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -528,238 +809,347 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
 {% endblock %}
 
 {% block body %}
-    <div class=\"container py-5\">
 
-        <nav aria-label=\"breadcrumb\" class=\"mb-4\">
-            <ol class=\"breadcrumb\">
-                <li class=\"breadcrumb-item\"><a href=\"{{ path('app_home') }}\">Начало</a></li>
-                <li class=\"breadcrumb-item active\">{{ review.title|slice(0, 30) }}...</li>
-            </ol>
-        </nav>
-
-        <div class=\"row g-4\">
-            <div class=\"col-lg-5\">
-                <div class=\"card border-0 shadow-sm h-100\">
-                    <div class=\"card-body p-4\">
-                        <span class=\"badge bg-primary mb-2\">{{ review.badge ?? 'ОФЕРТА' }}</span>
-                        <h1 class=\"h4 fw-bold mb-3\">{{ review.title }}</h1>
-
-                        {% if review.imageUrl %}
-                            <div class=\"text-center my-4 p-3 bg-white border rounded\">
-                                <a href=\"{{ path('app_buy_redirect', {id: review.id}) }}\" target=\"_blank\" rel=\"nofollow noreferrer\" title=\"Виж в магазина\">
-                                    <img src=\"{{ review.imageUrl }}\" class=\"img-fluid hover-zoom\" style=\"max-height: 300px;\" alt=\"{{ review.title }}\">
-                                </a>
-                            </div>
-                        {% endif %}
-
-                        <div class=\"d-flex justify-content-between align-items-center mb-4\">
-                            <span class=\"h2 text-primary fw-bold mb-0\">{{ review.price|number_format(2, '.', ' ') }} лв.</span>
-                            <a href=\"{{ path('app_buy_redirect', {id: review.id}) }}\" target=\"_blank\" class=\"btn btn-primary px-4 py-2\">
-                                <i class=\"bi bi-cart-check\"></i> ВИЖ В МАГАЗИНА
-                            </a>
-                        </div>
-
-                        <hr>
-                        <div class=\"text-muted small\">
-                            {{ review.content|striptags|slice(0, 300) }}...
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class=\"col-lg-7\">
-                <div class=\"card border-0 shadow-sm\" style=\"min-height: 600px; background: #f8f9fa;\">
-                    <div class=\"card-header bg-white border-0 py-3\">
-                        <h5 class=\"fw-bold m-0\"><i class=\"bi bi-speedometer2 text-primary\"></i> Център за сравнение</h5>
-                    </div>
-                    <div class=\"card-body p-4 d-flex flex-column\" id=\"chart-container\">
-
-                        <div style=\"height: 250px; width: 100%;\">
-                            <canvas id=\"priceComparisonChart\"></canvas>
-                        </div>
-
-                        <div id=\"comparison-analysis\" class=\"mt-4 flex-grow-1\">
-                            <div class=\"alert alert-secondary text-center py-5\">
-                                <i class=\"bi bi-arrow-down-up fs-1 mb-3\"></i>
-                                <h5>Избери продукт за сравнение</h5>
-                                <p class=\"mb-0\">Кликни бутона <strong>\"Сравни с този\"</strong> на продуктите по-долу, за да видиш прилики, разлики и анализ на цената.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class=\"mt-5 pt-4 border-top\">
-            <h3 class=\"fw-bold mb-4\">Подобни оферти</h3>
-            <div class=\"row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4\">
-
-                {# Събираме всички продукти #}
-                {% set allSimilar = [] %}
-                {% for p in similarProducts.emag %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'eMAG', 'color': 'primary'}]) %}{% endfor %}
-                {% for p in similarProducts.fashiondays %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Fashion Days', 'color': 'dark'}]) %}{% endfor %}
-                {% for p in similarProducts.alleop %}{% set allSimilar = allSimilar|merge([{'p': p, 'source': 'Alleop', 'color': 'success'}]) %}{% endfor %}
-
-                {% for item in allSimilar %}
-                    {% set product = item.p %}
-                    {% if product.price > 0 %}
-                        <div class=\"col\">
-                            <div class=\"card h-100 shadow-sm border-0\">
-                                <div class=\"card-body p-3 d-flex flex-column\">
-                                    <div class=\"text-center mb-3\" style=\"height: 120px;\">
-                                        <a href=\"{{ path('app_buy_redirect', {id: product.id}) }}\" target=\"_blank\" rel=\"nofollow noreferrer\" class=\"d-block h-100\">
-                                            <img src=\"{{ product.imageUrl }}\" style=\"height: 100%; object-fit: contain;\" class=\"hover-zoom\" alt=\"{{ product.title }}\">
-                                        </a>
-                                    </div>
-                                    <h6 class=\"card-title text-truncate mb-2\">
-                                        <a href=\"{{ path('app_buy_redirect', {id: product.id}) }}\" target=\"_blank\" class=\"text-decoration-none text-dark\">
-                                            {{ product.title }}
-                                        </a>
-                                    </h6>
-                                    <div class=\"fw-bold text-{{ item.color }} mb-3\">{{ product.price }} лв.</div>
-
-                                    <div class=\"mt-auto\">
-                                        <button type=\"button\"
-                                                class=\"btn btn-outline-{{ item.color }} w-100 js-compare-btn\"
-                                                data-title=\"{{ product.title }}\"
-                                                data-price=\"{{ product.price }}\"
-                                                data-source=\"{{ item.source }}\"
-                                                data-url=\"{{ path('app_buy_redirect', {id: product.id}) }}\">
-                                            <i class=\"bi bi-bar-chart\"></i> Сравни с този
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+    {# --- 1. ГЛАВНА СЕКЦИЯ С ПРОДУКТА --- #}
+    <div class=\"product-header\">
+        <div class=\"container\">
+            <div class=\"row align-items-center\">
+                <div class=\"col-lg-5 text-center mb-4 mb-lg-0\">
+                    {% if review.imageUrl %}
+                        <img src=\"{{ review.imageUrl }}\" alt=\"{{ review.title }}\" class=\"img-fluid main-product-image\">
+                    {% else %}
+                        <div class=\"main-product-image d-flex align-items-center justify-content-center\" style=\"height: 300px;\">
+                            <i class=\"bi bi-image text-muted\" style=\"font-size: 4rem;\"></i>
                         </div>
                     {% endif %}
-                {% endfor %}
+                </div>
+                <div class=\"col-lg-7\">
+                    <span class=\"badge bg-primary mb-2\">РЕВЮ</span>
+                    {% if review.badge %}
+                        <span class=\"badge bg-danger mb-2\">{{ review.badge }}</span>
+                    {% endif %}
+
+                    <h1 class=\"display-5 fw-bold mb-3\">{{ review.title }}</h1>
+
+                    <div class=\"d-flex align-items-center mb-4\">
+                        <div class=\"text-warning me-2\">
+                            {% for i in 1..5 %}
+                                {% if i <= review.rating %} <i class=\"bi bi-star-fill\"></i> {% else %} <i class=\"bi bi-star\"></i> {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class=\"text-muted\">({{ review.rating }}/5 Оценка)</span>
+                    </div>
+
+                    <div class=\"mb-4\">
+                        <span class=\"text-muted d-block mb-1\">Актуална цена:</span>
+                        <div class=\"price-badge\">{{ review.price|number_format(2, '.', ' ') }} лв.</div>
+                    </div>
+
+                    <div class=\"d-grid gap-2 d-md-block\">
+                        <a href=\"{{ path('app_buy_redirect', {id: review.id}) }}\" target=\"_blank\" class=\"btn btn-primary btn-lg px-5\">
+                            <i class=\"bi bi-cart-check me-2\"></i> ВИЖ ОФЕРТАТА
+                        </a>
+                        {# Бутонът Сравни цени скролва надолу #}
+                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\">
+                            <i class=\"bi bi-arrow-down-circle me-2\"></i> Виж алтернативи
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <div class=\"container mb-5\">
+
+        {# --- 2. ГРАФИКА ЗА ЦЕНИТЕ (Chart.js) --- #}
+        <div class=\"row mb-5\" id=\"comparison\">
+            <div class=\"col-lg-8 mx-auto\">
+                <div class=\"chart-container\">
+                    <h3 class=\"text-center mb-4\">📊 Анализ на цената</h3>
+                    <canvas id=\"priceChart\"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {# --- 3. ПОДОБНИ ОФЕРТИ (С ЧЕКБОКСОВЕ) --- #}
+        <div class=\"row\" id=\"similar-offers\">
+            <div class=\"col-12 mb-4 d-flex justify-content-between align-items-center border-bottom pb-3\">
+                <h3 class=\"fw-bold m-0\">
+                    <i class=\"bi bi-tags text-primary me-2\"></i> Най-добри алтернативи
+                </h3>
+                <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+            </div>
+        </div>
+
+        <div class=\"row g-3\">
+            {# Добавяме и текущия продукт в списъка за сравнение, за да можеш да го сравниш с другите #}
+            {% set allProducts = [{
+                'title': review.title,
+                'price': review.price,
+                'image': review.imageUrl,
+                'link': path('app_buy_redirect', {id: review.id}),
+                'platform': review.badge ? review.badge : 'Main',
+                'badge_class': 'bg-primary'
+            }]|merge(similarProducts) %}
+
+            {# Показваме само similarProducts в Grid-а, но ползваме logic за сравнение #}
+            {% for product in similarProducts %}
+                <div class=\"col-6 col-md-4 col-lg-3\">
+                    <div class=\"card h-100 similar-card\">
+
+                        {# ЧЕКБОКС ЗА СРАВНЕНИЕ #}
+                        <div class=\"compare-checkbox-wrapper\">
+                            <input class=\"form-check-input compare-checkbox shadow-sm\"
+                                   type=\"checkbox\"
+                                   data-title=\"{{ product.title }}\"
+                                   data-price=\"{{ product.price }}\"
+                                   data-image=\"{{ product.image }}\"
+                                   data-platform=\"{{ product.platform }}\"
+                                   data-link=\"{{ product.link }}\"
+                                   id=\"compare_{{ loop.index }}\">
+                        </div>
+
+                        <div class=\"position-relative text-center p-3\" style=\"height: 200px; overflow: hidden; background: #fff;\">
+                            <a href=\"{{ product.link }}\" target=\"_blank\">
+                                <img src=\"{{ product.image }}\" alt=\"{{ product.title }}\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\">
+                            </a>
+                            <span class=\"position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm\">
+                                {{ product.platform }}
+                            </span>
+                        </div>
+
+                        <div class=\"card-body d-flex flex-column bg-light bg-opacity-10\">
+                            <h6 class=\"card-title mb-2\" style=\"font-size: 0.95rem; line-height: 1.4;\">
+                                <a href=\"{{ product.link }}\" target=\"_blank\" class=\"text-decoration-none text-dark\">
+                                    {{ product.title|length > 40 ? product.title|slice(0, 40) ~ '...' : product.title }}
+                                </a>
+                            </h6>
+
+                            <div class=\"mt-auto pt-3 border-top\">
+                                <h5 class=\"text-primary fw-bold mb-2\">{{ product.price|number_format(2, '.', ' ') }} лв.</h5>
+
+                                <a href=\"{{ product.link }}\" target=\"_blank\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\">
+                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class=\"col-12 text-center py-5\">
+                    <div class=\"alert alert-secondary\">Няма намерени подобни продукти.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# --- 4. ПЛАВАЩА ЛЕНТА ЗА СРАВНЕНИЕ (Sticky Bottom Bar) --- #}
+    <div id=\"compareBar\">
+        <div class=\"container\">
+            <div class=\"d-flex align-items-center justify-content-between\">
+                <div class=\"d-flex align-items-center gap-3\">
+                    <span class=\"fw-bold text-dark\">Избрани за сравнение:</span>
+                    <div id=\"compareThumbs\" class=\"d-flex gap-2\">
+                    </div>
+                </div>
+                <div>
+                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\">Изчисти</button>
+                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\">
+                        <i class=\"bi bi-columns-gap me-2\"></i> СРАВНИ СЕГА
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- 5. МОДАЛЕН ПРОЗОРЕЦ ЗА СРАВНЕНИЕ --- #}
+    <div class=\"modal fade\" id=\"compareModal\" tabindex=\"-1\" aria-hidden=\"true\">
+        <div class=\"modal-dialog modal-xl modal-dialog-centered\">
+            <div class=\"modal-content\">
+                <div class=\"modal-header bg-light\">
+                    <h5 class=\"modal-title fw-bold\"><i class=\"bi bi-bar-chart-steps\"></i> Сравнение на продуктите</h5>
+                    <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>
+                </div>
+                <div class=\"modal-body p-0\">
+                    <div class=\"table-responsive\">
+                        <table class=\"table table-bordered table-compare m-0\">
+                            <tbody id=\"compareTableBody\">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class=\"modal-footer bg-light\">
+                    <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Затвори</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- СКРИПТОВЕ --- #}
     <script>
-        let myChart = null;
-        // Безопасно кодиране на данните за JS
-        const mainTitle = {{ review.title|json_encode|raw }};
-        const mainPrice = {{ review.price }};
-        const mainSource = \"{{ review.badge ?? 'ТОЗИ САЙТ' }}\";
-
+        // 1. Chart.js Логика
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+            const ctx = document.getElementById('priceChart');
+            const currentPrice = {{ review.price }};
+            const similarPrices = [
+                {% for p in similarProducts %}
+                {{ p.price }},
+                {% endfor %}
+            ];
+            let avgPrice = currentPrice;
+            if (similarPrices.length > 0) {
+                const sum = similarPrices.reduce((a, b) => a + b, 0) + currentPrice;
+                avgPrice = sum / (similarPrices.length + 1);
+            }
 
-            myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['ТОЗИ ПРОДУКТ', 'СРАВНЕН С...'],
+                    labels: ['ТОЗИ ПРОДУКТ', 'СРЕДНА ЦЕНА'],
                     datasets: [{
                         label: 'Цена (лв.)',
-                        data: [mainPrice, 0],
-                        backgroundColor: ['#0d6efd', '#e9ecef'],
-                        borderRadius: 8,
-                        barPercentage: 0.6
+                        data: [currentPrice, avgPrice],
+                        backgroundColor: ['rgba(13, 110, 253, 0.7)', 'rgba(108, 117, 125, 0.5)'],
+                        borderColor: ['rgb(13, 110, 253)', 'rgb(108, 117, 125)'],
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true } }
                 }
             });
+        });
 
-            // Слушаме за кликове
-            document.querySelectorAll('.js-compare-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    updateComparison(
-                        this.getAttribute('data-title'),
-                        parseFloat(this.getAttribute('data-price')),
-                        this.getAttribute('data-source'),
-                        this.getAttribute('data-url')
-                    );
-                });
+        // 2. Логика за Сравнението
+        let selectedProducts = [];
+
+        // Вкарваме текущия продукт автоматично като първа опция (невидим в масива, но може да се добави)
+        const mainProduct = {
+            title: \"{{ review.title|e('js') }}\",
+            price: {{ review.price }},
+            image: \"{{ review.imageUrl }}\",
+            platform: \"{{ review.badge ? review.badge : 'Ревю' }}\",
+            link: \"{{ path('app_buy_redirect', {id: review.id}) }}\"
+        };
+
+        const checkboxes = document.querySelectorAll('.compare-checkbox');
+        const compareBar = document.getElementById('compareBar');
+        const compareThumbs = document.getElementById('compareThumbs');
+        const compareTableBody = document.getElementById('compareTableBody');
+        const compareModal = new bootstrap.Modal(document.getElementById('compareModal'));
+
+        checkboxes.forEach(box => {
+            box.addEventListener('change', function() {
+                const product = {
+                    title: this.dataset.title,
+                    price: parseFloat(this.dataset.price),
+                    image: this.dataset.image,
+                    platform: this.dataset.platform,
+                    link: this.dataset.link
+                };
+
+                if (this.checked) {
+                    if (selectedProducts.length >= 3) {
+                        alert(\"Можете да сравнявате максимум 3 допълнителни продукта!\");
+                        this.checked = false;
+                        return;
+                    }
+                    selectedProducts.push(product);
+                } else {
+                    selectedProducts = selectedProducts.filter(p => p.title !== product.title);
+                }
+                updateCompareUI();
             });
         });
 
-        function updateComparison(compareTitle, comparePrice, source, url) {
-            // 1. Обновяваме Графиката
-            myChart.data.datasets[0].data[1] = comparePrice;
+        function updateCompareUI() {
+            compareThumbs.innerHTML = '';
 
-            let color = '#6c757d';
-            if(source === 'eMAG') color = '#0d6efd';
-            if(source === 'Alleop') color = '#198754';
-            if(source === 'Fashion Days') color = '#212529';
-
-            myChart.data.datasets[0].backgroundColor[1] = color;
-            myChart.update();
-
-            // 2. Генерираме АНАЛИЗ (Текст)
-            const diff = mainPrice - comparePrice;
-            const diffAbs = Math.abs(diff).toFixed(2);
-
-            let analysisHtml = `
-            <div class=\"card border-0 bg-white p-3 shadow-sm animation-fade-in\">
-                <h6 class=\"border-bottom pb-2 fw-bold text-uppercase text-muted small\">Резултат от сравнението</h6>
-
-                <div class=\"row g-3 mt-1\">
-                    <div class=\"col-6\">
-                        <div class=\"p-2 bg-light rounded\">
-                            <small class=\"d-block text-muted\">По какво си ПРИЛИЧАТ:</small>
-                            <ul class=\"mb-0 ps-3 small\">
-                                <li>Основна категория</li>
-                                <li>Сходна функционалност</li>
-                                <li>Популярни модели</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class=\"col-6\">
-                        <div class=\"p-2 bg-light rounded\">
-                            <small class=\"d-block text-muted\">По какво се РАЗЛИЧАВАТ:</small>
-                            <ul class=\"mb-0 ps-3 small\">
-                                <li>Търговец: <strong>\${source}</strong></li>
-                                <li>Цена (разлика: \${diffAbs} лв.)</li>
-                                <li>Наличност и доставка</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class=\"mt-3 p-3 rounded \${diff > 0 ? 'bg-success-subtle text-success-emphasis' : 'bg-primary-subtle text-primary-emphasis'}\">
-                    <h5 class=\"fw-bold mb-1\"><i class=\"bi bi-lightbulb\"></i> ЗАЩО ДА ИЗБЕРЕШ \${diff > 0 ? 'СРАВНЕНИЯ' : 'ТОЗИ'} ПРОДУКТ?</h5>
-                    <p class=\"mb-0\">
-                        \${diff > 0
-                ? `Избирайки офертата от <strong>\${source}</strong>, ти <strong>СПЕСТЯВАШ \${diffAbs} лв.</strong> спрямо текущата цена!`
-                : `Въпреки че е по-скъп с \${diffAbs} лв., <strong>\${source}</strong> може да предлага по-бърза доставка или удължена гаранция.`
+            if (selectedProducts.length > 0) {
+                compareBar.classList.add('visible');
+                selectedProducts.forEach(p => {
+                    compareThumbs.innerHTML += `<img src=\"\${p.image}\" class=\"selected-thumb\" title=\"\${p.title}\">`;
+                });
+            } else {
+                compareBar.classList.remove('visible');
             }
-                    </p>
-                </div>
+        }
 
-                <div class=\"mt-3 text-end\">
-                    <a href=\"\${url}\" target=\"_blank\" class=\"btn btn-sm btn-\${diff > 0 ? 'success' : 'outline-primary'}\">
-                        Виж офертата на \${source} <i class=\"bi bi-arrow-right\"></i>
-                    </a>
-                </div>
-            </div>
-        `;
+        function clearComparison() {
+            selectedProducts = [];
+            checkboxes.forEach(box => box.checked = false);
+            updateCompareUI();
+        }
 
-            document.getElementById('comparison-analysis').innerHTML = analysisHtml;
+        function openCompareModal() {
+            // Винаги добавяме и основния продукт за сравнение в началото
+            const comparisonList = [mainProduct, ...selectedProducts];
 
-            // Скрол до сравнението
-            document.getElementById('chart-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Намираме най-ниската цена за highlight
+            const minPrice = Math.min(...comparisonList.map(p => p.price));
+
+            let html = '';
+
+            // Ред 1: Снимки
+            html += `<tr><th>Продукт</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class=\"p-3\"><img src=\"\${p.image}\" style=\"height: 100px; object-fit: contain;\"></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 2: Заглавия
+            html += `<tr><th>Име</th>`;
+            comparisonList.forEach(p => {
+                html += `<td class=\"fw-bold\"><small>\${p.title}</small></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 3: Цена
+            html += `<tr><th>Цена</th>`;
+            comparisonList.forEach(p => {
+                const isCheapest = p.price === minPrice;
+                const colorClass = isCheapest ? 'text-success fw-bold' : 'text-dark';
+                const badge = isCheapest ? '<br><span class=\"badge bg-success mt-1\">НАЙ-ИЗГОДНО</span>' : '';
+                html += `<td class=\"\${colorClass} fs-5\">\${p.price.toFixed(2)} лв.\${badge}</td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 4: Платформа
+            html += `<tr><th>Магазин</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><span class=\"badge bg-secondary\">\${p.platform}</span></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 5: Плюсове (Автоматично генерирани)
+            html += `<tr><th>Плюсове</th>`;
+            comparisonList.forEach(p => {
+                let pros = [];
+                if (p.price === minPrice) pros.push('<i class=\"bi bi-check-circle-fill me-1\"></i> Най-ниска цена');
+                if (p.platform === 'eMAG') pros.push('<i class=\"bi bi-truck me-1\"></i> Бърза доставка (обикновено)');
+                if (p.platform === 'Fashion Days') pros.push('<i class=\"bi bi-arrow-return-left me-1\"></i> Лесно връщане');
+                if (p.platform === 'Alleop') pros.push('<i class=\"bi bi-shield-check me-1\"></i> Директен вносител');
+
+                if (pros.length === 0) pros.push('<i class=\"bi bi-star me-1\"></i> Добър избор');
+
+                html += `<td><div class=\"d-flex flex-column gap-1 align-items-center pro-item\">\${pros.join('<br>')}</div></td>`;
+            });
+            html += `</tr>`;
+
+            // Ред 6: Действие
+            html += `<tr><th>Действие</th>`;
+            comparisonList.forEach(p => {
+                html += `<td><a href=\"\${p.link}\" target=\"_blank\" class=\"btn btn-primary btn-sm\">Купи</a></td>`;
+            });
+            html += `</tr>`;
+
+            compareTableBody.innerHTML = html;
+            compareModal.show();
         }
     </script>
-
-    <style>
-        .animation-fade-in { animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hover-zoom {
-            transition: transform 0.3s ease;
-        }
-        .hover-zoom:hover {
-            transform: scale(1.05);
-        }
-    </style>
 {% endblock %}
 ", "review/show.html.twig", "/var/www/html/templates/review/show.html.twig");
     }

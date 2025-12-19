@@ -41,11 +41,8 @@ return [
                         .')'
                     .')'
                 .')'
-                .'|/review/([^/]++)(?'
-                    .'|(*:221)'
-                    .'|/compare(*:237)'
-                .')'
-                .'|/buy/([^/]++)(*:259)'
+                .'|/review/([^/]++)(*:218)'
+                .'|/buy/([^/]++)(*:239)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -57,9 +54,8 @@ return [
         168 => [[['_route' => '_profiler_exception', '_controller' => 'web_profiler.controller.exception_panel::body'], ['token'], null, null, false, false, null]],
         181 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
         191 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
-        221 => [[['_route' => 'app_review_show', '_controller' => 'App\\Controller\\ReviewController::show'], ['slug'], null, null, false, true, null]],
-        237 => [[['_route' => 'app_review_compare', '_controller' => 'App\\Controller\\ReviewController::compareProduct'], ['slug'], null, null, false, false, null]],
-        259 => [
+        218 => [[['_route' => 'app_review_show', '_controller' => 'App\\Controller\\ReviewController::show'], ['slug'], null, null, false, true, null]],
+        239 => [
             [['_route' => 'app_buy_redirect', '_controller' => 'App\\Controller\\ReviewController::buyRedirect'], ['id'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],
