@@ -43,3 +43,10 @@ e37d8f,172.18.0.1,GET,http://77.85.205.5/SDK/webLanguage,1766152995,,302,request
 9dffc4,172.18.0.1,OPTIONS,http://77.85.205.5/,1766153597,,200,request
 727b53,172.18.0.1,OPTIONS,http://77.85.205.5/,1766154749,,200,request
 886992,172.18.0.1,GET,http://77.85.205.5/SDK/webLanguage,1766154758,,302,request
+3f4d3a,172.18.0.1,GET,http://77.85.205.5/,1766161595,,200,request
+c157a1,172.18.0.1,HEAD,http://localhost/,1766161652,,200,request
+13b6d9,172.18.0.1,OPTIONS,http://77.85.205.5/,1766161686,,200,request
+e842ad,172.18.0.1,GET,http://77.85.205.5/SDK/webLanguage,1766161696,,302,request
+aac7fe,172.18.0.1,GET,http://localhost/,1766161711,,200,request
+c20e3f,172.18.0.1,GET,http://localhost/?source=emag,1766161715,,200,request
+5b882e,172.18.0.1,GET,http://localhost/?source=fashion_days,1766161718,,200,request
