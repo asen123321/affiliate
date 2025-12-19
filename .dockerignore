@@ -1,23 +1,26 @@
 # Git
 .git
 .gitignore
+.gitattributes
 
-# Docker
-.docker
+# Docker files
 Dockerfile
 .dockerignore
 docker-compose*.yml
 compose.yaml
 compose.override.yaml
 
-# Development
+# Development environment files
 .env.local
 .env.*.local
+.env.test
+
+# Cache and logs (will be regenerated)
 var/cache/*
-var/log/*
-var/sessions/*
 !var/cache/.gitkeep
+var/log/*
 !var/log/.gitkeep
+var/sessions/*
 !var/sessions/.gitkeep
 
 # IDE
@@ -27,31 +30,43 @@ var/sessions/*
 *.swo
 *~
 
-# Node
+# Node modules
 node_modules/
 
 # Tests
 tests/
 phpunit.xml
+phpunit.xml.dist
 .phpunit.cache
+phpunit.dist.xml
 
 # Documentation
 *.md
 !README.md
 
-# Build artifacts
-public/assets/
-
 # Vendor (will be installed during build)
 vendor/
 
-# Zone Identifier files
+# Build artifacts
+public/assets/
+
+# Zone Identifier files (Windows WSL)
 *.Zone.Identifier
 
-# Debug files
+# Debug and test files
 debug*.php
 debug*.html
 test*.php
 
-# Drivers
+# Drivers directory
 drivers/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Deployment files
+DEPLOY_NOW.md
+KOYEB_DEPLOYMENT.md
+error.md
+fashion.md
