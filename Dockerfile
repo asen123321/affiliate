@@ -1,9 +1,10 @@
 FROM php:8.3-apache
 
-# Install system dependencies
+# Install system dependencies and PHP extensions in one layer
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    curl \
     libicu-dev \
     libpq-dev \
     libzip-dev \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
         opcache \
     && rm -rf /var/lib/apt/lists/*
 
-# Configure opcache for production
+# Configure PHP for production
 RUN { \
     echo 'opcache.memory_consumption=128'; \
     echo 'opcache.interned_strings_buffer=8'; \
@@ -23,70 +24,82 @@ RUN { \
     echo 'opcache.revalidate_freq=2'; \
     echo 'opcache.fast_shutdown=1'; \
     echo 'opcache.enable_cli=1'; \
-    } > /usr/local/etc/php/conf.d/opcache-recommended.ini
+    echo 'memory_limit=256M'; \
+    echo 'max_execution_time=60'; \
+    echo 'upload_max_filesize=20M'; \
+    echo 'post_max_size=20M'; \
+    } > /usr/local/etc/php/conf.d/php-production.ini
 
-# Install Composer
+# Install Composer 2
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Enable Apache modules
+# Enable required Apache modules
 RUN a2enmod rewrite headers
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (for better layer caching)
+# Copy dependency files for layer caching
 COPY composer.json composer.lock symfony.lock ./
 
-# Set environment variables for build
+# Set build-time environment variables
 ENV APP_ENV=prod \
     APP_DEBUG=0 \
     COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies without running scripts
+# Install composer dependencies (production only, no scripts)
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-scripts \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    && composer clear-cache
 
-# Copy application source code
+# Copy application code
 COPY . .
 
-# Create necessary directories and set permissions
-RUN mkdir -p var/cache var/log var/share public/assets \
+# Create required directories with proper permissions
+RUN mkdir -p \
+    var/cache/prod \
+    var/log \
+    var/share \
+    public/assets \
     && chown -R www-data:www-data var public/assets \
     && chmod -R 775 var
 
-# Generate optimized autoloader
+# Generate optimized autoloader for production
 RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
 
-# Clear and warm up cache (with APP_SECRET set to avoid errors)
-RUN APP_SECRET=dummy_secret_for_build php bin/console cache:clear --env=prod --no-debug \
-    && APP_SECRET=dummy_secret_for_build php bin/console cache:warmup --env=prod --no-debug
+# Warm up Symfony cache for production with dummy secret
+RUN APP_SECRET=dummy_build_secret_32_chars_long php bin/console cache:clear --env=prod --no-debug \
+    && APP_SECRET=dummy_build_secret_32_chars_long php bin/console cache:warmup --env=prod --no-debug \
+    && chown -R www-data:www-data var/cache
 
-# Install assets
-RUN php bin/console assets:install public --env=prod --no-debug || true \
-    && php bin/console importmap:install --env=prod --no-debug || true
+# Install assets (optional, won't fail if none exist)
+RUN php bin/console assets:install public --env=prod --no-debug 2>/dev/null || true \
+    && php bin/console importmap:install --env=prod --no-debug 2>/dev/null || true
 
-# Configure Apache to serve from /var/www/html/public
+# Configure Apache document root
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+# Update Apache configuration for Symfony public directory
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Change Apache to listen on port 8000 (Koyeb requirement)
+# Configure Apache to listen on port 8000 (Koyeb default)
 RUN sed -i 's/Listen 80/Listen 8000/g' /etc/apache2/ports.conf \
     && sed -i 's/:80/:8000/g' /etc/apache2/sites-available/*.conf
+
+# Set final permissions
+RUN chown -R www-data:www-data /var/www/html
 
 # Expose port 8000
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+# Add healthcheck (requires curl)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
-
-# Set proper ownership one final time
-RUN chown -R www-data:www-data /var/www/html
 
 # Start Apache in foreground
 CMD ["apache2-foreground"]
