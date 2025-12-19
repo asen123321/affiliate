@@ -1,0 +1,57 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+compose.yaml
+compose.override.yaml
+
+# Development
+.env.local
+.env.*.local
+var/cache/*
+var/log/*
+var/sessions/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+!var/sessions/.gitkeep
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+
+# Tests
+tests/
+phpunit.xml
+.phpunit.cache
+
+# Documentation
+*.md
+!README.md
+
+# Build artifacts
+public/assets/
+
+# Vendor (will be installed during build)
+vendor/
+
+# Zone Identifier files
+*.Zone.Identifier
+
+# Debug files
+debug*.php
+debug*.html
+test*.php
+
+# Drivers
+drivers/

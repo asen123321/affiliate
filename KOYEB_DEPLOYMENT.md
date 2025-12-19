@@ -6,18 +6,21 @@
 2. **Koyeb Account**: Create account at https://app.koyeb.com/
 3. **Neon PostgreSQL Database**: Already configured (ep-shiny-forest-agvwg18b)
 
+## Deployment Method: Docker
+
+**Important**: This app uses **Docker deployment**, not Heroku buildpacks, because Koyeb's buildpack auto-detection was incorrectly identifying the app as Python instead of PHP.
+
 ## Files Created for Deployment
 
-1. **Procfile** - Tells Koyeb how to start the web server
-2. **runtime.txt** - Specifies PHP 8.3
-3. **.buildpacks** - Forces PHP buildpack (prevents Python detection)
-4. **public/.htaccess** - Apache rewrite rules for Symfony
-5. **.koyeb.yml** - Environment variables reference (not used by Koyeb, just documentation)
+1. **Dockerfile** - Complete production-ready Docker image with PHP 8.3 + Apache
+2. **.dockerignore** - Excludes unnecessary files from Docker build
+3. **public/.htaccess** - Apache rewrite rules for Symfony routing
+4. **.koyeb.yml** - Environment variables reference (documentation only)
 
 ## Key Changes Made
 
 ### 1. Moved Symfony Panther to dev dependencies
-**Why**: Panther requires Chrome/ChromeDriver which isn't available in Koyeb's buildpack environment.
+**Why**: Panther requires Chrome/ChromeDriver which isn't available in production Docker containers.
 **Impact**: Scraping commands (app:scrape-alleop, app:scrape-html, app:scrape-fashion-days) won't work in production.
 **Solution**: Run scrapers locally or on a separate worker service.
 
@@ -28,21 +31,18 @@
 }
 ```
 
-### 2. Created Procfile
-```
-web: heroku-php-apache2 public/
-```
+### 2. Created Production Dockerfile
+The Dockerfile:
+- Uses `php:8.3-apache` base image
+- Installs PostgreSQL, intl, zip, opcache extensions
+- Runs `composer install --no-dev --optimize-autoloader`
+- Configures Apache to serve from `/var/www/html/public`
+- Listens on port 8000 (Koyeb's default)
+- Warms up Symfony cache for production
+- Installs assets with AssetMapper
 
-### 3. Specified PHP version (runtime.txt)
-```
-php-8.3.x
-```
-
-### 4. Created .buildpacks file
-```
-https://github.com/heroku/heroku-buildpack-php
-```
-This explicitly tells Koyeb to use the PHP buildpack instead of auto-detecting (which was incorrectly choosing Python).
+### 3. Created .dockerignore
+Excludes development files, tests, cache, logs, and documentation from the Docker build for faster builds and smaller images.
 
 ## Deployment Steps
 
@@ -62,8 +62,9 @@ git push origin main
 4. Select repository: `asen123321/affiliate`
 5. Branch: `main`
 6. Build configuration:
-   - **Builder**: Buildpack
-   - **Run command**: (leave empty, uses Procfile)
+   - **Builder**: Docker
+   - **Dockerfile**: `Dockerfile` (default)
+   - **Port**: 8000
 
 ### Step 3: Configure Environment Variables
 
@@ -103,9 +104,9 @@ php bin/console doctrine:migrations:migrate --no-interaction
 
 ## Troubleshooting
 
-### Build fails with exit code 51
-**Cause**: Missing Procfile or invalid configuration
-**Solution**: Ensure Procfile exists with content: `web: heroku-php-apache2 public/`
+### Build fails with "Python app" error
+**Cause**: Koyeb's buildpack auto-detection chose Python instead of PHP
+**Solution**: Use Docker deployment method instead of buildpacks (already configured)
 
 ### Database connection errors
 **Cause**: DATABASE_URL not set correctly
