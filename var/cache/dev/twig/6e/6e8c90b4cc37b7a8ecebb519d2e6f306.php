@@ -234,6 +234,6 @@ class __TwigTemplate_25dc4a0dcbe4c74406b7f4dd39cca042 extends Template
         </dl>
     </div>
 </div>
-", "@WebProfiler/Profiler/_command_summary.html.twig", "/var/www/html/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/_command_summary.html.twig");
+", "@WebProfiler/Profiler/_command_summary.html.twig", "/home/needy/affiliate-site/vendor/symfony/web-profiler-bundle/Resources/views/Profiler/_command_summary.html.twig");
     }
 }

@@ -326,6 +326,6 @@ class __TwigTemplate_7eeec2d72dd4f06e041f5dcbc6aaf909 extends Template
         transform: scale(1.05);
     }
 </style>
-", "review/_product_card_compare.html.twig", "/var/www/html/templates/review/_product_card_compare.html.twig");
+", "review/_product_card_compare.html.twig", "/home/needy/affiliate-site/templates/review/_product_card_compare.html.twig");
     }
 }

@@ -1164,6 +1164,6 @@ class __TwigTemplate_9e0600c5ff201f50452187aa9e135fa0 extends Template
     }
 </style>
 {% endblock %}
-", "review/compare_prices.html.twig", "/var/www/html/templates/review/compare_prices.html.twig");
+", "review/compare_prices.html.twig", "/home/needy/affiliate-site/templates/review/compare_prices.html.twig");
     }
 }

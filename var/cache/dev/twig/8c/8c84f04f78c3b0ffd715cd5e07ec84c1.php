@@ -1489,6 +1489,6 @@ class __TwigTemplate_b87df4d1fb2537bbc334dcce4ec1e2e3 extends Template
         <span>{{ route|default(controller) }}</span>
     {%- endif %}
 {% endmacro %}
-", "@WebProfiler/Collector/request.html.twig", "/var/www/html/vendor/symfony/web-profiler-bundle/Resources/views/Collector/request.html.twig");
+", "@WebProfiler/Collector/request.html.twig", "/home/needy/affiliate-site/vendor/symfony/web-profiler-bundle/Resources/views/Collector/request.html.twig");
     }
 }

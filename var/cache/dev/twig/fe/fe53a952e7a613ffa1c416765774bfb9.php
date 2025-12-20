@@ -345,6 +345,6 @@ class __TwigTemplate_4d7ea4b8f6c169de150c9c1a990da2f0 extends Template
         </ul>
     </nav>
 {% endif %}
-", "@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/twitter_bootstrap_v4_pagination.html.twig");
+", "@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/twitter_bootstrap_v4_pagination.html.twig");
     }
 }

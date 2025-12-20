@@ -155,6 +155,6 @@ class __TwigTemplate_9323899d6b658d00ae0eaaf07a174026 extends Template
 
     </div>
 {% endblock %}
-", "compare/index.html.twig", "/var/www/html/templates/compare/index.html.twig");
+", "compare/index.html.twig", "/home/needy/affiliate-site/templates/compare/index.html.twig");
     }
 }

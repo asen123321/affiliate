@@ -593,8 +593,6 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         .mega-hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 600px;
-            height: 70vh;
-            max-height: 900px;
             position: relative;
             overflow: hidden;
         }
@@ -611,18 +609,14 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         }
 
         .animated-blobs {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
             width: 100%;
-            height: 100vh;
-            overflow: hidden;
+            height: 100%;
             z-index: -1;
-            contain: strict;
+            overflow: hidden;
             pointer-events: none;
-            will-change: contents;
         }
 
         .btn-square {
@@ -747,8 +741,15 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
 
         .btn-mega-cta {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
-            border: none; color: white !important; border-radius: 50px;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4); transition: all 0.3s ease;
+            border: none;
+            color: white !important;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .btn-mega-cta:hover {
+            transform: scale(1.05);
         }
 
         .floating-emoji {
@@ -767,40 +768,17 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             50% { transform: translateY(-30px); }
         }
 
-        /* PRODUCT CARD */
+        /* PRODUCT CARD - STRICT PERFORMANCE MODE */
         .product-card {
             background: white;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-            contain: layout style paint;
-            will-change: transform;
-            position: relative;
-        }
-
-        /* Use pseudo-element for shadow animation instead */
-        .product-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: -1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         .product-card:hover {
-            transform: translate3d(0, -5px, 0);
-        }
-
-        .product-card:hover::after {
-            opacity: 1;
+            transform: translateY(-5px);
         }
 
         .badge-premium { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
@@ -816,11 +794,11 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
-            will-change: transform;
+            transition: transform 0.3s ease;
         }
+
         .product-card:hover .product-image {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .image-overlay {
@@ -838,11 +816,27 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         .btn-product-cta {
             display: block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; text-align: center; padding: 14px 20px; border-radius: 12px;
-            font-weight: 800; text-decoration: none; transition: all 0.3s ease;
+            font-weight: 800; text-decoration: none; transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
-        .bottom-cta-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-mega-white { background: white; color: #667eea !important; border-radius: 50px; }
+        .btn-product-cta:hover {
+            transform: scale(1.02);
+        }
+
+        .bottom-cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            content-visibility: auto;
+            contain-intrinsic-size: 0 400px;
+        }
+        .btn-mega-white {
+            background: white;
+            color: #667eea !important;
+            border-radius: 50px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .btn-mega-white:hover {
+            transform: scale(1.05);
+        }
 
         html { scroll-behavior: smooth; }
     </style>
@@ -1133,8 +1127,6 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         .mega-hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 600px;
-            height: 70vh;
-            max-height: 900px;
             position: relative;
             overflow: hidden;
         }
@@ -1151,18 +1143,14 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         }
 
         .animated-blobs {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
             width: 100%;
-            height: 100vh;
-            overflow: hidden;
+            height: 100%;
             z-index: -1;
-            contain: strict;
+            overflow: hidden;
             pointer-events: none;
-            will-change: contents;
         }
 
         .btn-square {
@@ -1287,8 +1275,15 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
 
         .btn-mega-cta {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
-            border: none; color: white !important; border-radius: 50px;
-            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4); transition: all 0.3s ease;
+            border: none;
+            color: white !important;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .btn-mega-cta:hover {
+            transform: scale(1.05);
         }
 
         .floating-emoji {
@@ -1307,40 +1302,17 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             50% { transform: translateY(-30px); }
         }
 
-        /* PRODUCT CARD */
+        /* PRODUCT CARD - STRICT PERFORMANCE MODE */
         .product-card {
             background: white;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-            contain: layout style paint;
-            will-change: transform;
-            position: relative;
-        }
-
-        /* Use pseudo-element for shadow animation instead */
-        .product-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: -1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         .product-card:hover {
-            transform: translate3d(0, -5px, 0);
-        }
-
-        .product-card:hover::after {
-            opacity: 1;
+            transform: translateY(-5px);
         }
 
         .badge-premium { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
@@ -1356,11 +1328,11 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
-            will-change: transform;
+            transition: transform 0.3s ease;
         }
+
         .product-card:hover .product-image {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .image-overlay {
@@ -1378,11 +1350,27 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         .btn-product-cta {
             display: block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; text-align: center; padding: 14px 20px; border-radius: 12px;
-            font-weight: 800; text-decoration: none; transition: all 0.3s ease;
+            font-weight: 800; text-decoration: none; transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
-        .bottom-cta-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-mega-white { background: white; color: #667eea !important; border-radius: 50px; }
+        .btn-product-cta:hover {
+            transform: scale(1.02);
+        }
+
+        .bottom-cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            content-visibility: auto;
+            contain-intrinsic-size: 0 400px;
+        }
+        .btn-mega-white {
+            background: white;
+            color: #667eea !important;
+            border-radius: 50px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .btn-mega-white:hover {
+            transform: scale(1.05);
+        }
 
         html { scroll-behavior: smooth; }
     </style>

@@ -211,6 +211,6 @@ class __TwigTemplate_798b6aeb0836e611c0951e11bc9c7def extends Template
         </a>
     {% endif %}
 </div>
-", "@KnpPaginator/Pagination/semantic_ui_pagination.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/semantic_ui_pagination.html.twig");
+", "@KnpPaginator/Pagination/semantic_ui_pagination.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/semantic_ui_pagination.html.twig");
     }
 }

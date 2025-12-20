@@ -145,6 +145,6 @@ class __TwigTemplate_9291c1ad14fee1aabab4322c9ce188b6 extends Template
     </span>
     {{- title -}}
 </a>
-", "@KnpPaginator/Pagination/uikit_v3_sortable.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/uikit_v3_sortable.html.twig");
+", "@KnpPaginator/Pagination/uikit_v3_sortable.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/uikit_v3_sortable.html.twig");
     }
 }

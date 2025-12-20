@@ -1,26 +1,33 @@
-# Performance Optimization Tasks
-Based on the latest Lighthouse report (Score: 57), immediate fixes are required to resolve Cumulative Layout Shift (CLS) and Rendering issues.
+I am looking at the latest Lighthouse report (Score dropped to 52). The previous fixes DID NOT work. We need to fix the CSS strictly according to these diagnostics:
 
-## 1. Fix Critical CLS (Cumulative Layout Shift)
-The report identifies `div.animated-blobs` and the stats row as the main layout shifters.
+1. CRITICAL CLS FIX (.animated-blobs): The report explicitly states div.animated-blobs is causing a layout shift of 0.258.
 
-- **Background Blobs (`.animated-blobs`):**
-    - Currently, they are part of the flow, pushing content down.
-    - **Action:** Set CSS to `position: absolute;` or `fixed`, `z-index: -1`, `top: 0`, `left: 0`. Ensure they do not occupy physical space in the document flow.
+Current behavior: The blobs are taking up physical space in the DOM flow.
 
-- **Stats Row (`.d-flex` with "50+ Products Tested"):**
-    - Icons and text are shifting during load.
-    - **Action:** Define explicit `width` and `height` for the icons (<i> tags or SVGs) in CSS. Set a `min-height` for the container to prevent collapse/expansion.
+REQUIRED FIX: Force .animated-blobs to have position: absolute; (or fixed), top: 0, left: 0, width: 100%, height: 100%, and z-index: -1. It MUST NOT push the hero content down.
 
-- **Images:**
-    - Ensure ALL product images have explicit `width="..."` and `height="..."` attributes in the HTML logic (Twig templates).
+2. FIX 'Non-composited animations' (Performance Killer): The report flagged 52 elements with 'Unsupported CSS Property'. You are animating properties that trigger layout recalculations: padding, border-radius, font-weight, box-shadow.
 
-## 2. Fix Animation Performance
-The report warns about "Non-composited animations" on `.product-card`.
+REQUIRED FIX: REMOVE transitions on padding, margin, width, height, and border-radius.
 
-- **Box-Shadow:**
-    - STOP animating `box-shadow` on `:hover` (e.g., `transition: box-shadow ...`). This causes heavy re-paints.
-    - **Action:** Use `transform: translateY(-5px)` for hover effects. If a shadow change is strictly needed, use an `::after` pseudo-element with `opacity` transition.
+Replace hover effects: Use ONLY transform: scale() or transform: translateY() and opacity. Do NOT animate box-shadow directly (it is too heavy).
 
-## 3. LCP (Largest Contentful Paint)
-- Ensure the main Hero Banner image has `fetchpriority="high"` and is NOT lazy-loaded.
+3. Fix Image LCP:
+
+Ensure the main Hero image has fetchpriority="high" explicitly in the HTML/Twig.
+
+Please rewrite the CSS for .animated-blobs and .product-card to comply with these strict performance rules now."
+4. FIX SPEED INDEX (Critical Font Loading): The Speed Index has degraded to 8.9s because text remains invisible while custom fonts are downloading (Flash of Invisible Text).
+
+REQUIRED FIX: Update all @font-face rules in the CSS to include font-display: swap;.
+
+Example:
+
+CSS
+
+@font-face {
+font-family: 'MyFont';
+src: url(...);
+font-display: swap; /* THIS IS MANDATORY */
+}
+Content Visibility: Add content-visibility: auto; to the Footer and lower sections of the page (e.g., #footer, .bottom-section) so the browser doesn't waste time rendering them until the user scrolls down.

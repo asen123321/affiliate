@@ -180,6 +180,6 @@ class __TwigTemplate_c7d9b63ca926ded3d2b006c839eb8f0a extends Template
     <button>{{ options.button }}</button>
 
 </form>
-", "@KnpPaginator/Pagination/filtration.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/filtration.html.twig");
+", "@KnpPaginator/Pagination/filtration.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/filtration.html.twig");
     }
 }

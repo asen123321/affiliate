@@ -899,6 +899,6 @@ class __TwigTemplate_e1bdd5dc993d8cbf19fc210458090fb1 extends Template
     }
 </style>
 {% endblock %}
-", "review/compare_category.html.twig", "/var/www/html/templates/review/compare_category.html.twig");
+", "review/compare_category.html.twig", "/home/needy/affiliate-site/templates/review/compare_category.html.twig");
     }
 }

@@ -675,6 +675,6 @@ class __TwigTemplate_da8d0da4ea1a52b425cf0f693c27e477 extends Template
     }
 </style>
 {% endblock %}
-", "review/recommendations.html.twig", "/var/www/html/templates/review/recommendations.html.twig");
+", "review/recommendations.html.twig", "/home/needy/affiliate-site/templates/review/recommendations.html.twig");
     }
 }

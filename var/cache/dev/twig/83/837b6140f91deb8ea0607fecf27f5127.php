@@ -164,6 +164,6 @@ class __TwigTemplate_efd344d2642796971f8cd4c3318b00cf extends Template
         <button class=\"btn btn-primary\">{{ options.button }}</button>
     </div>
 </form>
-", "@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/bootstrap_v5_filtration.html.twig");
+", "@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/bootstrap_v5_filtration.html.twig");
     }
 }

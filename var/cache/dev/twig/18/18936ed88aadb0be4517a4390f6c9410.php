@@ -212,6 +212,6 @@ class __TwigTemplate_48b186f452d085c5cc5fbc24e20496c8 extends Template
         {% endif %}
     </div>
 {% endif %}
-", "@KnpPaginator/Pagination/sliding.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/sliding.html.twig");
+", "@KnpPaginator/Pagination/sliding.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/sliding.html.twig");
     }
 }

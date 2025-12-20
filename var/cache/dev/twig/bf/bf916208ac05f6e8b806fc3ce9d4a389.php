@@ -148,6 +148,6 @@ class __TwigTemplate_9ef396a76d72bbf1ad68ffe2e3caf613 extends Template
     </span>
     {{- title -}}
 </a>
-", "@KnpPaginator/Pagination/twitter_bootstrap_v4_material_design_icons_sortable_link.html.twig", "/var/www/html/vendor/knplabs/knp-paginator-bundle/templates/Pagination/twitter_bootstrap_v4_material_design_icons_sortable_link.html.twig");
+", "@KnpPaginator/Pagination/twitter_bootstrap_v4_material_design_icons_sortable_link.html.twig", "/home/needy/affiliate-site/vendor/knplabs/knp-paginator-bundle/templates/Pagination/twitter_bootstrap_v4_material_design_icons_sortable_link.html.twig");
     }
 }

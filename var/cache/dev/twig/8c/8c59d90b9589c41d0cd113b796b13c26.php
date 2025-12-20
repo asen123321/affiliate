@@ -1201,6 +1201,6 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         }
     </script>
 {% endblock %}
-", "review/show.html.twig", "/var/www/html/templates/review/show.html.twig");
+", "review/show.html.twig", "/home/needy/affiliate-site/templates/review/show.html.twig");
     }
 }
