@@ -2,6 +2,17 @@
 
 {% block title %}   Best Tech Deals 2025 - Exclusive Reviews & Hot Offers{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {# Preload first hero image for LCP optimization #}
+    {% if reviews|length > 0 %}
+        {% set firstImage = reviews[0].imageUrl ?? reviews[0].image ?? reviews[0].mainImage ?? null %}
+        {% if firstImage %}
+            <link rel="preload" as="image" href="{{ firstImage }}" fetchpriority="high">
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block body %}
 
     <div class="mega-hero position-relative overflow-hidden">
@@ -267,11 +278,12 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             z-index: -1;
             overflow: hidden;
             pointer-events: none;
+            contain: strict;
         }
 
         .btn-square {
