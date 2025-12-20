@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 class ReviewController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    #[Cache(public: true, smaxage: 3600)]
+
     public function index(
         Request $request,
         ReviewRepository $reviewRepository,

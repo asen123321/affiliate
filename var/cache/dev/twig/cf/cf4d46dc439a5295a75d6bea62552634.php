@@ -64,14 +64,15 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
     <head>
         <meta charset=\"UTF-8\">
         <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
 
         <!-- Dynamic Title & Meta Description -->
         <title>";
-        // line 8
+        // line 9
         yield from $this->unwrap()->yieldBlock('title', $context, $blocks);
         yield "</title>
         <meta name=\"description\" content=\"";
-        // line 9
+        // line 10
         yield from $this->unwrap()->yieldBlock('meta_description', $context, $blocks);
         yield "\">
 
@@ -79,29 +80,29 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         <meta name=\"robots\" content=\"index, follow\">
         <meta name=\"googlebot\" content=\"index, follow\">
         <link rel=\"canonical\" href=\"";
-        // line 14
+        // line 15
         yield from $this->unwrap()->yieldBlock('canonical', $context, $blocks);
         yield "\">
 
         <!-- Open Graph / Facebook -->
         <meta property=\"og:type\" content=\"";
-        // line 17
+        // line 18
         yield from $this->unwrap()->yieldBlock('og_type', $context, $blocks);
         yield "\">
         <meta property=\"og:url\" content=\"";
-        // line 18
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 18, $this->source); })()), "request", [], "any", false, false, false, 18), "uri", [], "any", false, false, false, 18), "html", null, true);
+        // line 19
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 19, $this->source); })()), "request", [], "any", false, false, false, 19), "uri", [], "any", false, false, false, 19), "html", null, true);
         yield "\">
         <meta property=\"og:title\" content=\"";
-        // line 19
+        // line 20
         yield from $this->unwrap()->yieldBlock('og_title', $context, $blocks);
         yield "\">
         <meta property=\"og:description\" content=\"";
-        // line 20
+        // line 21
         yield from $this->unwrap()->yieldBlock('og_description', $context, $blocks);
         yield "\">
         <meta property=\"og:image\" content=\"";
-        // line 21
+        // line 22
         yield from $this->unwrap()->yieldBlock('og_image', $context, $blocks);
         yield "\">
         <meta property=\"og:locale\" content=\"bg_BG\">
@@ -110,19 +111,19 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         <!-- Twitter Card -->
         <meta name=\"twitter:card\" content=\"summary_large_image\">
         <meta name=\"twitter:url\" content=\"";
-        // line 27
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 27, $this->source); })()), "request", [], "any", false, false, false, 27), "uri", [], "any", false, false, false, 27), "html", null, true);
+        // line 28
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 28, $this->source); })()), "request", [], "any", false, false, false, 28), "uri", [], "any", false, false, false, 28), "html", null, true);
         yield "\">
         <meta name=\"twitter:title\" content=\"";
-        // line 28
+        // line 29
         yield from $this->unwrap()->yieldBlock('twitter_title', $context, $blocks);
         yield "\">
         <meta name=\"twitter:description\" content=\"";
-        // line 29
+        // line 30
         yield from $this->unwrap()->yieldBlock('twitter_description', $context, $blocks);
         yield "\">
         <meta name=\"twitter:image\" content=\"";
-        // line 30
+        // line 31
         yield from $this->unwrap()->yieldBlock('twitter_image', $context, $blocks);
         yield "\">
 
@@ -133,25 +134,30 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
         <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
 
+        <!-- Preconnect to external image domains -->
+        <link rel=\"preconnect\" href=\"https://editor.alleop.bg\" crossorigin>
+        <link rel=\"dns-prefetch\" href=\"https://editor.alleop.bg\">
+
         <!-- Preload critical font for LCP element -->
         <link rel=\"preload\" href=\"https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>
+
+        <!-- Preload Bootstrap Icons font -->
+        <link rel=\"preload\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>
 
         <!-- Bootstrap 5.3 -->
         <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
         <noscript><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\"></noscript>
 
-        <!-- Bootstrap Icons -->
-        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\" media=\"print\" onload=\"this.media='all'\">
-        <noscript><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\"></noscript>
+        <!-- Bootstrap Icons - Loaded inline below for better performance -->
 
         <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
         <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
         <noscript><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\"></noscript>
 
         ";
-        // line 54
+        // line 60
         yield from $this->unwrap()->yieldBlock('stylesheets', $context, $blocks);
-        // line 56
+        // line 62
         yield "
         <style>
             /* Critical CSS - Above the fold styles */
@@ -252,19 +258,26 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
             .lead {
                 font-display: swap;
             }
+
+            /* Force font-display: swap on Bootstrap Icons */
+            @font-face {
+                font-family: \"bootstrap-icons\";
+                src: url(\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2\") format(\"woff2\");
+                font-display: swap;
+            }
         </style>
 
         ";
-        // line 158
+        // line 171
         yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
-        // line 162
+        // line 175
         yield "    </head>
     <body>
         <!-- Navigation Bar with Search and Filters -->
         <nav class=\"navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top\">
             <div class=\"container-fluid\">
                 <a class=\"navbar-brand fw-bold text-primary\" href=\"";
-        // line 167
+        // line 180
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home");
         yield "\">
                     <i class=\"bi bi-fire\"></i> ОФЕРТИ
@@ -279,11 +292,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                     <ul class=\"navbar-nav me-auto mb-2 mb-lg-0\">
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 179
-        yield ((( !CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 179, $this->source); })()), "request", [], "any", false, false, false, 179), "query", [], "any", false, false, false, 179), "get", ["source"], "method", false, false, false, 179) && (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 179, $this->source); })()), "request", [], "any", false, false, false, 179), "get", ["_route"], "method", false, false, false, 179) == "app_home"))) ? ("active") : (""));
+        // line 192
+        yield ((( !CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 192, $this->source); })()), "request", [], "any", false, false, false, 192), "query", [], "any", false, false, false, 192), "get", ["source"], "method", false, false, false, 192) && (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 192, $this->source); })()), "request", [], "any", false, false, false, 192), "get", ["_route"], "method", false, false, false, 192) == "app_home"))) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 180
+        // line 193
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home");
         yield "\">
                                 <i class=\"bi bi-house-fill\"></i> Всички
@@ -291,11 +304,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 185
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 185, $this->source); })()), "request", [], "any", false, false, false, 185), "query", [], "any", false, false, false, 185), "get", ["source"], "method", false, false, false, 185) == "emag")) ? ("active") : (""));
+        // line 198
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 198, $this->source); })()), "request", [], "any", false, false, false, 198), "query", [], "any", false, false, false, 198), "get", ["source"], "method", false, false, false, 198) == "emag")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 186
+        // line 199
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "emag"]);
         yield "\">
                                 <i class=\"bi bi-laptop\"></i> eMAG
@@ -303,11 +316,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 191
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 191, $this->source); })()), "request", [], "any", false, false, false, 191), "query", [], "any", false, false, false, 191), "get", ["source"], "method", false, false, false, 191) == "fashion_days")) ? ("active") : (""));
+        // line 204
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 204, $this->source); })()), "request", [], "any", false, false, false, 204), "query", [], "any", false, false, false, 204), "get", ["source"], "method", false, false, false, 204) == "fashion_days")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 192
+        // line 205
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "fashion_days"]);
         yield "\">
                                 <i class=\"bi bi-bag-heart\"></i> Fashion Days
@@ -315,11 +328,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 197
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 197, $this->source); })()), "request", [], "any", false, false, false, 197), "query", [], "any", false, false, false, 197), "get", ["source"], "method", false, false, false, 197) == "alleop")) ? ("active") : (""));
+        // line 210
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 210, $this->source); })()), "request", [], "any", false, false, false, 210), "query", [], "any", false, false, false, 210), "get", ["source"], "method", false, false, false, 210) == "alleop")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 198
+        // line 211
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "alleop"]);
         yield "\">
                                 <i class=\"bi bi-basket\"></i> Alleop
@@ -327,11 +340,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 203
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 203, $this->source); })()), "request", [], "any", false, false, false, 203), "get", ["_route"], "method", false, false, false, 203) == "app_recommendations")) ? ("active") : (""));
+        // line 216
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 216, $this->source); })()), "request", [], "any", false, false, false, 216), "get", ["_route"], "method", false, false, false, 216) == "app_recommendations")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 204
+        // line 217
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_recommendations");
         yield "\">
                                 <i class=\"bi bi-stars\"></i> За теб
@@ -342,7 +355,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
 
                     <!-- Search Form -->
                     <form class=\"d-flex\" action=\"";
-        // line 212
+        // line 225
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_search");
         yield "\" method=\"get\">
                         <div class=\"input-group\">
@@ -351,8 +364,8 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                                    class=\"form-control\"
                                    placeholder=\"Търси продукти...\"
                                    value=\"";
-        // line 218
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 218, $this->source); })()), "request", [], "any", false, false, false, 218), "query", [], "any", false, false, false, 218), "get", ["q", ""], "method", false, false, false, 218), "html", null, true);
+        // line 231
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 231, $this->source); })()), "request", [], "any", false, false, false, 231), "query", [], "any", false, false, false, 231), "get", ["q", ""], "method", false, false, false, 231), "html", null, true);
         yield "\"
                                    aria-label=\"Search\">
                             <button class=\"btn btn-primary\" type=\"submit\" aria-label=\"Search\">
@@ -399,9 +412,9 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         </style>
 
         ";
-        // line 263
+        // line 276
         yield from $this->unwrap()->yieldBlock('body', $context, $blocks);
-        // line 264
+        // line 277
         yield "    </body>
 </html>
 ";
@@ -414,7 +427,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 8
+    // line 9
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -437,7 +450,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 9
+    // line 10
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -460,7 +473,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 14
+    // line 15
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -473,7 +486,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "canonical"));
 
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 14, $this->source); })()), "request", [], "any", false, false, false, 14), "uri", [], "any", false, false, false, 14), "html", null, true);
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 15, $this->source); })()), "request", [], "any", false, false, false, 15), "uri", [], "any", false, false, false, 15), "html", null, true);
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
 
@@ -483,7 +496,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 17
+    // line 18
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -506,7 +519,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 19
+    // line 20
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -529,7 +542,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 20
+    // line 21
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -552,7 +565,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 21
+    // line 22
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -575,7 +588,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 28
+    // line 29
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -598,7 +611,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 29
+    // line 30
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -621,7 +634,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 30
+    // line 31
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -644,7 +657,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 54
+    // line 60
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -657,7 +670,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "stylesheets"));
 
-        // line 55
+        // line 61
         yield "        ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -668,7 +681,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 158
+    // line 171
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -681,10 +694,10 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 159
+        // line 172
         yield "            ";
         yield from $this->unwrap()->yieldBlock('importmap', $context, $blocks);
-        // line 160
+        // line 173
         yield "            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\" defer></script>
         ";
         
@@ -696,7 +709,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 159
+    // line 172
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -719,7 +732,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 263
+    // line 276
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -762,7 +775,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  723 => 263,  700 => 159,  688 => 160,  685 => 159,  672 => 158,  661 => 55,  648 => 54,  625 => 30,  602 => 29,  579 => 28,  556 => 21,  533 => 20,  510 => 19,  487 => 17,  464 => 14,  441 => 9,  418 => 8,  405 => 264,  403 => 263,  355 => 218,  346 => 212,  335 => 204,  331 => 203,  323 => 198,  319 => 197,  311 => 192,  307 => 191,  299 => 186,  295 => 185,  287 => 180,  283 => 179,  268 => 167,  261 => 162,  259 => 158,  155 => 56,  153 => 54,  126 => 30,  122 => 29,  118 => 28,  114 => 27,  105 => 21,  101 => 20,  97 => 19,  93 => 18,  89 => 17,  83 => 14,  75 => 9,  71 => 8,  62 => 1,);
+        return array (  736 => 276,  713 => 172,  701 => 173,  698 => 172,  685 => 171,  674 => 61,  661 => 60,  638 => 31,  615 => 30,  592 => 29,  569 => 22,  546 => 21,  523 => 20,  500 => 18,  477 => 15,  454 => 10,  431 => 9,  418 => 277,  416 => 276,  368 => 231,  359 => 225,  348 => 217,  344 => 216,  336 => 211,  332 => 210,  324 => 205,  320 => 204,  312 => 199,  308 => 198,  300 => 193,  296 => 192,  281 => 180,  274 => 175,  272 => 171,  161 => 62,  159 => 60,  127 => 31,  123 => 30,  119 => 29,  115 => 28,  106 => 22,  102 => 21,  98 => 20,  94 => 19,  90 => 18,  84 => 15,  76 => 10,  72 => 9,  62 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -772,6 +785,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
     <head>
         <meta charset=\"UTF-8\">
         <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
 
         <!-- Dynamic Title & Meta Description -->
         <title>{% block title %}Най-добри оферти от eMAG, Alleop, Fashion Days{% endblock %}</title>
@@ -805,16 +819,21 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
         <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
 
+        <!-- Preconnect to external image domains -->
+        <link rel=\"preconnect\" href=\"https://editor.alleop.bg\" crossorigin>
+        <link rel=\"dns-prefetch\" href=\"https://editor.alleop.bg\">
+
         <!-- Preload critical font for LCP element -->
         <link rel=\"preload\" href=\"https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>
+
+        <!-- Preload Bootstrap Icons font -->
+        <link rel=\"preload\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2\" as=\"font\" type=\"font/woff2\" crossorigin>
 
         <!-- Bootstrap 5.3 -->
         <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
         <noscript><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\"></noscript>
 
-        <!-- Bootstrap Icons -->
-        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\" media=\"print\" onload=\"this.media='all'\">
-        <noscript><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\"></noscript>
+        <!-- Bootstrap Icons - Loaded inline below for better performance -->
 
         <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
         <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
@@ -920,6 +939,13 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
 
             /* Optimize rendering performance */
             .lead {
+                font-display: swap;
+            }
+
+            /* Force font-display: swap on Bootstrap Icons */
+            @font-face {
+                font-family: \"bootstrap-icons\";
+                src: url(\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2\") format(\"woff2\");
                 font-display: swap;
             }
         </style>

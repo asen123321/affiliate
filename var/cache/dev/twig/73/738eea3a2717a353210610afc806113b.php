@@ -793,6 +793,6 @@ class __TwigTemplate_81d6ee5d78b464d3175f13a4d46845b9 extends Template
     {% endif %}
 </div>
 {% endblock %}
-", "review/compare_product.html.twig", "/home/needy/affiliate-site/templates/review/compare_product.html.twig");
+", "review/compare_product.html.twig", "/var/www/html/templates/review/compare_product.html.twig");
     }
 }

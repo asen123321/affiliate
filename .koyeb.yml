@@ -1,7 +1,0 @@
-# Koyeb deployment configuration
-# Environment variables to set in Koyeb dashboard:
-# - APP_SECRET: 6fd3485d8cd8749eeaa18249c49fcb2f1ade82cc93795308cd48378f1545f62e
-# - DATABASE_URL: postgresql://neondb_owner:npg_pdvcCOhMZ2D6@ep-shiny-forest-agvwg18b-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require
-# - PROFITSHARE_USER: _693fa9d1a262b
-# - PROFITSHARE_KEY: a6c36ec01561aa2512a1e53b485b1b4c39d88d45
-# - APP_ENV: prod
