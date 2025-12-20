@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
         <!-- Dynamic Title & Meta Description -->
         <title>{% block title %}Най-добри оферти от eMAG, Alleop, Fashion Days{% endblock %}</title>
@@ -36,16 +37,21 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+        <!-- Preconnect to external image domains -->
+        <link rel="preconnect" href="https://editor.alleop.bg" crossorigin>
+        <link rel="dns-prefetch" href="https://editor.alleop.bg">
+
         <!-- Preload critical font for LCP element -->
         <link rel="preload" href="https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin>
+
+        <!-- Preload Bootstrap Icons font -->
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2" as="font" type="font/woff2" crossorigin>
 
         <!-- Bootstrap 5.3 -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
         <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"></noscript>
 
-        <!-- Bootstrap Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" media="print" onload="this.media='all'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css"></noscript>
+        <!-- Bootstrap Icons - Loaded inline below for better performance -->
 
         <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -151,6 +157,13 @@
 
             /* Optimize rendering performance */
             .lead {
+                font-display: swap;
+            }
+
+            /* Force font-display: swap on Bootstrap Icons */
+            @font-face {
+                font-family: "bootstrap-icons";
+                src: url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/fonts/bootstrap-icons.woff2") format("woff2");
                 font-display: swap;
             }
         </style>
