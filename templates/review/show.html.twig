@@ -67,7 +67,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-5 text-center mb-4 mb-lg-0">
                     {% if review.imageUrl %}
-                        <img src="{{ review.imageUrl }}" alt="{{ review.title }}" class="img-fluid main-product-image" loading="eager" width="400" height="400">
+                        <img src="{{ review.imageUrl }}" alt="{{ review.title }}" class="img-fluid main-product-image" fetchpriority="high" loading="eager" width="400" height="400" decoding="async">
                     {% else %}
                         <div class="main-product-image d-flex align-items-center justify-content-center" style="height: 300px;">
                             <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
@@ -170,7 +170,7 @@
 
                         <div class="position-relative text-center p-3" style="height: 200px; overflow: hidden; background: #fff;">
                             <a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" aria-label="View {{ product.title }}">
-                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;" loading="lazy" width="200" height="200">
+                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;" loading="lazy" width="200" height="200" decoding="async">
                             </a>
                             <span class="position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm">
                                 {{ product.platform }}
