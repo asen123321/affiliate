@@ -178,7 +178,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
-    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>
+    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\" defer></script>
 ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -218,7 +218,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 70, $this->source); })()), "imageUrl", [], "any", false, false, false, 70), "html", null, true);
             yield "\" alt=\"";
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 70, $this->source); })()), "title", [], "any", false, false, false, 70), "html", null, true);
-            yield "\" class=\"img-fluid main-product-image\">
+            yield "\" class=\"img-fluid main-product-image\" fetchpriority=\"high\" loading=\"eager\" width=\"400\" height=\"400\" decoding=\"async\">
                     ";
         } else {
             // line 72
@@ -287,13 +287,15 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                         <a href=\"";
         // line 100
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 100, $this->source); })()), "id", [], "any", false, false, false, 100)]), "html", null, true);
-        yield "\" target=\"_blank\" class=\"btn btn-primary btn-lg px-5\">
-                            <i class=\"bi bi-cart-check me-2\"></i> ВИЖ ОФЕРТАТА
+        yield "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"btn btn-primary btn-lg px-5\" aria-label=\"View offer for ";
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 100, $this->source); })()), "title", [], "any", false, false, false, 100), "html", null, true);
+        yield "\">
+                            <i class=\"bi bi-cart-check me-2\" aria-hidden=\"true\"></i> ВИЖ ОФЕРТАТА
                         </a>
                         ";
         // line 104
-        yield "                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\">
-                            <i class=\"bi bi-arrow-down-circle me-2\"></i> Виж алтернативи
+        yield "                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\" aria-label=\"View alternatives\">
+                            <i class=\"bi bi-arrow-down-circle me-2\" aria-hidden=\"true\"></i> Виж алтернативи
                         </a>
                     </div>
                 </div>
@@ -415,13 +417,15 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                             <a href=\"";
             // line 172
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 172), "html", null, true);
-            yield "\" target=\"_blank\">
+            yield "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View ";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 172), "html", null, true);
+            yield "\">
                                 <img src=\"";
             // line 173
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 173), "html", null, true);
             yield "\" alt=\"";
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 173), "html", null, true);
-            yield "\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\">
+            yield "\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\" loading=\"lazy\" width=\"200\" height=\"200\" decoding=\"async\">
                             </a>
                             <span class=\"position-absolute top-0 start-0 badge ";
             // line 175
@@ -469,8 +473,10 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                                 <a href=\"";
             // line 195
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 195), "html", null, true);
-            yield "\" target=\"_blank\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\">
-                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\"></i>
+            yield "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\" aria-label=\"View offer for ";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 195), "html", null, true);
+            yield "\">
+                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\" aria-hidden=\"true\"></i>
                                 </a>
                             </div>
                         </div>
@@ -513,9 +519,9 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                     </div>
                 </div>
                 <div>
-                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\">Изчисти</button>
-                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\">
-                        <i class=\"bi bi-columns-gap me-2\"></i> СРАВНИ СЕГА
+                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\" aria-label=\"Clear comparison selection\">Изчисти</button>
+                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\" aria-label=\"Compare selected products\">
+                        <i class=\"bi bi-columns-gap me-2\" aria-hidden=\"true\"></i> СРАВНИ СЕГА
                     </button>
                 </div>
             </div>
@@ -773,7 +779,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  626 => 299,  622 => 298,  618 => 297,  614 => 296,  610 => 295,  575 => 262,  566 => 260,  562 => 259,  557 => 257,  551 => 253,  527 => 230,  507 => 211,  502 => 207,  493 => 203,  491 => 202,  471 => 195,  466 => 193,  458 => 188,  454 => 187,  448 => 183,  442 => 180,  439 => 179,  437 => 178,  432 => 176,  428 => 175,  421 => 173,  417 => 172,  410 => 168,  406 => 167,  402 => 166,  398 => 165,  394 => 164,  390 => 163,  385 => 160,  380 => 156,  361 => 155,  358 => 153,  356 => 152,  355 => 150,  354 => 149,  353 => 148,  352 => 147,  351 => 146,  349 => 145,  341 => 138,  335 => 135,  329 => 133,  327 => 132,  319 => 126,  308 => 116,  295 => 104,  289 => 100,  282 => 96,  274 => 91,  271 => 90,  265 => 89,  258 => 88,  254 => 87,  247 => 83,  244 => 82,  238 => 80,  236 => 79,  231 => 76,  225 => 72,  217 => 70,  215 => 69,  209 => 65,  206 => 63,  193 => 62,  178 => 58,  165 => 57,  103 => 6,  90 => 5,  66 => 3,  43 => 1,);
+        return array (  632 => 299,  628 => 298,  624 => 297,  620 => 296,  616 => 295,  581 => 262,  572 => 260,  568 => 259,  563 => 257,  557 => 253,  533 => 230,  513 => 211,  508 => 207,  499 => 203,  497 => 202,  475 => 195,  470 => 193,  462 => 188,  458 => 187,  452 => 183,  446 => 180,  443 => 179,  441 => 178,  436 => 176,  432 => 175,  425 => 173,  419 => 172,  412 => 168,  408 => 167,  404 => 166,  400 => 165,  396 => 164,  392 => 163,  387 => 160,  382 => 156,  363 => 155,  360 => 153,  358 => 152,  357 => 150,  356 => 149,  355 => 148,  354 => 147,  353 => 146,  351 => 145,  343 => 138,  337 => 135,  331 => 133,  329 => 132,  321 => 126,  310 => 116,  297 => 104,  289 => 100,  282 => 96,  274 => 91,  271 => 90,  265 => 89,  258 => 88,  254 => 87,  247 => 83,  244 => 82,  238 => 80,  236 => 79,  231 => 76,  225 => 72,  217 => 70,  215 => 69,  209 => 65,  206 => 63,  193 => 62,  178 => 58,  165 => 57,  103 => 6,  90 => 5,  66 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -836,7 +842,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
 
 {% block javascripts %}
     {{ parent() }}
-    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>
+    <script src=\"https://cdn.jsdelivr.net/npm/chart.js\" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -847,7 +853,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
             <div class=\"row align-items-center\">
                 <div class=\"col-lg-5 text-center mb-4 mb-lg-0\">
                     {% if review.imageUrl %}
-                        <img src=\"{{ review.imageUrl }}\" alt=\"{{ review.title }}\" class=\"img-fluid main-product-image\">
+                        <img src=\"{{ review.imageUrl }}\" alt=\"{{ review.title }}\" class=\"img-fluid main-product-image\" fetchpriority=\"high\" loading=\"eager\" width=\"400\" height=\"400\" decoding=\"async\">
                     {% else %}
                         <div class=\"main-product-image d-flex align-items-center justify-content-center\" style=\"height: 300px;\">
                             <i class=\"bi bi-image text-muted\" style=\"font-size: 4rem;\"></i>
@@ -877,12 +883,12 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                     </div>
 
                     <div class=\"d-grid gap-2 d-md-block\">
-                        <a href=\"{{ path('app_buy_redirect', {id: review.id}) }}\" target=\"_blank\" class=\"btn btn-primary btn-lg px-5\">
-                            <i class=\"bi bi-cart-check me-2\"></i> ВИЖ ОФЕРТАТА
+                        <a href=\"{{ path('app_buy_redirect', {id: review.id}) }}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"btn btn-primary btn-lg px-5\" aria-label=\"View offer for {{ review.title }}\">
+                            <i class=\"bi bi-cart-check me-2\" aria-hidden=\"true\"></i> ВИЖ ОФЕРТАТА
                         </a>
                         {# Бутонът Сравни цени скролва надолу #}
-                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\">
-                            <i class=\"bi bi-arrow-down-circle me-2\"></i> Виж алтернативи
+                        <a href=\"#similar-offers\" class=\"btn btn-outline-dark btn-lg px-4\" aria-label=\"View alternatives\">
+                            <i class=\"bi bi-arrow-down-circle me-2\" aria-hidden=\"true\"></i> Виж алтернативи
                         </a>
                     </div>
                 </div>
@@ -949,8 +955,8 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                         </div>
 
                         <div class=\"position-relative text-center p-3\" style=\"height: 200px; overflow: hidden; background: #fff;\">
-                            <a href=\"{{ product.link }}\" target=\"_blank\">
-                                <img src=\"{{ product.image }}\" alt=\"{{ product.title }}\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\">
+                            <a href=\"{{ product.link }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View {{ product.title }}\">
+                                <img src=\"{{ product.image }}\" alt=\"{{ product.title }}\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\" loading=\"lazy\" width=\"200\" height=\"200\" decoding=\"async\">
                             </a>
                             <span class=\"position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm\">
                                 {{ product.platform }}
@@ -972,8 +978,8 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                             <div class=\"mt-auto pt-3 border-top\">
                                 <h5 class=\"text-primary fw-bold mb-2\">{{ product.price|number_format(2, '.', ' ') }} лв.</h5>
 
-                                <a href=\"{{ product.link }}\" target=\"_blank\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\">
-                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\"></i>
+                                <a href=\"{{ product.link }}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\" aria-label=\"View offer for {{ product.title }}\">
+                                    Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\" aria-hidden=\"true\"></i>
                                 </a>
                             </div>
                         </div>
@@ -997,9 +1003,9 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                     </div>
                 </div>
                 <div>
-                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\">Изчисти</button>
-                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\">
-                        <i class=\"bi bi-columns-gap me-2\"></i> СРАВНИ СЕГА
+                    <button class=\"btn btn-danger btn-sm me-2\" onclick=\"clearComparison()\" aria-label=\"Clear comparison selection\">Изчисти</button>
+                    <button class=\"btn btn-primary px-4\" onclick=\"openCompareModal()\" aria-label=\"Compare selected products\">
+                        <i class=\"bi bi-columns-gap me-2\" aria-hidden=\"true\"></i> СРАВНИ СЕГА
                     </button>
                 </div>
             </div>

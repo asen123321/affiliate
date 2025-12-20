@@ -1,2 +1,4 @@
 ###> symfony/framework-bundle ###
 /.env
+var/log/
+var/log/
