@@ -31,29 +31,42 @@
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🔥</text></svg>">
 
-        <!-- Bootstrap 5.3 -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Bootstrap Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
-        <!-- Google Fonts - Modern & Bold -->
+        <!-- Preconnect to improve loading performance -->
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+        <!-- Bootstrap 5.3 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+        <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"></noscript>
+
+        <!-- Bootstrap Icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" media="print" onload="this.media='all'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css"></noscript>
+
+        <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+        <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 
         {% block stylesheets %}
         {% endblock %}
 
         <style>
+            /* Critical CSS - Above the fold styles */
             * {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
 
             body {
                 background: #f8f9fa;
                 overflow-x: hidden;
+                line-height: 1.6;
             }
 
-            /* Animated gradient background */
+            /* Animated gradient background - optimized */
             body::before {
                 content: '';
                 position: fixed;
@@ -64,6 +77,7 @@
                 background: linear-gradient(45deg, #667eea15 0%, #764ba215 25%, #f093fb15 50%, #667eea15 75%, #764ba215 100%);
                 animation: gradient-shift 15s ease infinite;
                 z-index: -1;
+                will-change: transform;
             }
 
             @keyframes gradient-shift {
@@ -72,11 +86,25 @@
                 50% { transform: translate(5%, -5%); }
                 75% { transform: translate(-5%, -5%); }
             }
+
+            /* Critical navbar styles */
+            .navbar {
+                background: white !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .container, .container-fluid {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+            }
         </style>
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
         {% endblock %}
     </head>
     <body>
@@ -87,7 +115,7 @@
                     <i class="bi bi-fire"></i> ОФЕРТИ
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -118,6 +146,12 @@
                                 <i class="bi bi-basket"></i> Alleop
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'app_recommendations' ? 'active' : '' }}"
+                               href="{{ path('app_recommendations') }}">
+                                <i class="bi bi-stars"></i> За теб
+                            </a>
+                        </li>
 
                     </ul>
 
@@ -130,8 +164,8 @@
                                    placeholder="Търси продукти..."
                                    value="{{ app.request.query.get('q', '') }}"
                                    aria-label="Search">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="bi bi-search"></i>
+                            <button class="btn btn-primary" type="submit" aria-label="Search">
+                                <i class="bi bi-search" aria-hidden="true"></i>
                             </button>
                         </div>
                     </form>
@@ -149,17 +183,17 @@
             }
             .nav-link {
                 font-weight: 600;
-                color: #6c757d !important;
+                color: #495057 !important;
                 padding: 0.5rem 1rem !important;
                 border-radius: 8px;
                 transition: all 0.3s ease;
             }
             .nav-link:hover {
                 background: #f8f9fa;
-                color: #667eea !important;
+                color: #5568d3 !important;
             }
             .nav-link.active {
-                background: #667eea;
+                background: #5568d3;
                 color: white !important;
             }
             .input-group {

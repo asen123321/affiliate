@@ -56,7 +56,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -67,7 +67,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-5 text-center mb-4 mb-lg-0">
                     {% if review.imageUrl %}
-                        <img src="{{ review.imageUrl }}" alt="{{ review.title }}" class="img-fluid main-product-image">
+                        <img src="{{ review.imageUrl }}" alt="{{ review.title }}" class="img-fluid main-product-image" loading="eager" width="400" height="400">
                     {% else %}
                         <div class="main-product-image d-flex align-items-center justify-content-center" style="height: 300px;">
                             <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
@@ -97,12 +97,12 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-block">
-                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" class="btn btn-primary btn-lg px-5">
-                            <i class="bi bi-cart-check me-2"></i> ВИЖ ОФЕРТАТА
+                        <a href="{{ path('app_buy_redirect', {id: review.id}) }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg px-5" aria-label="View offer for {{ review.title }}">
+                            <i class="bi bi-cart-check me-2" aria-hidden="true"></i> ВИЖ ОФЕРТАТА
                         </a>
                         {# Бутонът Сравни цени скролва надолу #}
-                        <a href="#similar-offers" class="btn btn-outline-dark btn-lg px-4">
-                            <i class="bi bi-arrow-down-circle me-2"></i> Виж алтернативи
+                        <a href="#similar-offers" class="btn btn-outline-dark btn-lg px-4" aria-label="View alternatives">
+                            <i class="bi bi-arrow-down-circle me-2" aria-hidden="true"></i> Виж алтернативи
                         </a>
                     </div>
                 </div>
@@ -128,7 +128,15 @@
                 <h3 class="fw-bold m-0">
                     <i class="bi bi-tags text-primary me-2"></i> Най-добри алтернативи
                 </h3>
-                <span class="text-muted small"><i class="bi bi-info-circle"></i> Избери продукти за сравнение</span>
+                <div class="d-flex gap-2 align-items-center">
+                    {% if review.category %}
+                        <a href="{{ path('app_compare_category', {category: review.category}) }}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-left-right"></i> Сравни {{ review.category }} eMAG vs Alleop
+                        </a>
+                    {% endif %}
+                    <span class="text-muted small"><i class="bi bi-info-circle"></i> Избери продукти за сравнение</span>
+                </div>
             </div>
         </div>
 
@@ -161,12 +169,17 @@
                         </div>
 
                         <div class="position-relative text-center p-3" style="height: 200px; overflow: hidden; background: #fff;">
-                            <a href="{{ product.link }}" target="_blank">
-                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                            <a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" aria-label="View {{ product.title }}">
+                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid" style="max-height: 100%; object-fit: contain;" loading="lazy" width="200" height="200">
                             </a>
                             <span class="position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm">
                                 {{ product.platform }}
                             </span>
+                            {% if product.category is defined and product.category %}
+                                <span class="position-absolute top-0 end-0 badge bg-secondary m-2 shadow-sm" style="font-size: 0.7rem;">
+                                    {{ product.category }}
+                                </span>
+                            {% endif %}
                         </div>
 
                         <div class="card-body d-flex flex-column bg-light bg-opacity-10">
@@ -179,8 +192,8 @@
                             <div class="mt-auto pt-3 border-top">
                                 <h5 class="text-primary fw-bold mb-2">{{ product.price|number_format(2, '.', ' ') }} лв.</h5>
 
-                                <a href="{{ product.link }}" target="_blank" class="btn btn-outline-primary w-100 btn-sm rounded-pill">
-                                    Виж оферта <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                <a href="{{ product.link }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary w-100 btn-sm rounded-pill" aria-label="View offer for {{ product.title }}">
+                                    Виж оферта <i class="bi bi-box-arrow-up-right ms-1" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </div>
@@ -204,9 +217,9 @@
                     </div>
                 </div>
                 <div>
-                    <button class="btn btn-danger btn-sm me-2" onclick="clearComparison()">Изчисти</button>
-                    <button class="btn btn-primary px-4" onclick="openCompareModal()">
-                        <i class="bi bi-columns-gap me-2"></i> СРАВНИ СЕГА
+                    <button class="btn btn-danger btn-sm me-2" onclick="clearComparison()" aria-label="Clear comparison selection">Изчисти</button>
+                    <button class="btn btn-primary px-4" onclick="openCompareModal()" aria-label="Compare selected products">
+                        <i class="bi bi-columns-gap me-2" aria-hidden="true"></i> СРАВНИ СЕГА
                     </button>
                 </div>
             </div>

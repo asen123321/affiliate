@@ -1,20 +1,9 @@
 # robots.txt for ОФЕРТИ - Сравни цени
 
 User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: /sitemap.xml
-
-# Allow search engines to crawl all product pages
-Allow: /review/
-Allow: /search
-Allow: /compare-prices
-
-# Disallow admin/private areas (if any in the future)
 Disallow: /admin/
 Disallow: /_profiler/
 Disallow: /_wdt/
 
-# Crawl-delay for polite bots
-Crawl-delay: 1
+# Sitemap
+Sitemap: https://closed-kellsie-usersymfony-c839c76e.koyeb.app/sitemap.xml
