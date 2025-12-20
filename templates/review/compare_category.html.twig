@@ -1,0 +1,280 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Сравни {{ categoryName|default(category)|title }} - eMAG vs Alleop{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold mb-3">
+                <i class="bi bi-arrow-left-right text-primary"></i>
+                Сравни {{ categoryName|default(category)|title }}
+            </h1>
+            <p class="lead text-muted">
+                Сравнение на цени между eMAG и Alleop за {{ categoryName|default(category)|title }}
+            </p>
+        </div>
+    </div>
+
+    {% set hasProducts = products.emag|length > 0 or products.alleop|length > 0 %}
+
+    {% if hasProducts %}
+        <!-- Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="card shadow-sm text-center h-100 border-primary">
+                    <div class="card-body">
+                        <i class="bi bi-laptop display-4 text-primary mb-3"></i>
+                        <h4 class="card-title">eMAG</h4>
+                        <p class="display-6 fw-bold text-primary mb-2">{{ products.emag|length }}</p>
+                        <small class="text-muted">{{ categoryName|default(category)|title }}</small>
+                        {% if products.emag|length > 0 %}
+                            {% set emagPrices = products.emag|map(p => p.price)|filter(p => p > 0) %}
+                            {% if emagPrices|length > 0 %}
+                                <hr class="my-3">
+                                <div class="text-start">
+                                    <small class="text-muted d-block">Най-ниска цена:</small>
+                                    <strong class="text-success">{{ min(emagPrices)|number_format(2, '.', ' ') }} лв.</strong>
+                                    <small class="text-muted d-block mt-2">Средна цена:</small>
+                                    <strong>{{ (emagPrices|reduce((carry, price) => carry + price, 0) / emagPrices|length)|number_format(2, '.', ' ') }} лв.</strong>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm text-center h-100 border-success">
+                    <div class="card-body">
+                        <i class="bi bi-basket display-4 text-success mb-3"></i>
+                        <h4 class="card-title">Alleop</h4>
+                        <p class="display-6 fw-bold text-success mb-2">{{ products.alleop|length }}</p>
+                        <small class="text-muted">{{ categoryName|default(category)|title }}</small>
+                        {% if products.alleop|length > 0 %}
+                            {% set alleopPrices = products.alleop|map(p => p.price)|filter(p => p > 0) %}
+                            {% if alleopPrices|length > 0 %}
+                                <hr class="my-3">
+                                <div class="text-start">
+                                    <small class="text-muted d-block">Най-ниска цена:</small>
+                                    <strong class="text-success">{{ min(alleopPrices)|number_format(2, '.', ' ') }} лв.</strong>
+                                    <small class="text-muted d-block mt-2">Средна цена:</small>
+                                    <strong>{{ (alleopPrices|reduce((carry, price) => carry + price, 0) / alleopPrices|length)|number_format(2, '.', ' ') }} лв.</strong>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Comparison Chart -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">
+                            <i class="bi bi-bar-chart-line-fill text-primary"></i>
+                            Сравнение на цени
+                        </h3>
+                        <canvas id="priceChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products by Platform Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if products.emag|length > 0 %}active{% endif %}"
+                                id="emag-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#emag"
+                                type="button">
+                            <i class="bi bi-laptop"></i> eMAG
+                            <span class="badge bg-light text-dark ms-2">{{ products.emag|length }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if products.emag|length == 0 %}active{% endif %}"
+                                id="alleop-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#alleop"
+                                type="button">
+                            <i class="bi bi-basket"></i> Alleop
+                            <span class="badge bg-light text-dark ms-2">{{ products.alleop|length }}</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- eMAG Tab -->
+                    <div class="tab-pane fade {% if products.emag|length > 0 %}show active{% endif %}"
+                         id="emag"
+                         role="tabpanel">
+                        {% if products.emag|length > 0 %}
+                            <div class="row g-3">
+                                {% for product in products.emag %}
+                                    {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'eMAG'} %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> Няма {{ categoryName|default(category)|title }} в eMAG
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Alleop Tab -->
+                    <div class="tab-pane fade {% if products.emag|length == 0 %}show active{% endif %}"
+                         id="alleop"
+                         role="tabpanel">
+                        {% if products.alleop|length > 0 %}
+                            <div class="row g-3">
+                                {% for product in products.alleop %}
+                                    {% include 'review/_product_card_compare.html.twig' with {'product': product, 'platform': 'Alleop'} %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> Няма {{ categoryName|default(category)|title }} в Alleop
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('priceChart');
+
+                const emagProducts = {{ products.emag|json_encode|raw }};
+                const alleopProducts = {{ products.alleop|json_encode|raw }};
+
+                function getAveragePrice(products) {
+                    if (!products || products.length === 0) return 0;
+                    const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price)));
+                    if (validPrices.length === 0) return 0;
+                    const total = validPrices.reduce((sum, p) => sum + parseFloat(p.price), 0);
+                    return parseFloat((total / validPrices.length).toFixed(2));
+                }
+
+                function getMinPrice(products) {
+                    if (!products || products.length === 0) return 0;
+                    const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+                    if (validPrices.length === 0) return 0;
+                    return parseFloat(Math.min(...validPrices).toFixed(2));
+                }
+
+                function getMaxPrice(products) {
+                    if (!products || products.length === 0) return 0;
+                    const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price))).map(p => parseFloat(p.price));
+                    if (validPrices.length === 0) return 0;
+                    return parseFloat(Math.max(...validPrices).toFixed(2));
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['eMAG', 'Alleop'],
+                        datasets: [
+                            {
+                                label: 'Най-ниска цена (лв.)',
+                                data: [
+                                    getMinPrice(emagProducts),
+                                    getMinPrice(alleopProducts)
+                                ],
+                                backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)'],
+                                borderColor: ['rgba(59, 130, 246, 1)', 'rgba(34, 197, 94, 1)'],
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Средна цена (лв.)',
+                                data: [
+                                    getAveragePrice(emagProducts),
+                                    getAveragePrice(alleopProducts)
+                                ],
+                                backgroundColor: ['rgba(99, 102, 241, 0.6)', 'rgba(74, 222, 128, 0.6)'],
+                                borderColor: ['rgba(99, 102, 241, 1)', 'rgba(74, 222, 128, 1)'],
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Най-висока цена (лв.)',
+                                data: [
+                                    getMaxPrice(emagProducts),
+                                    getMaxPrice(alleopProducts)
+                                ],
+                                backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(251, 146, 60, 0.6)'],
+                                borderColor: ['rgba(239, 68, 68, 1)', 'rgba(251, 146, 60, 1)'],
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true, position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' лв.';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    {% else %}
+        <div class="alert alert-warning text-center py-5">
+            <i class="bi bi-exclamation-triangle display-1 mb-3"></i>
+            <h3>Няма намерени продукти за "{{ categoryName|default(category)|title }}"</h3>
+            <p class="mb-4">Опитайте друга категория или разгледайте всички продукти.</p>
+            <a href="{{ path('app_home') }}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Към всички продукти
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .nav-pills .nav-link:not(.active) {
+        background: #f8f9fa;
+        color: #6c757d;
+    }
+    .nav-pills .nav-link:hover:not(.active) {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+</style>
+{% endblock %}

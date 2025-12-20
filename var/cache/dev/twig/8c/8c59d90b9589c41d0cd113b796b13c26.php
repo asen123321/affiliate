@@ -321,28 +321,46 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                 <h3 class=\"fw-bold m-0\">
                     <i class=\"bi bi-tags text-primary me-2\"></i> Най-добри алтернативи
                 </h3>
-                <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+                <div class=\"d-flex gap-2 align-items-center\">
+                    ";
+        // line 132
+        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 132, $this->source); })()), "category", [], "any", false, false, false, 132)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 133
+            yield "                        <a href=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_compare_category", ["category" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 133, $this->source); })()), "category", [], "any", false, false, false, 133)]), "html", null, true);
+            yield "\"
+                           class=\"btn btn-outline-primary btn-sm\">
+                            <i class=\"bi bi-arrow-left-right\"></i> Сравни ";
+            // line 135
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 135, $this->source); })()), "category", [], "any", false, false, false, 135), "html", null, true);
+            yield " eMAG vs Alleop
+                        </a>
+                    ";
+        }
+        // line 138
+        yield "                    <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+                </div>
             </div>
         </div>
 
         <div class=\"row g-3\">
             ";
-        // line 137
-        yield "            ";
-        $context["allProducts"] = Twig\Extension\CoreExtension::merge([["title" => CoreExtension::getAttribute($this->env, $this->source,         // line 138
-(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 138, $this->source); })()), "title", [], "any", false, false, false, 138), "price" => CoreExtension::getAttribute($this->env, $this->source,         // line 139
-(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 139, $this->source); })()), "price", [], "any", false, false, false, 139), "image" => CoreExtension::getAttribute($this->env, $this->source,         // line 140
-(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 140, $this->source); })()), "imageUrl", [], "any", false, false, false, 140), "link" => $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source,         // line 141
-(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 141, $this->source); })()), "id", [], "any", false, false, false, 141)]), "platform" => (((($tmp = CoreExtension::getAttribute($this->env, $this->source,         // line 142
-(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 142, $this->source); })()), "badge", [], "any", false, false, false, 142)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? (CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 142, $this->source); })()), "badge", [], "any", false, false, false, 142)) : ("Main")), "badge_class" => "bg-primary"]],         // line 144
-(isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 144, $this->source); })()));
         // line 145
+        yield "            ";
+        $context["allProducts"] = Twig\Extension\CoreExtension::merge([["title" => CoreExtension::getAttribute($this->env, $this->source,         // line 146
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 146, $this->source); })()), "title", [], "any", false, false, false, 146), "price" => CoreExtension::getAttribute($this->env, $this->source,         // line 147
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 147, $this->source); })()), "price", [], "any", false, false, false, 147), "image" => CoreExtension::getAttribute($this->env, $this->source,         // line 148
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 148, $this->source); })()), "imageUrl", [], "any", false, false, false, 148), "link" => $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source,         // line 149
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 149, $this->source); })()), "id", [], "any", false, false, false, 149)]), "platform" => (((($tmp = CoreExtension::getAttribute($this->env, $this->source,         // line 150
+(isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 150, $this->source); })()), "badge", [], "any", false, false, false, 150)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? (CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 150, $this->source); })()), "badge", [], "any", false, false, false, 150)) : ("Main")), "badge_class" => "bg-primary"]],         // line 152
+(isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 152, $this->source); })()));
+        // line 153
         yield "
             ";
-        // line 147
+        // line 155
         yield "            ";
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 147, $this->source); })()));
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 155, $this->source); })()));
         $context['_iterated'] = false;
         $context['loop'] = [
           'parent' => $context['_parent'],
@@ -358,86 +376,99 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
             $context['loop']['last'] = 1 === $length;
         }
         foreach ($context['_seq'] as $context["_key"] => $context["product"]) {
-            // line 148
+            // line 156
             yield "                <div class=\"col-6 col-md-4 col-lg-3\">
                     <div class=\"card h-100 similar-card\">
 
                         ";
-            // line 152
+            // line 160
             yield "                        <div class=\"compare-checkbox-wrapper\">
                             <input class=\"form-check-input compare-checkbox shadow-sm\"
                                    type=\"checkbox\"
                                    data-title=\"";
-            // line 155
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 155), "html", null, true);
+            // line 163
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 163), "html", null, true);
             yield "\"
                                    data-price=\"";
-            // line 156
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 156), "html", null, true);
+            // line 164
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 164), "html", null, true);
             yield "\"
                                    data-image=\"";
-            // line 157
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 157), "html", null, true);
+            // line 165
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 165), "html", null, true);
             yield "\"
                                    data-platform=\"";
-            // line 158
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 158), "html", null, true);
+            // line 166
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 166), "html", null, true);
             yield "\"
                                    data-link=\"";
-            // line 159
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 159), "html", null, true);
+            // line 167
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 167), "html", null, true);
             yield "\"
                                    id=\"compare_";
-            // line 160
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["loop"], "index", [], "any", false, false, false, 160), "html", null, true);
+            // line 168
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["loop"], "index", [], "any", false, false, false, 168), "html", null, true);
             yield "\">
                         </div>
 
                         <div class=\"position-relative text-center p-3\" style=\"height: 200px; overflow: hidden; background: #fff;\">
                             <a href=\"";
-            // line 164
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 164), "html", null, true);
+            // line 172
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 172), "html", null, true);
             yield "\" target=\"_blank\">
                                 <img src=\"";
-            // line 165
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 165), "html", null, true);
+            // line 173
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "image", [], "any", false, false, false, 173), "html", null, true);
             yield "\" alt=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 165), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 173), "html", null, true);
             yield "\" class=\"img-fluid\" style=\"max-height: 100%; object-fit: contain;\">
                             </a>
                             <span class=\"position-absolute top-0 start-0 badge ";
-            // line 167
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "badge_class", [], "any", false, false, false, 167), "html", null, true);
+            // line 175
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "badge_class", [], "any", false, false, false, 175), "html", null, true);
             yield " m-2 shadow-sm\">
                                 ";
-            // line 168
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 168), "html", null, true);
+            // line 176
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "platform", [], "any", false, false, false, 176), "html", null, true);
             yield "
                             </span>
-                        </div>
+                            ";
+            // line 178
+            if ((CoreExtension::getAttribute($this->env, $this->source, $context["product"], "category", [], "any", true, true, false, 178) && CoreExtension::getAttribute($this->env, $this->source, $context["product"], "category", [], "any", false, false, false, 178))) {
+                // line 179
+                yield "                                <span class=\"position-absolute top-0 end-0 badge bg-secondary m-2 shadow-sm\" style=\"font-size: 0.7rem;\">
+                                    ";
+                // line 180
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "category", [], "any", false, false, false, 180), "html", null, true);
+                yield "
+                                </span>
+                            ";
+            }
+            // line 183
+            yield "                        </div>
 
                         <div class=\"card-body d-flex flex-column bg-light bg-opacity-10\">
                             <h6 class=\"card-title mb-2\" style=\"font-size: 0.95rem; line-height: 1.4;\">
                                 <a href=\"";
-            // line 174
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 174), "html", null, true);
+            // line 187
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 187), "html", null, true);
             yield "\" target=\"_blank\" class=\"text-decoration-none text-dark\">
                                     ";
-            // line 175
-            yield (((Twig\Extension\CoreExtension::length($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175)) > 40)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((Twig\Extension\CoreExtension::slice($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175), 0, 40) . "..."), "html", null, true)) : ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 175), "html", null, true)));
+            // line 188
+            yield (((Twig\Extension\CoreExtension::length($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 188)) > 40)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((Twig\Extension\CoreExtension::slice($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 188), 0, 40) . "..."), "html", null, true)) : ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "title", [], "any", false, false, false, 188), "html", null, true)));
             yield "
                                 </a>
                             </h6>
 
                             <div class=\"mt-auto pt-3 border-top\">
                                 <h5 class=\"text-primary fw-bold mb-2\">";
-            // line 180
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 180), 2, ".", " "), "html", null, true);
+            // line 193
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "price", [], "any", false, false, false, 193), 2, ".", " "), "html", null, true);
             yield " лв.</h5>
 
                                 <a href=\"";
-            // line 182
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 182), "html", null, true);
+            // line 195
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["product"], "link", [], "any", false, false, false, 195), "html", null, true);
             yield "\" target=\"_blank\" class=\"btn btn-outline-primary w-100 btn-sm rounded-pill\">
                                     Виж оферта <i class=\"bi bi-box-arrow-up-right ms-1\"></i>
                                 </a>
@@ -456,9 +487,9 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                 $context['loop']['last'] = 0 === $context['loop']['revindex0'];
             }
         }
-        // line 189
+        // line 202
         if (!$context['_iterated']) {
-            // line 190
+            // line 203
             yield "                <div class=\"col-12 text-center py-5\">
                     <div class=\"alert alert-secondary\">Няма намерени подобни продукти.</div>
                 </div>
@@ -467,12 +498,12 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['product'], $context['_parent'], $context['_iterated'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 194
+        // line 207
         yield "        </div>
     </div>
 
     ";
-        // line 198
+        // line 211
         yield "    <div id=\"compareBar\">
         <div class=\"container\">
             <div class=\"d-flex align-items-center justify-content-between\">
@@ -492,7 +523,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
     </div>
 
     ";
-        // line 217
+        // line 230
         yield "    <div class=\"modal fade\" id=\"compareModal\" tabindex=\"-1\" aria-hidden=\"true\">
         <div class=\"modal-dialog modal-xl modal-dialog-centered\">
             <div class=\"modal-content\">
@@ -516,31 +547,31 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
     </div>
 
     ";
-        // line 240
+        // line 253
         yield "    <script>
         // 1. Chart.js Логика
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('priceChart');
             const currentPrice = ";
-        // line 244
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 244, $this->source); })()), "price", [], "any", false, false, false, 244), "html", null, true);
+        // line 257
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 257, $this->source); })()), "price", [], "any", false, false, false, 257), "html", null, true);
         yield ";
             const similarPrices = [
                 ";
-        // line 246
+        // line 259
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 246, $this->source); })()));
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["similarProducts"]) || array_key_exists("similarProducts", $context) ? $context["similarProducts"] : (function () { throw new RuntimeError('Variable "similarProducts" does not exist.', 259, $this->source); })()));
         foreach ($context['_seq'] as $context["_key"] => $context["p"]) {
-            // line 247
+            // line 260
             yield "                ";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["p"], "price", [], "any", false, false, false, 247), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["p"], "price", [], "any", false, false, false, 260), "html", null, true);
             yield ",
                 ";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['p'], $context['_parent']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 249
+        // line 262
         yield "            ];
             let avgPrice = currentPrice;
             if (similarPrices.length > 0) {
@@ -575,24 +606,24 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
         // Вкарваме текущия продукт автоматично като първа опция (невидим в масива, но може да се добави)
         const mainProduct = {
             title: \"";
-        // line 282
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 282, $this->source); })()), "title", [], "any", false, false, false, 282), "js"), "html", null, true);
+        // line 295
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 295, $this->source); })()), "title", [], "any", false, false, false, 295), "js"), "html", null, true);
         yield "\",
             price: ";
-        // line 283
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 283, $this->source); })()), "price", [], "any", false, false, false, 283), "html", null, true);
+        // line 296
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 296, $this->source); })()), "price", [], "any", false, false, false, 296), "html", null, true);
         yield ",
             image: \"";
-        // line 284
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 284, $this->source); })()), "imageUrl", [], "any", false, false, false, 284), "html", null, true);
+        // line 297
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 297, $this->source); })()), "imageUrl", [], "any", false, false, false, 297), "html", null, true);
         yield "\",
             platform: \"";
-        // line 285
-        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 285, $this->source); })()), "badge", [], "any", false, false, false, 285)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 285, $this->source); })()), "badge", [], "any", false, false, false, 285), "html", null, true)) : ("Ревю"));
+        // line 298
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 298, $this->source); })()), "badge", [], "any", false, false, false, 298)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 298, $this->source); })()), "badge", [], "any", false, false, false, 298), "html", null, true)) : ("Ревю"));
         yield "\",
             link: \"";
-        // line 286
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 286, $this->source); })()), "id", [], "any", false, false, false, 286)]), "html", null, true);
+        // line 299
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_buy_redirect", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["review"]) || array_key_exists("review", $context) ? $context["review"] : (function () { throw new RuntimeError('Variable "review" does not exist.', 299, $this->source); })()), "id", [], "any", false, false, false, 299)]), "html", null, true);
         yield "\"
         };
 
@@ -742,7 +773,7 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  595 => 286,  591 => 285,  587 => 284,  583 => 283,  579 => 282,  544 => 249,  535 => 247,  531 => 246,  526 => 244,  520 => 240,  496 => 217,  476 => 198,  471 => 194,  462 => 190,  460 => 189,  440 => 182,  435 => 180,  427 => 175,  423 => 174,  414 => 168,  410 => 167,  403 => 165,  399 => 164,  392 => 160,  388 => 159,  384 => 158,  380 => 157,  376 => 156,  372 => 155,  367 => 152,  362 => 148,  343 => 147,  340 => 145,  338 => 144,  337 => 142,  336 => 141,  335 => 140,  334 => 139,  333 => 138,  331 => 137,  319 => 126,  308 => 116,  295 => 104,  289 => 100,  282 => 96,  274 => 91,  271 => 90,  265 => 89,  258 => 88,  254 => 87,  247 => 83,  244 => 82,  238 => 80,  236 => 79,  231 => 76,  225 => 72,  217 => 70,  215 => 69,  209 => 65,  206 => 63,  193 => 62,  178 => 58,  165 => 57,  103 => 6,  90 => 5,  66 => 3,  43 => 1,);
+        return array (  626 => 299,  622 => 298,  618 => 297,  614 => 296,  610 => 295,  575 => 262,  566 => 260,  562 => 259,  557 => 257,  551 => 253,  527 => 230,  507 => 211,  502 => 207,  493 => 203,  491 => 202,  471 => 195,  466 => 193,  458 => 188,  454 => 187,  448 => 183,  442 => 180,  439 => 179,  437 => 178,  432 => 176,  428 => 175,  421 => 173,  417 => 172,  410 => 168,  406 => 167,  402 => 166,  398 => 165,  394 => 164,  390 => 163,  385 => 160,  380 => 156,  361 => 155,  358 => 153,  356 => 152,  355 => 150,  354 => 149,  353 => 148,  352 => 147,  351 => 146,  349 => 145,  341 => 138,  335 => 135,  329 => 133,  327 => 132,  319 => 126,  308 => 116,  295 => 104,  289 => 100,  282 => 96,  274 => 91,  271 => 90,  265 => 89,  258 => 88,  254 => 87,  247 => 83,  244 => 82,  238 => 80,  236 => 79,  231 => 76,  225 => 72,  217 => 70,  215 => 69,  209 => 65,  206 => 63,  193 => 62,  178 => 58,  165 => 57,  103 => 6,  90 => 5,  66 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -877,7 +908,15 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                 <h3 class=\"fw-bold m-0\">
                     <i class=\"bi bi-tags text-primary me-2\"></i> Най-добри алтернативи
                 </h3>
-                <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+                <div class=\"d-flex gap-2 align-items-center\">
+                    {% if review.category %}
+                        <a href=\"{{ path('app_compare_category', {category: review.category}) }}\"
+                           class=\"btn btn-outline-primary btn-sm\">
+                            <i class=\"bi bi-arrow-left-right\"></i> Сравни {{ review.category }} eMAG vs Alleop
+                        </a>
+                    {% endif %}
+                    <span class=\"text-muted small\"><i class=\"bi bi-info-circle\"></i> Избери продукти за сравнение</span>
+                </div>
             </div>
         </div>
 
@@ -916,6 +955,11 @@ class __TwigTemplate_9a78b1dbe3c6ae058d990b07ec7af56e extends Template
                             <span class=\"position-absolute top-0 start-0 badge {{ product.badge_class }} m-2 shadow-sm\">
                                 {{ product.platform }}
                             </span>
+                            {% if product.category is defined and product.category %}
+                                <span class=\"position-absolute top-0 end-0 badge bg-secondary m-2 shadow-sm\" style=\"font-size: 0.7rem;\">
+                                    {{ product.category }}
+                                </span>
+                            {% endif %}
                         </div>
 
                         <div class=\"card-body d-flex flex-column bg-light bg-opacity-10\">

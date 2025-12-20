@@ -19,6 +19,7 @@ return [
         '/' => [[['_route' => 'app_home', '_controller' => 'App\\Controller\\ReviewController::index'], null, null, null, false, false, null]],
         '/search' => [[['_route' => 'app_search', '_controller' => 'App\\Controller\\ReviewController::search'], null, null, null, false, false, null]],
         '/compare-prices' => [[['_route' => 'app_compare_prices', '_controller' => 'App\\Controller\\ReviewController::comparePrices'], null, null, null, false, false, null]],
+        '/recommendations' => [[['_route' => 'app_recommendations', '_controller' => 'App\\Controller\\ReviewController::recommendations'], null, null, null, false, false, null]],
         '/webhook/profitshare' => [[['_route' => 'app_webhook_profitshare', '_controller' => 'App\\Controller\\WebhookController::profitshareWebhook'], null, ['GET' => 0], null, false, false, null]],
     ],
     [ // $regexpList
@@ -42,7 +43,8 @@ return [
                     .')'
                 .')'
                 .'|/review/([^/]++)(*:218)'
-                .'|/buy/([^/]++)(*:239)'
+                .'|/compare\\-category/([^/]++)(*:253)'
+                .'|/buy/([^/]++)(*:274)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -55,7 +57,8 @@ return [
         181 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
         191 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
         218 => [[['_route' => 'app_review_show', '_controller' => 'App\\Controller\\ReviewController::show'], ['slug'], null, null, false, true, null]],
-        239 => [
+        253 => [[['_route' => 'app_compare_category', '_controller' => 'App\\Controller\\ReviewController::compareCategory'], ['category'], null, null, false, true, null]],
+        274 => [
             [['_route' => 'app_buy_redirect', '_controller' => 'App\\Controller\\ReviewController::buyRedirect'], ['id'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],

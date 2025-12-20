@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Препоръки базирани на разгледаните продукти{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i class="bi bi-stars text-warning"></i>
+                Вашите персонализирани препоръки
+            </h1>
+            <p class="lead text-muted">
+                Базирано на вашите разгледани категории и интереси
+            </p>
+        </div>
+    </div>
+
+    {% if viewedCategories|length > 0 %}
+        <!-- Viewed Categories Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">
+                            <i class="bi bi-clock-history text-primary"></i>
+                            Вашите категории по интерес
+                        </h3>
+                        <div class="row g-3">
+                            {% for categoryData in viewedCategories %}
+                                {% if categoryData.category %}
+                                    <div class="col-md-4 col-lg-3">
+                                        <div class="card h-100 border-primary">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-primary mb-3">
+                                                    {{ categoryData.category }}
+                                                </h5>
+                                                <p class="text-muted mb-3">
+                                                    <i class="bi bi-eye"></i>
+                                                    Разгледани: <strong>{{ categoryData.view_count }}</strong>
+                                                </p>
+                                                <div class="d-grid gap-2">
+                                                    <a href="{{ path('app_compare_category', {category: categoryData.category}) }}"
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-arrow-left-right"></i> Сравни платформи
+                                                    </a>
+                                                    <a href="{{ path('app_compare_prices', {category: categoryData.category}) }}"
+                                                       class="btn btn-outline-secondary btn-sm">
+                                                        <i class="bi bi-search"></i> Търси в категория
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Products Section -->
+        {% if recommendedProducts|length > 0 %}
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h3 class="mb-4">
+                        <i class="bi bi-gift text-success"></i>
+                        Препоръчани продукти за вас
+                    </h3>
+                    <div class="row g-4">
+                        {% for product in recommendedProducts %}
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card h-100 shadow-sm product-card">
+                                    <div class="position-relative text-center p-3" style="height: 200px; overflow: hidden; background: #fff;">
+                                        <a href="{{ product.link }}">
+                                            <img src="{{ product.image }}"
+                                                 alt="{{ product.title }}"
+                                                 class="img-fluid"
+                                                 style="max-height: 100%; object-fit: contain;">
+                                        </a>
+                                        {% if product.category %}
+                                            <span class="position-absolute top-0 end-0 badge bg-primary m-2 shadow-sm">
+                                                {{ product.category }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-2" style="min-height: 48px;">
+                                            <a href="{{ product.link }}" class="text-decoration-none text-dark">
+                                                {{ product.title|length > 50 ? product.title|slice(0, 50) ~ '...' : product.title }}
+                                            </a>
+                                        </h6>
+                                        {% if product.rating is defined %}
+                                            <div class="text-warning mb-2">
+                                                {% for i in 1..5 %}
+                                                    {% if i <= product.rating %}
+                                                        <i class="bi bi-star-fill"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        <h5 class="text-primary fw-bold mb-3">
+                                            {{ product.price|number_format(2, '.', ' ') }} лв.
+                                        </h5>
+                                        <a href="{{ product.link }}" class="btn btn-outline-primary w-100 btn-sm">
+                                            Виж повече <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i>
+                Разгледайте повече продукти, за да получите персонализирани препоръки!
+            </div>
+        {% endif %}
+
+        <!-- Recent Views Section -->
+        {% if recentViews|length > 0 %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="card-title mb-4">
+                                <i class="bi bi-list-ul text-info"></i>
+                                Скорошно разгледани продукти
+                            </h3>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Продукт</th>
+                                            <th>Категория</th>
+                                            <th>Дата</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for view in recentViews %}
+                                            <tr>
+                                                <td>
+                                                    {% if view.productUrl %}
+                                                        <a href="{{ view.productUrl }}" class="text-decoration-none">
+                                                            {{ view.productName }}
+                                                        </a>
+                                                    {% else %}
+                                                        {{ view.productName }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if view.category %}
+                                                        <span class="badge bg-secondary">{{ view.category }}</span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-muted">
+                                                    {{ view.createdAt|date('d.m.Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+            <h3 class="mb-3">Все още нямате разгледани продукти</h3>
+            <p class="text-muted mb-4">
+                Започнете да разглеждате продукти, за да получите персонализирани препоръки!
+            </p>
+            <a href="{{ path('app_home') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house"></i> Разгледай продукти
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .product-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+    }
+</style>
+{% endblock %}

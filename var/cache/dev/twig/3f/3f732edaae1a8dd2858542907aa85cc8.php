@@ -298,15 +298,17 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["detailUrl"]) || array_key_exists("detailUrl", $context) ? $context["detailUrl"] : (function () { throw new RuntimeError('Variable "detailUrl" does not exist.', 131, $this->source); })()), "html", null, true);
                 yield "\" ";
                 if ((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 131, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
-                    yield "target=\"_blank\"";
+                    yield "target=\"_blank\" rel=\"noopener noreferrer\"";
                 }
-                yield ">
+                yield " aria-label=\"View ";
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayName"]) || array_key_exists("displayName", $context) ? $context["displayName"] : (function () { throw new RuntimeError('Variable "displayName" does not exist.', 131, $this->source); })()), "html", null, true);
+                yield "\">
                                     <img src=\"";
                 // line 132
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayImage"]) || array_key_exists("displayImage", $context) ? $context["displayImage"] : (function () { throw new RuntimeError('Variable "displayImage" does not exist.', 132, $this->source); })()), "html", null, true);
                 yield "\" class=\"product-image img-fluid\" alt=\"";
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayName"]) || array_key_exists("displayName", $context) ? $context["displayName"] : (function () { throw new RuntimeError('Variable "displayName" does not exist.', 132, $this->source); })()), "html", null, true);
-                yield "\" loading=\"lazy\">
+                yield "\" loading=\"lazy\" width=\"220\" height=\"220\">
                                 </a>
                                 <div class=\"image-overlay\">
                                     <a href=\"";
@@ -314,9 +316,13 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["detailUrl"]) || array_key_exists("detailUrl", $context) ? $context["detailUrl"] : (function () { throw new RuntimeError('Variable "detailUrl" does not exist.', 135, $this->source); })()), "html", null, true);
                 yield "\" ";
                 if ((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 135, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
-                    yield "target=\"_blank\"";
+                    yield "target=\"_blank\" rel=\"noopener noreferrer\"";
                 }
-                yield " class=\"quick-view\" style=\"text-decoration: none; cursor: pointer;\">
+                yield " class=\"quick-view\" style=\"text-decoration: none; cursor: pointer;\" aria-label=\"";
+                yield (((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 135, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("View in store") : ("Quick view"));
+                yield " ";
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayName"]) || array_key_exists("displayName", $context) ? $context["displayName"] : (function () { throw new RuntimeError('Variable "displayName" does not exist.', 135, $this->source); })()), "html", null, true);
+                yield "\">
                                         👁️ ";
                 // line 136
                 yield (((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 136, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("ВИЖ В МАГАЗИНА") : ("QUICK VIEW"));
@@ -389,16 +395,20 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["detailUrl"]) || array_key_exists("detailUrl", $context) ? $context["detailUrl"] : (function () { throw new RuntimeError('Variable "detailUrl" does not exist.', 167, $this->source); })()), "html", null, true);
             yield "\" class=\"btn-product-cta\" ";
             if ((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 167, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
-                yield "target=\"_blank\"";
+                yield "target=\"_blank\" rel=\"noopener noreferrer\"";
             }
-            yield ">
+            yield " aria-label=\"";
+            yield (((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 167, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Buy now") : ("View deal"));
+            yield " - ";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayName"]) || array_key_exists("displayName", $context) ? $context["displayName"] : (function () { throw new RuntimeError('Variable "displayName" does not exist.', 167, $this->source); })()), "html", null, true);
+            yield "\">
                                 <span class=\"cta-text\">
-                                    <i class=\"bi bi-lightning-charge-fill me-1\"></i>
+                                    <i class=\"bi bi-lightning-charge-fill me-1\" aria-hidden=\"true\"></i>
                                     ";
             // line 170
             yield (((($tmp = (isset($context["isExternal"]) || array_key_exists("isExternal", $context) ? $context["isExternal"] : (function () { throw new RuntimeError('Variable "isExternal" does not exist.', 170, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("КУПИ СЕГА") : ("VIEW DEAL"));
             yield "
-                                    <i class=\"bi bi-arrow-right ms-1\"></i>
+                                    <i class=\"bi bi-arrow-right ms-1\" aria-hidden=\"true\"></i>
                                 </span>
                                 <span class=\"cta-glow\"></span>
                             </a>
@@ -692,7 +702,7 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  538 => 230,  534 => 228,  528 => 226,  526 => 225,  517 => 223,  514 => 222,  510 => 220,  508 => 219,  505 => 218,  499 => 217,  489 => 215,  486 => 214,  482 => 213,  479 => 212,  475 => 210,  473 => 209,  466 => 207,  463 => 206,  457 => 204,  455 => 203,  452 => 202,  450 => 201,  447 => 200,  444 => 199,  441 => 198,  438 => 197,  434 => 194,  421 => 186,  419 => 185,  399 => 170,  389 => 167,  383 => 163,  378 => 162,  368 => 158,  362 => 155,  359 => 154,  353 => 153,  348 => 152,  344 => 151,  338 => 147,  330 => 141,  322 => 136,  314 => 135,  306 => 132,  298 => 131,  295 => 130,  292 => 129,  285 => 123,  278 => 119,  274 => 117,  271 => 116,  267 => 113,  264 => 111,  261 => 110,  258 => 109,  255 => 108,  253 => 107,  250 => 106,  247 => 105,  245 => 104,  243 => 103,  240 => 102,  237 => 101,  234 => 100,  231 => 98,  228 => 97,  225 => 95,  222 => 94,  218 => 93,  214 => 92,  211 => 91,  208 => 89,  205 => 88,  201 => 87,  197 => 86,  193 => 85,  190 => 84,  188 => 83,  185 => 81,  182 => 80,  179 => 78,  177 => 77,  172 => 76,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+        return array (  548 => 230,  544 => 228,  538 => 226,  536 => 225,  527 => 223,  524 => 222,  520 => 220,  518 => 219,  515 => 218,  509 => 217,  499 => 215,  496 => 214,  492 => 213,  489 => 212,  485 => 210,  483 => 209,  476 => 207,  473 => 206,  467 => 204,  465 => 203,  462 => 202,  460 => 201,  457 => 200,  454 => 199,  451 => 198,  448 => 197,  444 => 194,  431 => 186,  429 => 185,  409 => 170,  395 => 167,  389 => 163,  384 => 162,  374 => 158,  368 => 155,  365 => 154,  359 => 153,  354 => 152,  350 => 151,  344 => 147,  336 => 141,  328 => 136,  316 => 135,  308 => 132,  298 => 131,  295 => 130,  292 => 129,  285 => 123,  278 => 119,  274 => 117,  271 => 116,  267 => 113,  264 => 111,  261 => 110,  258 => 109,  255 => 108,  253 => 107,  250 => 106,  247 => 105,  245 => 104,  243 => 103,  240 => 102,  237 => 101,  234 => 100,  231 => 98,  228 => 97,  225 => 95,  222 => 94,  218 => 93,  214 => 92,  211 => 91,  208 => 89,  205 => 88,  201 => 87,  197 => 86,  193 => 85,  190 => 84,  188 => 83,  185 => 81,  182 => 80,  179 => 78,  177 => 77,  172 => 76,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -827,11 +837,11 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                         {# СНИМКА #}
                         {% if displayImage %}
                             <div class=\"product-image-wrapper\">
-                                <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\"{% endif %}>
-                                    <img src=\"{{ displayImage }}\" class=\"product-image img-fluid\" alt=\"{{ displayName }}\" loading=\"lazy\">
+                                <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\" rel=\"noopener noreferrer\"{% endif %} aria-label=\"View {{ displayName }}\">
+                                    <img src=\"{{ displayImage }}\" class=\"product-image img-fluid\" alt=\"{{ displayName }}\" loading=\"lazy\" width=\"220\" height=\"220\">
                                 </a>
                                 <div class=\"image-overlay\">
-                                    <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\"{% endif %} class=\"quick-view\" style=\"text-decoration: none; cursor: pointer;\">
+                                    <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\" rel=\"noopener noreferrer\"{% endif %} class=\"quick-view\" style=\"text-decoration: none; cursor: pointer;\" aria-label=\"{{ isExternal ? 'View in store' : 'Quick view' }} {{ displayName }}\">
                                         👁️ {{ isExternal ? 'ВИЖ В МАГАЗИНА' : 'QUICK VIEW' }}
                                     </a>
                                 </div>
@@ -863,11 +873,11 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                                 <div class=\"price-tag\">💰 BEST PRICE</div>
                             </div>
 
-                            <a href=\"{{ detailUrl }}\" class=\"btn-product-cta\" {% if isExternal %}target=\"_blank\"{% endif %}>
+                            <a href=\"{{ detailUrl }}\" class=\"btn-product-cta\" {% if isExternal %}target=\"_blank\" rel=\"noopener noreferrer\"{% endif %} aria-label=\"{{ isExternal ? 'Buy now' : 'View deal' }} - {{ displayName }}\">
                                 <span class=\"cta-text\">
-                                    <i class=\"bi bi-lightning-charge-fill me-1\"></i>
+                                    <i class=\"bi bi-lightning-charge-fill me-1\" aria-hidden=\"true\"></i>
                                     {{ isExternal ? 'КУПИ СЕГА' : 'VIEW DEAL' }}
-                                    <i class=\"bi bi-arrow-right ms-1\"></i>
+                                    <i class=\"bi bi-arrow-right ms-1\" aria-hidden=\"true\"></i>
                                 </span>
                                 <span class=\"cta-glow\"></span>
                             </a>
@@ -1053,6 +1063,6 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
     </style>
 
 {% endblock %}
-", "review/index.html.twig", "/home/needy/affiliate-site/templates/review/index.html.twig");
+", "review/index.html.twig", "/var/www/html/templates/review/index.html.twig");
     }
 }

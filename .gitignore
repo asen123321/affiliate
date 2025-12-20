@@ -1,4 +1,2 @@
 ###> symfony/framework-bundle ###
-.env
-
-
+/.env

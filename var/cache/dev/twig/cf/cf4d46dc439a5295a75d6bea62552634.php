@@ -128,31 +128,44 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
 
         <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🔥</text></svg>\">
 
-        <!-- Bootstrap 5.3 -->
-        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
-        <!-- Bootstrap Icons -->
-        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\">
-        <!-- Google Fonts - Modern & Bold -->
+        <!-- Preconnect to improve loading performance -->
+        <link rel=\"preconnect\" href=\"https://cdn.jsdelivr.net\" crossorigin>
         <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
         <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
-        <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\">
+
+        <!-- Bootstrap 5.3 -->
+        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\"></noscript>
+
+        <!-- Bootstrap Icons -->
+        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\"></noscript>
+
+        <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
+        <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\"></noscript>
 
         ";
-        // line 43
+        // line 51
         yield from $this->unwrap()->yieldBlock('stylesheets', $context, $blocks);
-        // line 45
+        // line 53
         yield "
         <style>
+            /* Critical CSS - Above the fold styles */
             * {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
 
             body {
                 background: #f8f9fa;
                 overflow-x: hidden;
+                line-height: 1.6;
             }
 
-            /* Animated gradient background */
+            /* Animated gradient background - optimized */
             body::before {
                 content: '';
                 position: fixed;
@@ -163,6 +176,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                 background: linear-gradient(45deg, #667eea15 0%, #764ba215 25%, #f093fb15 50%, #667eea15 75%, #764ba215 100%);
                 animation: gradient-shift 15s ease infinite;
                 z-index: -1;
+                will-change: transform;
             }
 
             @keyframes gradient-shift {
@@ -171,25 +185,39 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                 50% { transform: translate(5%, -5%); }
                 75% { transform: translate(-5%, -5%); }
             }
+
+            /* Critical navbar styles */
+            .navbar {
+                background: white !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .container, .container-fluid {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+            }
         </style>
 
         ";
-        // line 77
+        // line 105
         yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
-        // line 81
+        // line 109
         yield "    </head>
     <body>
         <!-- Navigation Bar with Search and Filters -->
         <nav class=\"navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top\">
             <div class=\"container-fluid\">
                 <a class=\"navbar-brand fw-bold text-primary\" href=\"";
-        // line 86
+        // line 114
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home");
         yield "\">
                     <i class=\"bi bi-fire\"></i> ОФЕРТИ
                 </a>
 
-                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\">
+                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"navbarNav\">
                     <span class=\"navbar-toggler-icon\"></span>
                 </button>
 
@@ -198,11 +226,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                     <ul class=\"navbar-nav me-auto mb-2 mb-lg-0\">
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 98
-        yield ((( !CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 98, $this->source); })()), "request", [], "any", false, false, false, 98), "query", [], "any", false, false, false, 98), "get", ["source"], "method", false, false, false, 98) && (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 98, $this->source); })()), "request", [], "any", false, false, false, 98), "get", ["_route"], "method", false, false, false, 98) == "app_home"))) ? ("active") : (""));
+        // line 126
+        yield ((( !CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 126, $this->source); })()), "request", [], "any", false, false, false, 126), "query", [], "any", false, false, false, 126), "get", ["source"], "method", false, false, false, 126) && (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 126, $this->source); })()), "request", [], "any", false, false, false, 126), "get", ["_route"], "method", false, false, false, 126) == "app_home"))) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 99
+        // line 127
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home");
         yield "\">
                                 <i class=\"bi bi-house-fill\"></i> Всички
@@ -210,11 +238,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 104
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 104, $this->source); })()), "request", [], "any", false, false, false, 104), "query", [], "any", false, false, false, 104), "get", ["source"], "method", false, false, false, 104) == "emag")) ? ("active") : (""));
+        // line 132
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 132, $this->source); })()), "request", [], "any", false, false, false, 132), "query", [], "any", false, false, false, 132), "get", ["source"], "method", false, false, false, 132) == "emag")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 105
+        // line 133
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "emag"]);
         yield "\">
                                 <i class=\"bi bi-laptop\"></i> eMAG
@@ -222,11 +250,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 110
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 110, $this->source); })()), "request", [], "any", false, false, false, 110), "query", [], "any", false, false, false, 110), "get", ["source"], "method", false, false, false, 110) == "fashion_days")) ? ("active") : (""));
+        // line 138
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 138, $this->source); })()), "request", [], "any", false, false, false, 138), "query", [], "any", false, false, false, 138), "get", ["source"], "method", false, false, false, 138) == "fashion_days")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 111
+        // line 139
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "fashion_days"]);
         yield "\">
                                 <i class=\"bi bi-bag-heart\"></i> Fashion Days
@@ -234,14 +262,26 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                         </li>
                         <li class=\"nav-item\">
                             <a class=\"nav-link ";
-        // line 116
-        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 116, $this->source); })()), "request", [], "any", false, false, false, 116), "query", [], "any", false, false, false, 116), "get", ["source"], "method", false, false, false, 116) == "alleop")) ? ("active") : (""));
+        // line 144
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 144, $this->source); })()), "request", [], "any", false, false, false, 144), "query", [], "any", false, false, false, 144), "get", ["source"], "method", false, false, false, 144) == "alleop")) ? ("active") : (""));
         yield "\"
                                href=\"";
-        // line 117
+        // line 145
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_home", ["source" => "alleop"]);
         yield "\">
                                 <i class=\"bi bi-basket\"></i> Alleop
+                            </a>
+                        </li>
+                        <li class=\"nav-item\">
+                            <a class=\"nav-link ";
+        // line 150
+        yield (((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 150, $this->source); })()), "request", [], "any", false, false, false, 150), "get", ["_route"], "method", false, false, false, 150) == "app_recommendations")) ? ("active") : (""));
+        yield "\"
+                               href=\"";
+        // line 151
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_recommendations");
+        yield "\">
+                                <i class=\"bi bi-stars\"></i> За теб
                             </a>
                         </li>
 
@@ -249,7 +289,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
 
                     <!-- Search Form -->
                     <form class=\"d-flex\" action=\"";
-        // line 125
+        // line 159
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_search");
         yield "\" method=\"get\">
                         <div class=\"input-group\">
@@ -258,12 +298,12 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                                    class=\"form-control\"
                                    placeholder=\"Търси продукти...\"
                                    value=\"";
-        // line 131
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 131, $this->source); })()), "request", [], "any", false, false, false, 131), "query", [], "any", false, false, false, 131), "get", ["q", ""], "method", false, false, false, 131), "html", null, true);
+        // line 165
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 165, $this->source); })()), "request", [], "any", false, false, false, 165), "query", [], "any", false, false, false, 165), "get", ["q", ""], "method", false, false, false, 165), "html", null, true);
         yield "\"
                                    aria-label=\"Search\">
-                            <button class=\"btn btn-primary\" type=\"submit\">
-                                <i class=\"bi bi-search\"></i>
+                            <button class=\"btn btn-primary\" type=\"submit\" aria-label=\"Search\">
+                                <i class=\"bi bi-search\" aria-hidden=\"true\"></i>
                             </button>
                         </div>
                     </form>
@@ -281,17 +321,17 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
             }
             .nav-link {
                 font-weight: 600;
-                color: #6c757d !important;
+                color: #495057 !important;
                 padding: 0.5rem 1rem !important;
                 border-radius: 8px;
                 transition: all 0.3s ease;
             }
             .nav-link:hover {
                 background: #f8f9fa;
-                color: #667eea !important;
+                color: #5568d3 !important;
             }
             .nav-link.active {
-                background: #667eea;
+                background: #5568d3;
                 color: white !important;
             }
             .input-group {
@@ -306,9 +346,9 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         </style>
 
         ";
-        // line 176
+        // line 210
         yield from $this->unwrap()->yieldBlock('body', $context, $blocks);
-        // line 177
+        // line 211
         yield "    </body>
 </html>
 ";
@@ -551,7 +591,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 43
+    // line 51
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -564,7 +604,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "stylesheets"));
 
-        // line 44
+        // line 52
         yield "        ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -575,7 +615,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 77
+    // line 105
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -588,11 +628,11 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 78
+        // line 106
         yield "            ";
         yield from $this->unwrap()->yieldBlock('importmap', $context, $blocks);
-        // line 79
-        yield "            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\"></script>
+        // line 107
+        yield "            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\" defer></script>
         ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -603,7 +643,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 78
+    // line 106
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -626,7 +666,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         yield from [];
     }
 
-    // line 176
+    // line 210
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -669,7 +709,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  630 => 176,  607 => 78,  595 => 79,  592 => 78,  579 => 77,  568 => 44,  555 => 43,  532 => 30,  509 => 29,  486 => 28,  463 => 21,  440 => 20,  417 => 19,  394 => 17,  371 => 14,  348 => 9,  325 => 8,  312 => 177,  310 => 176,  262 => 131,  253 => 125,  242 => 117,  238 => 116,  230 => 111,  226 => 110,  218 => 105,  214 => 104,  206 => 99,  202 => 98,  187 => 86,  180 => 81,  178 => 77,  144 => 45,  142 => 43,  126 => 30,  122 => 29,  118 => 28,  114 => 27,  105 => 21,  101 => 20,  97 => 19,  93 => 18,  89 => 17,  83 => 14,  75 => 9,  71 => 8,  62 => 1,);
+        return array (  670 => 210,  647 => 106,  635 => 107,  632 => 106,  619 => 105,  608 => 52,  595 => 51,  572 => 30,  549 => 29,  526 => 28,  503 => 21,  480 => 20,  457 => 19,  434 => 17,  411 => 14,  388 => 9,  365 => 8,  352 => 211,  350 => 210,  302 => 165,  293 => 159,  282 => 151,  278 => 150,  270 => 145,  266 => 144,  258 => 139,  254 => 138,  246 => 133,  242 => 132,  234 => 127,  230 => 126,  215 => 114,  208 => 109,  206 => 105,  152 => 53,  150 => 51,  126 => 30,  122 => 29,  118 => 28,  114 => 27,  105 => 21,  101 => 20,  97 => 19,  93 => 18,  89 => 17,  83 => 14,  75 => 9,  71 => 8,  62 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -707,29 +747,42 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
 
         <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🔥</text></svg>\">
 
-        <!-- Bootstrap 5.3 -->
-        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
-        <!-- Bootstrap Icons -->
-        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\">
-        <!-- Google Fonts - Modern & Bold -->
+        <!-- Preconnect to improve loading performance -->
+        <link rel=\"preconnect\" href=\"https://cdn.jsdelivr.net\" crossorigin>
         <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
         <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
-        <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\">
+
+        <!-- Bootstrap 5.3 -->
+        <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\"></noscript>
+
+        <!-- Bootstrap Icons -->
+        <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css\"></noscript>
+
+        <!-- Google Fonts - Modern & Bold with display=swap for better performance -->
+        <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\" media=\"print\" onload=\"this.media='all'\">
+        <noscript><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap\" rel=\"stylesheet\"></noscript>
 
         {% block stylesheets %}
         {% endblock %}
 
         <style>
+            /* Critical CSS - Above the fold styles */
             * {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
 
             body {
                 background: #f8f9fa;
                 overflow-x: hidden;
+                line-height: 1.6;
             }
 
-            /* Animated gradient background */
+            /* Animated gradient background - optimized */
             body::before {
                 content: '';
                 position: fixed;
@@ -740,6 +793,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                 background: linear-gradient(45deg, #667eea15 0%, #764ba215 25%, #f093fb15 50%, #667eea15 75%, #764ba215 100%);
                 animation: gradient-shift 15s ease infinite;
                 z-index: -1;
+                will-change: transform;
             }
 
             @keyframes gradient-shift {
@@ -748,11 +802,25 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                 50% { transform: translate(5%, -5%); }
                 75% { transform: translate(-5%, -5%); }
             }
+
+            /* Critical navbar styles */
+            .navbar {
+                background: white !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .container, .container-fluid {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+            }
         </style>
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
-            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\"></script>
+            <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\" defer></script>
         {% endblock %}
     </head>
     <body>
@@ -763,7 +831,7 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                     <i class=\"bi bi-fire\"></i> ОФЕРТИ
                 </a>
 
-                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\">
+                <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\" aria-label=\"Toggle navigation\" aria-expanded=\"false\" aria-controls=\"navbarNav\">
                     <span class=\"navbar-toggler-icon\"></span>
                 </button>
 
@@ -794,6 +862,12 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                                 <i class=\"bi bi-basket\"></i> Alleop
                             </a>
                         </li>
+                        <li class=\"nav-item\">
+                            <a class=\"nav-link {{ app.request.get('_route') == 'app_recommendations' ? 'active' : '' }}\"
+                               href=\"{{ path('app_recommendations') }}\">
+                                <i class=\"bi bi-stars\"></i> За теб
+                            </a>
+                        </li>
 
                     </ul>
 
@@ -806,8 +880,8 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
                                    placeholder=\"Търси продукти...\"
                                    value=\"{{ app.request.query.get('q', '') }}\"
                                    aria-label=\"Search\">
-                            <button class=\"btn btn-primary\" type=\"submit\">
-                                <i class=\"bi bi-search\"></i>
+                            <button class=\"btn btn-primary\" type=\"submit\" aria-label=\"Search\">
+                                <i class=\"bi bi-search\" aria-hidden=\"true\"></i>
                             </button>
                         </div>
                     </form>
@@ -825,17 +899,17 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
             }
             .nav-link {
                 font-weight: 600;
-                color: #6c757d !important;
+                color: #495057 !important;
                 padding: 0.5rem 1rem !important;
                 border-radius: 8px;
                 transition: all 0.3s ease;
             }
             .nav-link:hover {
                 background: #f8f9fa;
-                color: #667eea !important;
+                color: #5568d3 !important;
             }
             .nav-link.active {
-                background: #667eea;
+                background: #5568d3;
                 color: white !important;
             }
             .input-group {
@@ -852,6 +926,6 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         {% block body %}{% endblock %}
     </body>
 </html>
-", "base.html.twig", "/home/needy/affiliate-site/templates/base.html.twig");
+", "base.html.twig", "/var/www/html/templates/base.html.twig");
     }
 }

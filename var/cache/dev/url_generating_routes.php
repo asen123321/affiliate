@@ -23,6 +23,8 @@ return [
     'app_review_show' => [['slug'], ['_controller' => 'App\\Controller\\ReviewController::show'], [], [['variable', '/', '[^/]++', 'slug', true], ['text', '/review']], [], [], []],
     'app_search' => [[], ['_controller' => 'App\\Controller\\ReviewController::search'], [], [['text', '/search']], [], [], []],
     'app_compare_prices' => [[], ['_controller' => 'App\\Controller\\ReviewController::comparePrices'], [], [['text', '/compare-prices']], [], [], []],
+    'app_recommendations' => [[], ['_controller' => 'App\\Controller\\ReviewController::recommendations'], [], [['text', '/recommendations']], [], [], []],
+    'app_compare_category' => [['category'], ['_controller' => 'App\\Controller\\ReviewController::compareCategory'], [], [['variable', '/', '[^/]++', 'category', true], ['text', '/compare-category']], [], [], []],
     'app_buy_redirect' => [['id'], ['_controller' => 'App\\Controller\\ReviewController::buyRedirect'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/buy']], [], [], []],
     'app_webhook_profitshare' => [[], ['_controller' => 'App\\Controller\\WebhookController::profitshareWebhook'], [], [['text', '/webhook/profitshare']], [], [], []],
     'App\Controller\CompareController::index' => [[], ['_controller' => 'App\\Controller\\CompareController::index'], [], [['text', '/compare']], [], [], []],
@@ -30,6 +32,8 @@ return [
     'App\Controller\ReviewController::show' => [['slug'], ['_controller' => 'App\\Controller\\ReviewController::show'], [], [['variable', '/', '[^/]++', 'slug', true], ['text', '/review']], [], [], []],
     'App\Controller\ReviewController::search' => [[], ['_controller' => 'App\\Controller\\ReviewController::search'], [], [['text', '/search']], [], [], []],
     'App\Controller\ReviewController::comparePrices' => [[], ['_controller' => 'App\\Controller\\ReviewController::comparePrices'], [], [['text', '/compare-prices']], [], [], []],
+    'App\Controller\ReviewController::recommendations' => [[], ['_controller' => 'App\\Controller\\ReviewController::recommendations'], [], [['text', '/recommendations']], [], [], []],
+    'App\Controller\ReviewController::compareCategory' => [['category'], ['_controller' => 'App\\Controller\\ReviewController::compareCategory'], [], [['variable', '/', '[^/]++', 'category', true], ['text', '/compare-category']], [], [], []],
     'App\Controller\ReviewController::buyRedirect' => [['id'], ['_controller' => 'App\\Controller\\ReviewController::buyRedirect'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/buy']], [], [], []],
     'App\Controller\WebhookController::profitshareWebhook' => [[], ['_controller' => 'App\\Controller\\WebhookController::profitshareWebhook'], [], [['text', '/webhook/profitshare']], [], [], []],
 ];

@@ -30,18 +30,76 @@
     <div class="row mb-5">
         <div class="col-lg-8 mx-auto">
             <form action="{{ path('app_compare_prices') }}" method="get">
-                <div class="input-group input-group-lg shadow-sm">
+                <div class="input-group input-group-lg shadow-sm mb-3">
                     <input type="search"
                            name="q"
                            class="form-control"
                            placeholder="Например: кафемашина, лаптоп, рокля..."
-                           value="{{ query }}"
-                           required>
+                           value="{{ query }}">
                     <button class="btn btn-primary px-4" type="submit">
                         <i class="bi bi-search"></i> Сравни цени
                     </button>
                 </div>
+
+                <!-- Category Filter (optional) -->
+                <div class="mb-3">
+                    <label for="category" class="form-label fw-bold">Филтър по категория (опционално):</label>
+                    <input type="text"
+                           name="category"
+                           id="category"
+                           class="form-control"
+                           placeholder="Например: Телевизори, Лаптопи, Дрехи..."
+                           value="{{ category|default('') }}">
+                    <small class="form-text text-muted">
+                        Оставете празно за търсене във всички категории
+                    </small>
+                </div>
             </form>
+
+            <!-- Quick Category Selection -->
+            <div class="mt-4">
+                <p class="fw-bold mb-2">
+                    <i class="bi bi-grid text-primary"></i> Бързо сравнение по категория:
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ path('app_compare_category', {category: 'tv'}) }}"
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-tv"></i> Телевизори
+                    </a>
+                    <a href="{{ path('app_compare_category', {category: 'phone'}) }}"
+                       class="btn btn-outline-success">
+                        <i class="bi bi-phone"></i> Телефони
+                    </a>
+                    <a href="{{ path('app_compare_category', {category: 'speaker'}) }}"
+                       class="btn btn-outline-info">
+                        <i class="bi bi-speaker"></i> Колонки
+                    </a>
+                    <a href="{{ path('app_compare_category', {category: 'laptop'}) }}"
+                       class="btn btn-outline-warning">
+                        <i class="bi bi-laptop"></i> Лаптопи
+                    </a>
+                </div>
+            </div>
+
+            {% if viewedCategories is defined and viewedCategories|length > 0 %}
+                <!-- Recently Viewed Categories -->
+                <div class="mt-4">
+                    <p class="fw-bold mb-2">
+                        <i class="bi bi-clock-history text-primary"></i> Вашите разгледани категории:
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for categoryData in viewedCategories %}
+                            {% if categoryData.category %}
+                                <a href="{{ path('app_compare_category', {category: categoryData.category}) }}"
+                                   class="badge bg-secondary text-decoration-none p-2">
+                                    {{ categoryData.category }}
+                                    <span class="badge bg-light text-dark ms-1">{{ categoryData.view_count }}</span>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 
