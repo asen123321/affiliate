@@ -172,6 +172,19 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
         $context['_parent'] = $context;
         $context['_seq'] = CoreExtension::ensureTraversable((isset($context["reviews"]) || array_key_exists("reviews", $context) ? $context["reviews"] : (function () { throw new RuntimeError('Variable "reviews" does not exist.', 76, $this->source); })()));
         $context['_iterated'] = false;
+        $context['loop'] = [
+          'parent' => $context['_parent'],
+          'index0' => 0,
+          'index'  => 1,
+          'first'  => true,
+        ];
+        if (is_array($context['_seq']) || (is_object($context['_seq']) && $context['_seq'] instanceof \Countable)) {
+            $length = count($context['_seq']);
+            $context['loop']['revindex0'] = $length - 1;
+            $context['loop']['revindex'] = $length;
+            $context['loop']['length'] = $length;
+            $context['loop']['last'] = 1 === $length;
+        }
         foreach ($context['_seq'] as $context["_key"] => $context["item"]) {
             // line 77
             yield "                ";
@@ -308,7 +321,13 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayImage"]) || array_key_exists("displayImage", $context) ? $context["displayImage"] : (function () { throw new RuntimeError('Variable "displayImage" does not exist.', 132, $this->source); })()), "html", null, true);
                 yield "\" class=\"product-image img-fluid\" alt=\"";
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["displayName"]) || array_key_exists("displayName", $context) ? $context["displayName"] : (function () { throw new RuntimeError('Variable "displayName" does not exist.', 132, $this->source); })()), "html", null, true);
-                yield "\" loading=\"lazy\" width=\"220\" height=\"220\">
+                yield "\" ";
+                if ((CoreExtension::getAttribute($this->env, $this->source, $context["loop"], "index", [], "any", false, false, false, 132) <= 4)) {
+                    yield "fetchpriority=\"high\" loading=\"eager\"";
+                } else {
+                    yield "loading=\"lazy\"";
+                }
+                yield " width=\"220\" height=\"220\" decoding=\"async\">
                                 </a>
                                 <div class=\"image-overlay\">
                                     <a href=\"";
@@ -424,6 +443,14 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                 </div>
             ";
             $context['_iterated'] = true;
+            ++$context['loop']['index0'];
+            ++$context['loop']['index'];
+            $context['loop']['first'] = false;
+            if (isset($context['loop']['revindex0'], $context['loop']['revindex'])) {
+                --$context['loop']['revindex0'];
+                --$context['loop']['revindex'];
+                $context['loop']['last'] = 0 === $context['loop']['revindex0'];
+            }
         }
         // line 185
         if (!$context['_iterated']) {
@@ -438,7 +465,7 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             ";
         }
         $_parent = $context['_parent'];
-        unset($context['_seq'], $context['_key'], $context['item'], $context['_parent'], $context['_iterated']);
+        unset($context['_seq'], $context['_key'], $context['item'], $context['_parent'], $context['_iterated'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
         // line 194
         yield "        </div>
@@ -573,6 +600,8 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             overflow: hidden; z-index: 1;
+            contain: strict;
+            pointer-events: none;
         }
 
         .btn-square {
@@ -629,23 +658,54 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4); transition: all 0.3s ease;
         }
 
-        .floating-emoji { position: relative; height: 400px; }
-        .emoji-item { position: absolute; font-size: 5rem; animation: float-emoji 6s infinite ease-in-out; }
-        @keyframes float-emoji { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }
+        .floating-emoji {
+            position: relative;
+            height: 400px;
+            contain: layout style paint;
+        }
+        .emoji-item {
+            position: absolute;
+            font-size: 5rem;
+            animation: float-emoji 6s infinite ease-in-out;
+            will-change: transform;
+        }
+        @keyframes float-emoji {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
 
         /* PRODUCT CARD */
         .product-card {
             background: white; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); transition: all 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            contain: layout style paint;
+            will-change: transform;
         }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25); }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+        }
 
         .badge-premium { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
         .hot-label { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 8px 16px; font-size: 0.7rem; font-weight: 900; border-bottom-left-radius: 15px; }
 
-        .product-image-wrapper { position: relative; height: 220px; overflow: hidden; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .product-card:hover .product-image { transform: scale(1.1); }
+        .product-image-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            will-change: transform;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
 
         .image-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -702,7 +762,7 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  548 => 230,  544 => 228,  538 => 226,  536 => 225,  527 => 223,  524 => 222,  520 => 220,  518 => 219,  515 => 218,  509 => 217,  499 => 215,  496 => 214,  492 => 213,  489 => 212,  485 => 210,  483 => 209,  476 => 207,  473 => 206,  467 => 204,  465 => 203,  462 => 202,  460 => 201,  457 => 200,  454 => 199,  451 => 198,  448 => 197,  444 => 194,  431 => 186,  429 => 185,  409 => 170,  395 => 167,  389 => 163,  384 => 162,  374 => 158,  368 => 155,  365 => 154,  359 => 153,  354 => 152,  350 => 151,  344 => 147,  336 => 141,  328 => 136,  316 => 135,  308 => 132,  298 => 131,  295 => 130,  292 => 129,  285 => 123,  278 => 119,  274 => 117,  271 => 116,  267 => 113,  264 => 111,  261 => 110,  258 => 109,  255 => 108,  253 => 107,  250 => 106,  247 => 105,  245 => 104,  243 => 103,  240 => 102,  237 => 101,  234 => 100,  231 => 98,  228 => 97,  225 => 95,  222 => 94,  218 => 93,  214 => 92,  211 => 91,  208 => 89,  205 => 88,  201 => 87,  197 => 86,  193 => 85,  190 => 84,  188 => 83,  185 => 81,  182 => 80,  179 => 78,  177 => 77,  172 => 76,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+        return array (  575 => 230,  571 => 228,  565 => 226,  563 => 225,  554 => 223,  551 => 222,  547 => 220,  545 => 219,  542 => 218,  536 => 217,  526 => 215,  523 => 214,  519 => 213,  516 => 212,  512 => 210,  510 => 209,  503 => 207,  500 => 206,  494 => 204,  492 => 203,  489 => 202,  487 => 201,  484 => 200,  481 => 199,  478 => 198,  475 => 197,  471 => 194,  458 => 186,  456 => 185,  428 => 170,  414 => 167,  408 => 163,  403 => 162,  393 => 158,  387 => 155,  384 => 154,  378 => 153,  373 => 152,  369 => 151,  363 => 147,  355 => 141,  347 => 136,  335 => 135,  321 => 132,  311 => 131,  308 => 130,  305 => 129,  298 => 123,  291 => 119,  287 => 117,  284 => 116,  280 => 113,  277 => 111,  274 => 110,  271 => 109,  268 => 108,  266 => 107,  263 => 106,  260 => 105,  258 => 104,  256 => 103,  253 => 102,  250 => 101,  247 => 100,  244 => 98,  241 => 97,  238 => 95,  235 => 94,  231 => 93,  227 => 92,  224 => 91,  221 => 89,  218 => 88,  214 => 87,  210 => 86,  206 => 85,  203 => 84,  201 => 83,  198 => 81,  195 => 80,  192 => 78,  190 => 77,  172 => 76,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -838,7 +898,7 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
                         {% if displayImage %}
                             <div class=\"product-image-wrapper\">
                                 <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\" rel=\"noopener noreferrer\"{% endif %} aria-label=\"View {{ displayName }}\">
-                                    <img src=\"{{ displayImage }}\" class=\"product-image img-fluid\" alt=\"{{ displayName }}\" loading=\"lazy\" width=\"220\" height=\"220\">
+                                    <img src=\"{{ displayImage }}\" class=\"product-image img-fluid\" alt=\"{{ displayName }}\" {% if loop.index <= 4 %}fetchpriority=\"high\" loading=\"eager\"{% else %}loading=\"lazy\"{% endif %} width=\"220\" height=\"220\" decoding=\"async\">
                                 </a>
                                 <div class=\"image-overlay\">
                                     <a href=\"{{ detailUrl }}\" {% if isExternal %}target=\"_blank\" rel=\"noopener noreferrer\"{% endif %} class=\"quick-view\" style=\"text-decoration: none; cursor: pointer;\" aria-label=\"{{ isExternal ? 'View in store' : 'Quick view' }} {{ displayName }}\">
@@ -964,6 +1024,8 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             overflow: hidden; z-index: 1;
+            contain: strict;
+            pointer-events: none;
         }
 
         .btn-square {
@@ -1020,23 +1082,54 @@ class __TwigTemplate_0107af6e6ecefb5ac429c86b5263a4f0 extends Template
             box-shadow: 0 10px 40px rgba(255, 107, 107, 0.4); transition: all 0.3s ease;
         }
 
-        .floating-emoji { position: relative; height: 400px; }
-        .emoji-item { position: absolute; font-size: 5rem; animation: float-emoji 6s infinite ease-in-out; }
-        @keyframes float-emoji { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }
+        .floating-emoji {
+            position: relative;
+            height: 400px;
+            contain: layout style paint;
+        }
+        .emoji-item {
+            position: absolute;
+            font-size: 5rem;
+            animation: float-emoji 6s infinite ease-in-out;
+            will-change: transform;
+        }
+        @keyframes float-emoji {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
 
         /* PRODUCT CARD */
         .product-card {
             background: white; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); transition: all 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            contain: layout style paint;
+            will-change: transform;
         }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25); }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+        }
 
         .badge-premium { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
         .hot-label { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; padding: 8px 16px; font-size: 0.7rem; font-weight: 900; border-bottom-left-radius: 15px; }
 
-        .product-image-wrapper { position: relative; height: 220px; overflow: hidden; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .product-card:hover .product-image { transform: scale(1.1); }
+        .product-image-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            will-change: transform;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
 
         .image-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
