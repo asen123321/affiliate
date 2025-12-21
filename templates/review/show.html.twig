@@ -56,6 +56,8 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {# ВАЖНО: Добавяме Bootstrap Bundle за да работят модалите #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 {% endblock %}
 
@@ -122,19 +124,60 @@
             </div>
         </div>
 
+        {# --- 2.5 DETAILED COMPARISON TABLE --- #}
+        <div id="comparisonTableContainer" class="d-none mt-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-table text-success"></i>
+                        Детайлно сравнение на спецификации
+                    </h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle" id="comparisonTable">
+                            <thead class="table-light">
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# --- 3. ПОДОБНИ ОФЕРТИ (С ЧЕКБОКСОВЕ) --- #}
         <div class="row" id="similar-offers">
             <div class="col-12 mb-4 d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h3 class="fw-bold m-0">
                     <i class="bi bi-tags text-primary me-2"></i> Най-добри алтернативи
                 </h3>
-                <div class="d-flex gap-2 align-items-center">
-                    {% if review.category %}
-                        <a href="{{ path('app_compare_category', {category: review.category}) }}"
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+
+                    {# --- ЛОГИКА ЗА ПОЗНАВАНЕ НА КАТЕГОРИЯТА (Fix за eMAG) --- #}
+                    {% set compCategory = review.category %}
+
+                    {# Ако категорията е празна, проверяваме заглавието #}
+                    {% if not compCategory %}
+                        {% set lowerTitle = review.title|lower %}
+                        {% if 'tv' in lowerTitle or 'телевизор' in lowerTitle %}
+                            {% set compCategory = 'tv' %}
+                        {% elseif 'phone' in lowerTitle or 'телефон' in lowerTitle or 'gsm' in lowerTitle %}
+                            {% set compCategory = 'phone' %}
+                        {% elseif 'laptop' in lowerTitle or 'лаптоп' in lowerTitle %}
+                            {% set compCategory = 'laptop' %}
+                        {% endif %}
+                    {% endif %}
+
+                    {# Показваме бутона само ако сме намерили категория #}
+                    {% if compCategory %}
+                        <a href="{{ path('app_compare_category', {category: compCategory}) }}"
                            class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-arrow-left-right"></i> Сравни {{ review.category }} eMAG vs Alleop
+                            <i class="bi bi-arrow-left-right"></i> Сравни {{ compCategory }} eMAG vs Alleop
                         </a>
                     {% endif %}
+
+                    <button id="compareSelectedBtn" class="btn btn-outline-success btn-sm" style="display: none;">
+                        <i class="bi bi-check2-square"></i> Сравни избраните
+                    </button>
                     <span class="text-muted small"><i class="bi bi-info-circle"></i> Избери продукти за сравнение</span>
                 </div>
             </div>
@@ -160,11 +203,23 @@
                         <div class="compare-checkbox-wrapper">
                             <input class="form-check-input compare-checkbox shadow-sm"
                                    type="checkbox"
-                                   data-title="{{ product.title }}"
+                                   data-name="{{ product.title }}"
                                    data-price="{{ product.price }}"
-                                   data-image="{{ product.image }}"
+                                   data-img="{{ product.image }}"
                                    data-platform="{{ product.platform }}"
+
+                                {# ВАЖНО: Слепваме Заглавие + Описание за по-добро разпознаване на характеристиките #}
+                                   data-description="{{ product.title }} {{ product.description|default('')|striptags }}"
+
+                                   data-screen=""
+                                   data-resolution=""
+                                   data-type=""
+                                   data-smart=""
                                    data-link="{{ product.link }}"
+
+                                {# Ако няма кратко описание, ползваме заглавието #}
+                                   data-summary="{{ product.title }}"
+
                                    id="compare_{{ loop.index }}">
                         </div>
 
@@ -251,40 +306,252 @@
 
     {# --- СКРИПТОВЕ --- #}
     <script>
-        // 1. Chart.js Логика
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('priceChart');
-            const currentPrice = {{ review.price }};
-            const similarPrices = [
-                {% for p in similarProducts %}
-                {{ p.price }},
-                {% endfor %}
-            ];
-            let avgPrice = currentPrice;
-            if (similarPrices.length > 0) {
-                const sum = similarPrices.reduce((a, b) => a + b, 0) + currentPrice;
-                avgPrice = sum / (similarPrices.length + 1);
+        // 1. Chart.js Логика - HYBRID MODE (Default + Comparison)
+        let priceChart = null;
+        const ctx = document.getElementById('priceChart');
+        const currentPrice = {{ review.price }};
+        const similarPrices = [
+            {% for p in similarProducts %}
+            {{ p.price }},
+            {% endfor %}
+        ];
+
+        // Calculate average price for default mode
+        let avgPrice = currentPrice;
+        if (similarPrices.length > 0) {
+            const sum = similarPrices.reduce((a, b) => a + b, 0) + currentPrice;
+            avgPrice = sum / (similarPrices.length + 1);
+        }
+
+        // SMART SPEC PARSER - Extracts specs from description text
+        function parseSpecs(description, productName) {
+            const text = (description + ' ' + productName).toLowerCase();
+            const specs = {};
+
+            // Parse Screen Size (inches or cm)
+            const screenMatch = text.match(/\b(\d{2,3})["''\s]*(?:inch|инч|дюйм|"|'')/i) ||
+                text.match(/\b(\d{2,3})\s*см\b/i);
+            if (screenMatch) {
+                specs.screen = screenMatch[1] + (text.includes('см') ? ' см' : '"');
             }
 
-            new Chart(ctx, {
+            // Parse Resolution
+            const resolutionMatch = text.match(/\b(4K|8K|UHD|FHD|Full\s*HD|HD|QHD|2K)\b/i) ||
+                text.match(/\b(\d{3,4}\s*[xх×]\s*\d{3,4})\b/i);
+            if (resolutionMatch) {
+                specs.resolution = resolutionMatch[1].toUpperCase().replace(/\s/g, '');
+            }
+
+            // Parse Display Type
+            const typeMatch = text.match(/\b(OLED|QLED|Mini\s*LED|MiniLED|DLED|LED|LCD|Plasma)\b/i);
+            if (typeMatch) {
+                specs.type = typeMatch[1].replace(/\s/g, '');
+            }
+
+            // Parse Smart TV / OS
+            const smartMatch = text.match(/\b(Android\s*TV|Google\s*TV|WebOS|Tizen|Fire\s*TV|Smart\s*TV|Smart)\b/i);
+            if (smartMatch) {
+                specs.smart = smartMatch[1].replace(/\s+/g, ' ');
+            }
+
+            return specs;
+        }
+
+        // UPDATE COMPARISON TABLE
+        function updateComparisonTable() {
+            const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+            const tableContainer = document.getElementById('comparisonTableContainer');
+            const table = document.getElementById('comparisonTable');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+
+            if (checkedBoxes.length > 0) {
+                // Show table
+                tableContainer.classList.remove('d-none');
+
+                // Clear previous content
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                // Build table header with product images and names
+                let headerRow = '<tr><th class="bg-secondary text-white" style="width: 150px;">Характеристика</th>';
+                checkedBoxes.forEach(box => {
+                    const img = box.dataset.img || '';
+                    const name = box.dataset.name || 'Product';
+                    const platform = box.dataset.platform || '';
+
+                    headerRow += `
+                        <th class="text-center" style="min-width: 200px;">
+                            ${img ? `<img src="${img}" alt="${name}" class="img-fluid mb-2" style="max-height: 120px; object-fit: contain;">` : ''}
+                            <div class="fw-bold small">${name.slice(0, 50)}${name.length > 50 ? '...' : ''}</div>
+                            <span class="badge ${platform === 'eMAG' ? 'bg-primary' : platform === 'Fashion Days' ? 'bg-dark' : 'bg-success'} mt-1">${platform}</span>
+                        </th>
+                    `;
+                });
+                headerRow += '</tr>';
+                thead.innerHTML = headerRow;
+
+                // Build specification rows
+                const specs = [
+                    { label: 'Цена', key: 'price', format: (val) => `<span class="h5 text-primary fw-bold">${val} лв.</span>` },
+                    { label: 'Екран', key: 'screen', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                    { label: 'Резолюция', key: 'resolution', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                    { label: 'Тип дисплей', key: 'type', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                    { label: 'Smart TV / OS', key: 'smart', format: (val) => val || '<em class="text-muted">Не е посочено</em>' }
+                ];
+
+                specs.forEach(spec => {
+                    let row = `<tr><td class="fw-bold bg-light">${spec.label}</td>`;
+                    checkedBoxes.forEach(box => {
+                        let value = box.dataset[spec.key] || '';
+
+                        // SMART PARSING FALLBACK: If empty, try to extract from description
+                        if (!value && spec.key !== 'price') {
+                            const description = box.dataset.description || '';
+                            const productName = box.dataset.name || '';
+                            const parsed = parseSpecs(description, productName);
+                            value = parsed[spec.key] || '';
+                        }
+
+                        row += `<td class="text-center">${spec.format(value)}</td>`;
+                    });
+                    row += '</tr>';
+                    tbody.innerHTML += row;
+                });
+
+                // Build Review/Summary comparison row
+                let summaryRow = '<tr><td class="fw-bold bg-light">Описание</td>';
+                checkedBoxes.forEach(box => {
+                    const summary = box.dataset.summary || 'Няма налична информация';
+                    summaryRow += `<td class="text-start p-3"><small>${summary}</small></td>`;
+                });
+                summaryRow += '</tr>';
+                tbody.innerHTML += summaryRow;
+
+                // Build action row with "View Offer" buttons
+                let actionRow = '<tr><td class="fw-bold bg-light">Действие</td>';
+                checkedBoxes.forEach(box => {
+                    const link = box.dataset.link || '#';
+                    actionRow += `
+                        <td class="text-center">
+                            <a href="${link}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-cart-check"></i> Виж оферта
+                            </a>
+                        </td>
+                    `;
+                });
+                actionRow += '</tr>';
+                tbody.innerHTML += actionRow;
+
+            } else {
+                // Hide table
+                tableContainer.classList.add('d-none');
+            }
+        }
+
+        // Function to update chart based on selected products
+        function updateChart() {
+            // Get all checked checkboxes
+            const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+
+            let labels = [];
+            let dataPoints = [];
+            let backgroundColors = [];
+
+            if (checkedBoxes.length > 0) {
+                // --- PRODUCT COMPARISON MODE ---
+                checkedBoxes.forEach(box => {
+                    // Extract data from checkbox
+                    const productName = box.dataset.title;
+                    const productPrice = parseFloat(box.dataset.price);
+                    const platform = box.dataset.platform;
+
+                    // Shorten product name if too long
+                    const shortName = productName.length > 25 ? productName.slice(0, 25) + '...' : productName;
+                    labels.push(shortName);
+                    dataPoints.push(productPrice);
+
+                    // Assign color based on platform
+                    if (platform === 'eMAG') {
+                        backgroundColors.push('rgba(255, 99, 132, 0.7)'); // eMAG Red
+                    } else if (platform === 'Alleop') {
+                        backgroundColors.push('rgba(75, 192, 192, 0.7)'); // Alleop Green/Blue
+                    } else if (platform === 'Fashion Days') {
+                        backgroundColors.push('rgba(255, 159, 64, 0.7)'); // Fashion Days Orange
+                    } else {
+                        backgroundColors.push('rgba(153, 102, 255, 0.7)'); // Other Purple
+                    }
+                });
+            } else {
+                // --- DEFAULT PLATFORM MODE ---
+                // Show "THIS PRODUCT" vs "AVERAGE PRICE"
+                labels = ['ТОЗИ ПРОДУКТ', 'СРЕДНА ЦЕНА'];
+                dataPoints = [currentPrice, avgPrice];
+                backgroundColors = ['rgba(13, 110, 253, 0.7)', 'rgba(108, 117, 125, 0.5)'];
+            }
+
+            // Destroy existing chart if it exists
+            if (priceChart) {
+                priceChart.destroy();
+            }
+
+            // Create new chart
+            priceChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['ТОЗИ ПРОДУКТ', 'СРЕДНА ЦЕНА'],
+                    labels: labels,
                     datasets: [{
                         label: 'Цена (лв.)',
-                        data: [currentPrice, avgPrice],
-                        backgroundColor: ['rgba(13, 110, 253, 0.7)', 'rgba(108, 117, 125, 0.5)'],
-                        borderColor: ['rgb(13, 110, 253)', 'rgb(108, 117, 125)'],
+                        data: dataPoints,
+                        backgroundColor: backgroundColors,
                         borderWidth: 1,
                         borderRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: checkedBoxes.length > 0 ? 'Сравнение на избрани продукти' : 'Анализ на цената'
+                        }
+                    },
                     scales: { y: { beginAtZero: true } }
                 }
             });
+        }
+
+        // Initialize chart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateChart();
+            updateComparisonTable();
+            updateCompareButton();
+        });
+
+        // Update "Compare Selected" button visibility
+        function updateCompareButton() {
+            const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+            const compareBtn = document.getElementById('compareSelectedBtn');
+
+            if (checkedBoxes.length > 0) {
+                compareBtn.style.display = 'inline-block';
+            } else {
+                compareBtn.style.display = 'none';
+            }
+        }
+
+        // Smooth scroll to chart when "Compare Selected" is clicked
+        document.getElementById('compareSelectedBtn').addEventListener('click', function() {
+            const chartSection = document.getElementById('comparison');
+            if (chartSection) {
+                chartSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Update chart and table after scroll
+                setTimeout(function() {
+                    updateChart();
+                    updateComparisonTable();
+                }, 300);
+            }
         });
 
         // 2. Логика за Сравнението
@@ -296,21 +563,26 @@
             price: {{ review.price }},
             image: "{{ review.imageUrl }}",
             platform: "{{ review.badge ? review.badge : 'Ревю' }}",
-            link: "{{ path('app_buy_redirect', {id: review.id}) }}"
+            link: "{{ path('app_buy_redirect', {id: review.id}) }}",
+            // ВАЖНО: Добавяме описанието и тук, за да не е N/A в таблицата за главния продукт
+            description: "{{ review.title|e('js') }} {{ review.description|default('')|striptags|e('js') }}",
+            summary: "{{ review.title|e('js') }}"
         };
 
         const checkboxes = document.querySelectorAll('.compare-checkbox');
         const compareBar = document.getElementById('compareBar');
         const compareThumbs = document.getElementById('compareThumbs');
         const compareTableBody = document.getElementById('compareTableBody');
-        const compareModal = new bootstrap.Modal(document.getElementById('compareModal'));
+        // ВАЖНО: Не създаваме инстанцията веднага, за да избегнем грешки, ако Bootstrap не е заредил още
+        let compareModalInstance = null;
 
         checkboxes.forEach(box => {
             box.addEventListener('change', function() {
                 const product = {
-                    title: this.dataset.title,
+                    // ТУК БЕШЕ ГРЕШКАТА: Трябва да съвпадат с data-* атрибутите в HTML
+                    title: this.dataset.name,  // беше this.dataset.title
                     price: parseFloat(this.dataset.price),
-                    image: this.dataset.image,
+                    image: this.dataset.img,   // беше this.dataset.image
                     platform: this.dataset.platform,
                     link: this.dataset.link
                 };
@@ -323,9 +595,13 @@
                     }
                     selectedProducts.push(product);
                 } else {
+                    // Филтрираме по заглавие (name), защото това ползваме горе
                     selectedProducts = selectedProducts.filter(p => p.title !== product.title);
                 }
                 updateCompareUI();
+                updateChart();
+                updateComparisonTable();
+                updateCompareButton();
             });
         });
 
@@ -346,6 +622,9 @@
             selectedProducts = [];
             checkboxes.forEach(box => box.checked = false);
             updateCompareUI();
+            updateChart(); // Reset chart to default mode
+            updateComparisonTable(); // Hide comparison table
+            updateCompareButton(); // Hide button
         }
 
         function openCompareModal() {
@@ -410,8 +689,21 @@
             });
             html += `</tr>`;
 
+            // --- БЕЗОПАСНО ОТВАРЯНЕ НА МОДАЛА ---
+            const compareTableBody = document.getElementById('compareTableBody');
             compareTableBody.innerHTML = html;
-            compareModal.show();
+
+            const modalElement = document.getElementById('compareModal');
+            if (!compareModalInstance) {
+                // Инициализираме го само когато потребителят кликне, за да сме сигурни, че Bootstrap е заредил
+                if (typeof bootstrap !== 'undefined') {
+                    compareModalInstance = new bootstrap.Modal(modalElement);
+                } else {
+                    console.error('Bootstrap JS не е заредил! Проверете интернет връзката или CDN линковете.');
+                    return;
+                }
+            }
+            compareModalInstance.show();
         }
     </script>
 {% endblock %}

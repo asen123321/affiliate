@@ -12,13 +12,20 @@
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="display-6 fw-bold mb-3">
-                <i class="bi bi-arrow-left-right text-primary"></i>
-                Сравни {{ categoryName|default(category)|title }}
-            </h1>
-            <p class="lead text-muted">
-                Сравнение на цени между eMAG и Alleop за {{ categoryName|default(category)|title }}
-            </p>
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <h1 class="display-6 fw-bold mb-3">
+                        <i class="bi bi-arrow-left-right text-primary"></i>
+                        Сравни {{ categoryName|default(category)|title }}
+                    </h1>
+                    <p class="lead text-muted">
+                        Сравнение на цени между eMAG и Alleop за {{ categoryName|default(category)|title }}
+                    </p>
+                </div>
+                <button id="compareSelectedBtn" class="btn btn-outline-success" style="display: none;">
+                    <i class="bi bi-check2-square"></i> Сравни избраните
+                </button>
+            </div>
         </div>
     </div>
 
@@ -88,6 +95,26 @@
             </div>
         </div>
 
+        <!-- Detailed Comparison Table -->
+        <div id="comparisonTableContainer" class="d-none mt-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-table text-success"></i>
+                        Детайлно сравнение на спецификации
+                    </h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle" id="comparisonTable">
+                            <thead class="table-light">
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Products by Platform Tabs -->
         <div class="row">
             <div class="col-12">
@@ -152,14 +179,16 @@
             </div>
         </div>
 
-        <!-- Chart Script -->
+        <!-- Chart Script - HYBRID MODE -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const ctx = document.getElementById('priceChart');
+                let priceChart = null;
 
                 const emagProducts = {{ products.emag|json_encode|raw }};
                 const alleopProducts = {{ products.alleop|json_encode|raw }};
 
+                // Helper functions for platform statistics
                 function getAveragePrice(products) {
                     if (!products || products.length === 0) return 0;
                     const validPrices = products.filter(p => p && p.price && !isNaN(parseFloat(p.price)));
@@ -182,65 +211,320 @@
                     return parseFloat(Math.max(...validPrices).toFixed(2));
                 }
 
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['eMAG', 'Alleop'],
-                        datasets: [
-                            {
-                                label: 'Най-ниска цена (лв.)',
-                                data: [
-                                    getMinPrice(emagProducts),
-                                    getMinPrice(alleopProducts)
-                                ],
-                                backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)'],
-                                borderColor: ['rgba(59, 130, 246, 1)', 'rgba(34, 197, 94, 1)'],
-                                borderWidth: 2
-                            },
-                            {
-                                label: 'Средна цена (лв.)',
-                                data: [
-                                    getAveragePrice(emagProducts),
-                                    getAveragePrice(alleopProducts)
-                                ],
-                                backgroundColor: ['rgba(99, 102, 241, 0.6)', 'rgba(74, 222, 128, 0.6)'],
-                                borderColor: ['rgba(99, 102, 241, 1)', 'rgba(74, 222, 128, 1)'],
-                                borderWidth: 2
-                            },
-                            {
-                                label: 'Най-висока цена (лв.)',
-                                data: [
-                                    getMaxPrice(emagProducts),
-                                    getMaxPrice(alleopProducts)
-                                ],
-                                backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(251, 146, 60, 0.6)'],
-                                borderColor: ['rgba(239, 68, 68, 1)', 'rgba(251, 146, 60, 1)'],
-                                borderWidth: 2
+                // SMART SPEC PARSER - Extracts specs from description text
+                function parseSpecs(description, productName) {
+                    const text = (description + ' ' + productName).toLowerCase();
+                    const specs = {};
+
+                    // Parse Screen Size (inches or cm)
+                    const screenMatch = text.match(/\b(\d{2,3})["''\s]*(?:inch|инч|дюйм|"|'')/i) ||
+                                       text.match(/\b(\d{2,3})\s*см\b/i);
+                    if (screenMatch) {
+                        specs.screen = screenMatch[1] + (text.includes('см') ? ' см' : '"');
+                    }
+
+                    // Parse Resolution
+                    const resolutionMatch = text.match(/\b(4K|8K|UHD|FHD|Full\s*HD|HD|QHD|2K)\b/i) ||
+                                           text.match(/\b(\d{3,4}\s*[xх×]\s*\d{3,4})\b/i);
+                    if (resolutionMatch) {
+                        specs.resolution = resolutionMatch[1].toUpperCase().replace(/\s/g, '');
+                    }
+
+                    // Parse Display Type
+                    const typeMatch = text.match(/\b(OLED|QLED|Mini\s*LED|MiniLED|DLED|LED|LCD|Plasma)\b/i);
+                    if (typeMatch) {
+                        specs.type = typeMatch[1].replace(/\s/g, '');
+                    }
+
+                    // Parse Smart TV / OS
+                    const smartMatch = text.match(/\b(Android\s*TV|Google\s*TV|WebOS|Tizen|Fire\s*TV|Smart\s*TV|Smart)\b/i);
+                    if (smartMatch) {
+                        specs.smart = smartMatch[1].replace(/\s+/g, ' ');
+                    }
+
+                    return specs;
+                }
+
+                // UPDATE COMPARISON TABLE
+                function updateComparisonTable() {
+                    const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+                    const tableContainer = document.getElementById('comparisonTableContainer');
+                    const table = document.getElementById('comparisonTable');
+                    const thead = table.querySelector('thead');
+                    const tbody = table.querySelector('tbody');
+
+                    if (checkedBoxes.length > 0) {
+                        // Show table
+                        tableContainer.classList.remove('d-none');
+
+                        // Clear previous content
+                        thead.innerHTML = '';
+                        tbody.innerHTML = '';
+
+                        // Build table header with product images and names
+                        let headerRow = '<tr><th class="bg-secondary text-white" style="width: 150px;">Характеристика</th>';
+                        checkedBoxes.forEach(box => {
+                            const img = box.dataset.img || '';
+                            const name = box.dataset.name || 'Product';
+                            const platform = box.dataset.platform || '';
+
+                            headerRow += `
+                                <th class="text-center" style="min-width: 200px;">
+                                    ${img ? `<img src="${img}" alt="${name}" class="img-fluid mb-2" style="max-height: 120px; object-fit: contain;">` : ''}
+                                    <div class="fw-bold small">${name.slice(0, 50)}${name.length > 50 ? '...' : ''}</div>
+                                    <span class="badge ${platform === 'eMAG' ? 'bg-primary' : 'bg-success'} mt-1">${platform}</span>
+                                </th>
+                            `;
+                        });
+                        headerRow += '</tr>';
+                        thead.innerHTML = headerRow;
+
+                        // Build specification rows
+                        const specs = [
+                            { label: 'Цена', key: 'price', format: (val) => `<span class="h5 text-primary fw-bold">${val} лв.</span>` },
+                            { label: 'Екран', key: 'screen', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                            { label: 'Резолюция', key: 'resolution', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                            { label: 'Тип дисплей', key: 'type', format: (val) => val || '<em class="text-muted">Не е посочено</em>' },
+                            { label: 'Smart TV / OS', key: 'smart', format: (val) => val || '<em class="text-muted">Не е посочено</em>' }
+                        ];
+
+                        specs.forEach(spec => {
+                            let row = `<tr><td class="fw-bold bg-light">${spec.label}</td>`;
+                            checkedBoxes.forEach(box => {
+                                let value = box.dataset[spec.key] || '';
+
+                                // SMART PARSING FALLBACK: If empty, try to extract from description
+                                if (!value && spec.key !== 'price') {
+                                    const description = box.dataset.description || '';
+                                    const productName = box.dataset.name || '';
+                                    const parsed = parseSpecs(description, productName);
+                                    value = parsed[spec.key] || '';
+                                }
+
+                                row += `<td class="text-center">${spec.format(value)}</td>`;
+                            });
+                            row += '</tr>';
+                            tbody.innerHTML += row;
+                        });
+
+                        // Build Review/Summary comparison row
+                        let summaryRow = '<tr><td class="fw-bold bg-light">Описание</td>';
+                        checkedBoxes.forEach(box => {
+                            const summary = box.dataset.summary || 'Няма налична информация';
+                            summaryRow += `<td class="text-start p-3"><small>${summary}</small></td>`;
+                        });
+                        summaryRow += '</tr>';
+                        tbody.innerHTML += summaryRow;
+
+                        // Build action row with "View Offer" buttons
+                        let actionRow = '<tr><td class="fw-bold bg-light">Действие</td>';
+                        checkedBoxes.forEach(box => {
+                            const link = box.dataset.link || '#';
+                            actionRow += `
+                                <td class="text-center">
+                                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm w-100">
+                                        <i class="bi bi-cart-check"></i> Виж оферта
+                                    </a>
+                                </td>
+                            `;
+                        });
+                        actionRow += '</tr>';
+                        tbody.innerHTML += actionRow;
+
+                    } else {
+                        // Hide table
+                        tableContainer.classList.add('d-none');
+                    }
+                }
+
+                // HYBRID CHART UPDATE FUNCTION
+                function updateChart() {
+                    // Get all checked checkboxes
+                    const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+
+                    let chartData, chartOptions;
+
+                    if (checkedBoxes.length > 0) {
+                        // --- MODE A: PRODUCT COMPARISON (Priority) ---
+                        let labels = [];
+                        let dataPoints = [];
+                        let backgroundColors = [];
+
+                        checkedBoxes.forEach(box => {
+                            const productName = box.dataset.name;
+                            const productPrice = parseFloat(box.dataset.price);
+                            const platform = box.dataset.platform;
+
+                            // Shorten product name if too long
+                            const shortName = productName.length > 30 ? productName.slice(0, 30) + '...' : productName;
+                            labels.push(shortName);
+                            dataPoints.push(productPrice);
+
+                            // Assign color based on platform
+                            if (platform === 'eMAG') {
+                                backgroundColors.push('#ef2d2d'); // eMAG Red
+                            } else {
+                                backgroundColors.push('#009900'); // Alleop Green
                             }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: true, position: 'top' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
+                        });
+
+                        chartData = {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Цена (лв.)',
+                                data: dataPoints,
+                                backgroundColor: backgroundColors,
+                                borderWidth: 2,
+                                borderColor: backgroundColors
+                            }]
+                        };
+
+                        chartOptions = {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                title: {
+                                    display: true,
+                                    text: 'Сравнение на избрани продукти',
+                                    font: { size: 16, weight: 'bold' }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'Цена: ' + context.parsed.y + ' лв.';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + ' лв.';
+                                        }
                                     }
                                 }
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return value + ' лв.';
+                        };
+
+                    } else {
+                        // --- MODE B: PLATFORM OVERVIEW (Default) ---
+                        chartData = {
+                            labels: ['eMAG', 'Alleop'],
+                            datasets: [
+                                {
+                                    label: 'Най-ниска цена (лв.)',
+                                    data: [
+                                        getMinPrice(emagProducts),
+                                        getMinPrice(alleopProducts)
+                                    ],
+                                    backgroundColor: ['rgba(59, 130, 246, 0.8)', 'rgba(34, 197, 94, 0.8)'],
+                                    borderColor: ['rgba(59, 130, 246, 1)', 'rgba(34, 197, 94, 1)'],
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Средна цена (лв.)',
+                                    data: [
+                                        getAveragePrice(emagProducts),
+                                        getAveragePrice(alleopProducts)
+                                    ],
+                                    backgroundColor: ['rgba(99, 102, 241, 0.6)', 'rgba(74, 222, 128, 0.6)'],
+                                    borderColor: ['rgba(99, 102, 241, 1)', 'rgba(74, 222, 128, 1)'],
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Най-висока цена (лв.)',
+                                    data: [
+                                        getMaxPrice(emagProducts),
+                                        getMaxPrice(alleopProducts)
+                                    ],
+                                    backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(251, 146, 60, 0.6)'],
+                                    borderColor: ['rgba(239, 68, 68, 1)', 'rgba(251, 146, 60, 1)'],
+                                    borderWidth: 2
+                                }
+                            ]
+                        };
+
+                        chartOptions = {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                title: {
+                                    display: true,
+                                    text: 'Статистика по платформи (eMAG vs Alleop)',
+                                    font: { size: 16, weight: 'bold' }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' лв.';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + ' лв.';
+                                        }
                                     }
                                 }
                             }
-                        }
+                        };
+                    }
+
+                    // Destroy old chart if exists
+                    if (priceChart) {
+                        priceChart.destroy();
+                    }
+
+                    // Create new chart
+                    priceChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: chartOptions
+                    });
+                }
+
+                // Initialize chart on page load
+                updateChart();
+                updateComparisonTable();
+                updateCompareButton();
+
+                // Add event listeners to all checkboxes
+                document.querySelectorAll('.compare-checkbox').forEach(box => {
+                    box.addEventListener('change', function() {
+                        updateChart();
+                        updateComparisonTable();
+                        updateCompareButton();
+                    });
+                });
+
+                // Update "Compare Selected" button visibility
+                function updateCompareButton() {
+                    const checkedBoxes = document.querySelectorAll('.compare-checkbox:checked');
+                    const compareBtn = document.getElementById('compareSelectedBtn');
+
+                    if (checkedBoxes.length > 0) {
+                        compareBtn.style.display = 'inline-block';
+                    } else {
+                        compareBtn.style.display = 'none';
+                    }
+                }
+
+                // Smooth scroll to chart when "Compare Selected" is clicked
+                document.getElementById('compareSelectedBtn').addEventListener('click', function() {
+                    const chartSection = document.querySelector('.chart-container');
+                    if (chartSection) {
+                        chartSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Update chart and table after scroll
+                        setTimeout(function() {
+                            updateChart();
+                            updateComparisonTable();
+                        }, 300);
                     }
                 });
             });

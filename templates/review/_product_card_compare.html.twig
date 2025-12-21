@@ -1,9 +1,30 @@
 <div class="col-md-6 col-lg-4">
-    <div class="card h-100 shadow-sm hover-card">
-        {% if product.imageUrl %}
+    <div class="card h-100 shadow-sm hover-card position-relative">
+        {# Checkbox for comparison #}
+        <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+            {% set imgUrl = product.imageUrl ?? product.image ?? '' %}
+            {% set fullDescription = product.content ? product.content|striptags : (product.metaDescription ?? product.title) %}
+            {% set summary = product.metaDescription ?? (product.content ? product.content|striptags|slice(0, 200) : 'Няма налична информация') %}
+            <input class="form-check-input compare-checkbox shadow-sm"
+                   type="checkbox"
+                   data-name="{{ product.title }}"
+                   data-price="{{ product.price }}"
+                   data-platform="{{ platform }}"
+                   data-img="{{ imgUrl }}"
+                   data-description="{{ fullDescription }}"
+                   data-screen=""
+                   data-resolution=""
+                   data-type=""
+                   data-smart=""
+                   data-link="{{ path('app_buy_redirect', {id: product.id}) }}"
+                   data-summary="{{ summary }}"
+                   style="width: 1.5em; height: 1.5em; cursor: pointer; border: 2px solid #0d6efd;">
+        </div>
+
+        {% if imgUrl %}
             <div class="card-img-wrapper">
                 <a href="{{ path('app_buy_redirect', {id: product.id}) }}" target="_blank" rel="noopener noreferrer" class="d-block h-100 text-center">
-                    <img src="{{ product.imageUrl }}"
+                    <img src="{{ imgUrl }}"
                          class="card-img-top p-3"
                          alt="{{ product.title }}"
                          style="height: 200px; object-fit: contain; background: white;"
