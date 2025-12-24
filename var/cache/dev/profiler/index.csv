@@ -360,3 +360,4 @@ e843d7,172.18.0.1,GET,http://localhost/compare-category/watch,1766574513,,200,re
 bb316d,172.18.0.1,GET,http://localhost/?source=fashion_days,1766574520,,200,request
 cd6c03,172.18.0.1,GET,http://localhost/category/mzhki-drexi,1766574533,,200,request
 86941b,172.18.0.1,GET,http://localhost/category/parfyumi,1766575279,,200,request
+d4a680,172.18.0.1,GET,http://localhost/,1766576628,,200,request
