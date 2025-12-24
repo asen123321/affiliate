@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}   Best Tech Deals 2025 - Exclusive Reviews & Hot Offers{% endblock %}
+{% block title %}   Най добрите сделки през 2026 !{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -21,31 +21,31 @@
             <div class="row align-items-center py-5 hero-row">
                 <div class="col-lg-7 text-white py-5">
                     <div class="mb-3">
-                        <span class="badge-hot">TRENDING NOW</span>
+                        <span class="badge-hot">Промоции</span>
                     </div>
                     <h1 class="display-2 fw-black mb-4 text-shadow">
-                        Get The Best Tech<br>
-                        <span class="gradient-text">Before It Sells Out!</span>
+                       Най доброто !<br>
+                        <span class="gradient-text">Преди да се продаде</span>
                     </h1>
                     <p class="lead fs-3 mb-4 fw-semibold">
-                        💰 Exclusive deals • ⚡ Expert reviews • ✅ Verified picks
+                        💰 Невероятни промоции
                     </p>
                     <div class="d-flex flex-wrap gap-3 mb-4">
                         <div class="stat-box">
                             <div class="fs-2 fw-black">50+</div>
-                            <div class="small opacity-90">Products Tested</div>
+                            <div class="small opacity-90">Тествани продукти</div>
                         </div>
                         <div class="stat-box">
                             <div class="fs-2 fw-black">100%</div>
-                            <div class="small opacity-90">Honest Reviews</div>
+                            <div class="small opacity-90">Реални ревюта</div>
                         </div>
                         <div class="stat-box">
                             <div class="fs-2 fw-black">24/7</div>
-                            <div class="small opacity-90">Price Updates</div>
+                            <div class="small opacity-90">Намалена цена</div>
                         </div>
                     </div>
                     <a href="#deals" class="btn btn-mega-cta btn-lg px-5 py-3 fw-black">
-                        <i class="bi bi-lightning-charge-fill me-2"></i>SHOP HOT DEALS NOW
+                        <i class="bi bi-lightning-charge-fill me-2"></i>Пазаруване
                         <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>
@@ -66,11 +66,10 @@
         <div class="container">
             <div class="d-flex align-items-center justify-content-center gap-3 py-2">
                 <i class="bi bi-clock-history text-danger fs-5 animate-pulse"></i>
-                <span class="fw-bold">⚡ LIMITED TIME OFFERS ⚡</span>
+                <span class="fw-bold">⚡ Лимитирани оферти⚡</span>
                 <span class="text-muted">|</span>
-                <span>🔥 New deals added daily</span>
+                <span>🔥 Нови оферти всеки ден</span>
                 <span class="text-muted">|</span>
-                <span>✅ Price drops alert active</span>
             </div>
         </div>
     </div>
@@ -78,9 +77,8 @@
     <div class="container my-5" id="deals">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-black mb-3">
-                💎 <span class="gradient-text">Editor's Choice Deals</span> 💎
+                💎 <span class="gradient-text">Най добрите сделки</span> 💎
             </h2>
-            <p class="lead text-muted">Handpicked by experts. Verified by real tests. Loved by thousands.</p>
         </div>
 
         {# 2-Column Layout: Sidebar (Left) + Content (Right) #}
@@ -147,7 +145,7 @@
                         {% endif %}
 
                         <div class="hot-corner">
-                            <div class="hot-label">🔥 HOT</div>
+                            <div class="hot-label">🔥 ГОРЕЩО</div>
                         </div>
 
                         {# СНИМКА #}
@@ -186,7 +184,7 @@
                                 <div class="current-price">
                                     {% if item.price is defined %}{{ item.price }} лв.{% endif %}
                                 </div>
-                                <div class="price-tag">💰 BEST PRICE</div>
+                                <div class="price-tag">💰 НАЙ ДОБРА ЦЕНА </div>
                             </div>
 
                             <a href="{{ detailUrl }}" class="btn-product-cta" {% if isExternal %}target="_blank" rel="noopener noreferrer"{% endif %} aria-label="{{ isExternal ? 'Buy now' : 'View deal' }} - {{ displayName }}">
@@ -211,8 +209,8 @@
                     <div class="col-12">
                         <div class="alert alert-light text-center rounded-4 border-0 shadow-sm py-5">
                             <div class="display-1 mb-3">😢</div>
-                            <h4 class="fw-bold mb-2">No deals available yet</h4>
-                            <p class="text-muted mb-0">Check back soon for amazing offers!</p>
+                            <h4 class="fw-bold mb-2">Не е налично</h4>
+                            <p class="text-muted mb-0">Изчакайте за нови оферти</p>
                         </div>
                     </div>
                 {% endfor %}
@@ -258,10 +256,10 @@
 
     <div class="bottom-cta-section">
         <div class="container text-center py-5">
-            <div class="display-4 fw-black text-white mb-3">⚡ Don't Miss Out! ⚡</div>
-            <p class="lead text-white mb-4 opacity-90">Join thousands of smart shoppers getting the best tech deals</p>
+            <div class="display-4 fw-black text-white mb-3">⚡ Не пропускай ⚡</div>
+            <p class="lead text-white mb-4 opacity-90">Присуидини се </p>
             <a href="#deals" class="btn btn-mega-white btn-lg px-5 py-3 fw-black">
-                <i class="bi bi-arrow-up me-2"></i>BACK TO DEALS
+                <i class="bi bi-arrow-up me-2"></i>ОБРАТНО КЪМ ОФЕРТИТЕ
             </a>
         </div>
     </div>

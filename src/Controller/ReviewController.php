@@ -34,12 +34,13 @@ class ReviewController extends AbstractController
         if ($source === 'fashion_days') {
             // 1. АКО Е FASHION DAYS -> Търсим в таблица PRODUCT
             $qb = $productRepository->createQueryBuilder('p')
+                ->leftJoin('p.category', 'c')
+                ->addSelect('c')  // Eager load to prevent N+1
                 ->where('p.source = :source_name')
                 ->setParameter('source_name', 'FashionDays')
                 ->orderBy('p.updatedAt', 'DESC');
         } else {
             // 2. ЗА ВСИЧКО ДРУГО (eMAG, Alleop*) -> Търсим в таблица REVIEW
-            // *Забележка: Ако искаш и Alleop да е от Product таблицата, добави elseif тук
             $qb = $reviewRepository->createQueryBuilder('r')
                 ->where('r.isPublished = :status')
                 ->setParameter('status', true)
@@ -96,8 +97,10 @@ class ReviewController extends AbstractController
             $categoryIds[] = $child->getId();
         }
 
-        // Get products from Product entity
+        // Get products from Product entity with EAGER LOADING
         $qb = $productRepository->createQueryBuilder('p')
+            ->leftJoin('p.category', 'c')
+            ->addSelect('c')
             ->where('p.category IN (:categories)')
             ->setParameter('categories', $categoryIds)
             ->orderBy('p.updatedAt', 'DESC');
@@ -108,7 +111,6 @@ class ReviewController extends AbstractController
             60
         );
 
-        // Get category tree for sidebar
         $categories = $categoryRepository->getCategoryTree();
 
         return $this->render('review/index.html.twig', [
@@ -127,14 +129,12 @@ class ReviewController extends AbstractController
         ProductViewRepository $productViewRepository
     ): Response
     {
-        // 1. Намираме текущото ревю
         $review = $reviewRepository->findOneBy(['slug' => $slug, 'isPublished' => true]);
 
         if (!$review) {
             throw $this->createNotFoundException('Review not found');
         }
 
-        // Track product view
         $session = $request->getSession();
         $sessionId = $session->getId();
 
@@ -147,11 +147,9 @@ class ReviewController extends AbstractController
 
         $productViewRepository->save($productView, true);
 
-        // 2. Get user's viewed categories to personalize recommendations
         $viewedCategories = $productViewRepository->findViewedCategoriesBySession($sessionId, 5);
         $userInterestCategories = array_map(fn($item) => $item['category'], $viewedCategories);
 
-        // 3. Определяме дума за търсене от заглавието и категорията
         $title = trim($review->getTitle());
         $parts = explode(' ', $title);
         $firstWord = mb_strtolower($parts[0]);
@@ -165,7 +163,7 @@ class ReviewController extends AbstractController
         $allSimilarProducts = [];
         $currentCategory = $review->getCategory();
 
-        // --- 4. ТЪРСЕНЕ В eMAG (Таблица Review) - По категория и заглавие ---
+        // --- 4. ТЪРСЕНЕ В eMAG ---
         $emagQb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :true')
             ->andWhere('r.price > 0')
@@ -173,7 +171,6 @@ class ReviewController extends AbstractController
             ->setParameter('true', true)
             ->setParameter('currentId', $review->getId());
 
-        // Prioritize same category
         if ($currentCategory) {
             $emagQb->andWhere('(r.category = :category OR LOWER(r.title) LIKE :startTerm)')
                 ->setParameter('category', $currentCategory)
@@ -183,11 +180,8 @@ class ReviewController extends AbstractController
                 ->setParameter('startTerm', $searchTerm . '%');
         }
 
-        $emagResults = $emagQb->setMaxResults(6)
-            ->getQuery()
-            ->getResult();
+        $emagResults = $emagQb->setMaxResults(6)->getQuery()->getResult();
 
-        // Преобразуваме в унифициран масив
         foreach ($emagResults as $item) {
             $allSimilarProducts[] = [
                 'title' => $item->getTitle(),
@@ -200,18 +194,14 @@ class ReviewController extends AbstractController
             ];
         }
 
-        // --- 5. ТЪРСЕНЕ В ALLEOP (Таблица Product) - По категория ---
+        // --- 5. ТЪРСЕНЕ В ALLEOP ---
         $alleopQb = $productRepository->createQueryBuilder('p')
             ->where('p.price > 0');
 
-        // Note: Product.category is now a Category entity, not a string
-        // We can only search by product name since Review.category is a string
         $alleopQb->andWhere('LOWER(p.name) LIKE :startTerm')
             ->setParameter('startTerm', $searchTerm . '%');
 
-        $alleopResults = $alleopQb->setMaxResults(6)
-            ->getQuery()
-            ->getResult();
+        $alleopResults = $alleopQb->setMaxResults(6)->getQuery()->getResult();
 
         foreach ($alleopResults as $item) {
             $allSimilarProducts[] = [
@@ -225,7 +215,7 @@ class ReviewController extends AbstractController
             ];
         }
 
-        // --- 6. ТЪРСЕНЕ В FASHION DAYS (Таблица Product) - По категория ---
+        // --- 6. ТЪРСЕНЕ В FASHION DAYS ---
         $fashionQb = $productRepository->createQueryBuilder('p')
             ->where('p.source = :source_name')
             ->setParameter('source_name', 'FashionDays')
@@ -239,9 +229,7 @@ class ReviewController extends AbstractController
                 ->setParameter('startTerm', $searchTerm . '%');
         }
 
-        $fashionResults = $fashionQb->setMaxResults(6)
-            ->getQuery()
-            ->getResult();
+        $fashionResults = $fashionQb->setMaxResults(6)->getQuery()->getResult();
 
         foreach ($fashionResults as $item) {
             $allSimilarProducts[] = [
@@ -255,7 +243,7 @@ class ReviewController extends AbstractController
             ];
         }
 
-        // --- 7. Add products from user's previously viewed categories ---
+        // --- 7. Recommended ---
         if (!empty($userInterestCategories)) {
             $recommendedQb = $reviewRepository->createQueryBuilder('r')
                 ->where('r.isPublished = :true')
@@ -272,7 +260,6 @@ class ReviewController extends AbstractController
             foreach ($recommendedQb as $item) {
                 $platform = 'Recommended';
                 $badgeClass = 'bg-info';
-
                 if ($item->getBadge() === 'ALLEOP' || str_contains($item->getOriginalProductUrl() ?? '', 'alleop')) {
                     $platform = 'Alleop';
                     $badgeClass = 'bg-success';
@@ -293,9 +280,8 @@ class ReviewController extends AbstractController
             }
         }
 
-        // --- 8. If current product has category, add same category from DIFFERENT platform ---
+        // --- 8. Cross-platform suggestions ---
         if ($currentCategory) {
-            // Determine current platform
             $currentPlatform = null;
             if ($review->getBadge() === 'ALLEOP' || str_contains($review->getOriginalProductUrl() ?? '', 'alleop')) {
                 $currentPlatform = 'alleop';
@@ -303,9 +289,7 @@ class ReviewController extends AbstractController
                 $currentPlatform = 'emag';
             }
 
-            // Get products from OTHER platforms in same category
             if ($currentPlatform === 'alleop') {
-                // Current is Alleop, suggest eMAG
                 $otherPlatformQb = $reviewRepository->createQueryBuilder('r')
                     ->where('r.isPublished = :true')
                     ->andWhere('r.price > 0')
@@ -333,7 +317,6 @@ class ReviewController extends AbstractController
                     ];
                 }
             } elseif ($currentPlatform === 'emag') {
-                // Current is eMAG, suggest Alleop
                 $otherPlatformQb = $reviewRepository->createQueryBuilder('r')
                     ->where('r.isPublished = :true')
                     ->andWhere('r.price > 0')
@@ -363,13 +346,12 @@ class ReviewController extends AbstractController
             }
         }
 
-        // Разбъркваме и режем до 12
         shuffle($allSimilarProducts);
         $finalSelection = array_slice($allSimilarProducts, 0, 12);
 
         return $this->render('review/show.html.twig', [
             'review' => $review,
-            'similarProducts' => $finalSelection, // Важно: Това вече е плосък масив!
+            'similarProducts' => $finalSelection,
         ]);
     }
 
@@ -446,7 +428,6 @@ class ReviewController extends AbstractController
         ];
 
         if (empty($query) && empty($category)) {
-            // Get user's recently viewed categories for suggestions
             $session = $request->getSession();
             $sessionId = $session->getId();
             $viewedCategories = $productViewRepository->findViewedCategoriesBySession($sessionId, 5);
@@ -469,7 +450,7 @@ class ReviewController extends AbstractController
             'laptop' => 'лаптоп',
         ];
 
-        // 1. eMAG (Review) - Search with category filter
+        // 1. eMAG (Review) - ПОПРАВКА: Конвертиране към масив за съвместимост с шаблона
         $emagQb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :true')
             ->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
@@ -479,7 +460,6 @@ class ReviewController extends AbstractController
             ->setParameter('url', '%emag%');
 
         if (!empty($category)) {
-            // Use keyword mapping for category search
             $categoryKeyword = $categoryKeywords[$category] ?? $category;
             $emagQb->andWhere('(r.category = :category OR LOWER(r.title) LIKE :categoryKeyword)')
                 ->setParameter('category', $category)
@@ -494,9 +474,23 @@ class ReviewController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        $productsByPlatform['emag'] = $emagResults;
+        // ТУК Е ПРОМЯНАТА: Вместо да връщаме обекти, ги правим на масив като FashionDays
+        foreach ($emagResults as $item) {
+            $productsByPlatform['emag'][] = [
+                'id' => $item->getId(),
+                'title' => $item->getTitle(),
+                'price' => $item->getPrice(),
+                'imageUrl' => $item->getImageUrl() ?? $item->getMainImage(),
+                'slug' => $item->getSlug(),
+                'link' => $this->generateUrl('app_buy_redirect', ['id' => $item->getId()]),
+                'rating' => $item->getRating(),
+                'category' => $item->getCategory(),
+                'is_product_entity' => false,
+                'badge' => 'EMAG'
+            ];
+        }
 
-        // 2. ALLEOP (Review table, not Product) - with category filter
+        // 2. ALLEOP (Review)
         $alleopQb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :true')
             ->andWhere('r.badge = :badge OR r.originalProductUrl LIKE :url')
@@ -506,7 +500,6 @@ class ReviewController extends AbstractController
             ->setParameter('url', '%alleop%');
 
         if (!empty($category)) {
-            // Use keyword mapping for category search
             $categoryKeyword = $categoryKeywords[$category] ?? $category;
             $alleopQb->andWhere('(r.category = :category OR LOWER(r.title) LIKE :categoryKeyword)')
                 ->setParameter('category', $category)
@@ -516,14 +509,28 @@ class ReviewController extends AbstractController
                 ->setParameter('term', '%' . $searchTerm . '%');
         }
 
-        $alleopRaw = $alleopQb->orderBy('r.price', 'ASC')
+        $alleopResults = $alleopQb->orderBy('r.price', 'ASC')
             ->setMaxResults(20)
             ->getQuery()
             ->getResult();
 
-        $productsByPlatform['alleop'] = $alleopRaw;
+        // Същата логика и за Alleop, за да сме сигурни
+        foreach ($alleopResults as $item) {
+            $productsByPlatform['alleop'][] = [
+                'id' => $item->getId(),
+                'title' => $item->getTitle(),
+                'price' => $item->getPrice(),
+                'imageUrl' => $item->getImageUrl() ?? $item->getMainImage(),
+                'slug' => $item->getSlug(),
+                'link' => $this->generateUrl('app_buy_redirect', ['id' => $item->getId()]),
+                'rating' => $item->getRating(),
+                'category' => $item->getCategory(),
+                'is_product_entity' => false,
+                'badge' => 'ALLEOP'
+            ];
+        }
 
-        // 3. Fashion Days (Product) - with category filter
+        // 3. Fashion Days (Product)
         $fashionQb = $productRepository->createQueryBuilder('p')
             ->where('p.source = :source_name')
             ->andWhere('p.price > 0')
@@ -535,7 +542,6 @@ class ReviewController extends AbstractController
         }
 
         if (!empty($category)) {
-            // Join category table to filter by category slug/name
             $fashionQb->innerJoin('p.category', 'c')
                 ->andWhere('c.slug = :category OR c.name = :category')
                 ->setParameter('category', $category);
@@ -547,6 +553,9 @@ class ReviewController extends AbstractController
             ->getResult();
 
         foreach ($fashionRaw as $prod) {
+            // Взимаме името на категорията безопасно
+            $catName = $prod->getCategory() ? $prod->getCategory()->getName() : 'Общи';
+
             $productsByPlatform['fashiondays'][] = [
                 'id' => $prod->getId(),
                 'title' => $prod->getName(),
@@ -555,7 +564,7 @@ class ReviewController extends AbstractController
                 'slug' => null,
                 'link' => $prod->getLink(),
                 'rating' => 0,
-                'category' => $prod->getCategory(),
+                'category' => $catName,
                 'is_product_entity' => true
             ];
         }
@@ -630,13 +639,11 @@ class ReviewController extends AbstractController
         ReviewRepository $reviewRepository,
         ProductRepository $productRepository
     ): Response {
-        // Get products from different platforms in the same category
         $productsByPlatform = [
             'emag' => [],
             'alleop' => []
         ];
 
-        // Map category to search keywords
         $categoryKeywords = [
             'tv' => 'телевизор',
             'phone' => 'телефон',
@@ -647,7 +654,7 @@ class ReviewController extends AbstractController
 
         $searchKeyword = $categoryKeywords[$category] ?? $category;
 
-        // 1. eMAG products matching this category (by title since eMAG doesn't have categories)
+        // 1. eMAG products matching this category
         $emagQb = $reviewRepository->createQueryBuilder('r')
             ->where('r.isPublished = :true')
             ->andWhere('r.price > 0')
@@ -656,7 +663,6 @@ class ReviewController extends AbstractController
             ->setParameter('badge', 'EMAG')
             ->setParameter('url', '%emag%');
 
-        // Search by category OR title keyword
         if (!empty($searchKeyword)) {
             $emagQb->andWhere('(r.category = :category OR LOWER(r.title) LIKE :keyword)')
                 ->setParameter('category', $category)
@@ -682,7 +688,6 @@ class ReviewController extends AbstractController
             ->setParameter('badge', 'ALLEOP')
             ->setParameter('url', '%alleop%');
 
-        // Search by category OR title keyword
         if (!empty($searchKeyword)) {
             $alleopQb->andWhere('(r.category = :category OR LOWER(r.title) LIKE :keyword)')
                 ->setParameter('category', $category)

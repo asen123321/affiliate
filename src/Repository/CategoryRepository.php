@@ -18,11 +18,14 @@ class CategoryRepository extends ServiceEntityRepository
 
     /**
      * Get all root categories (categories without parent)
+     * OPTIMIZED: Eager loads children to prevent N+1 queries
      * @return Category[]
      */
     public function findRootCategories(): array
     {
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.children', 'children')
+            ->addSelect('children')  // Eager load children
             ->where('c.parent IS NULL')
             ->orderBy('c.name', 'ASC')
             ->getQuery()

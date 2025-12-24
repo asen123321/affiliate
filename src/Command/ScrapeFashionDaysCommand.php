@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Product;
+use App\Entity\Category;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -10,19 +11,24 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Panther\Client;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[AsCommand(
     name: 'app:scrape-fashion',
-    description: 'Scrapes FashionDays (Final Fix with Link Cleaner)',
+    description: 'Scrapes FashionDays (Final: Preserves Image Signature)',
 )]
 class ScrapeFashionDaysCommand extends Command
 {
     private $entityManager;
+    private $slugger;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
+        $this->slugger = $slugger;
     }
 
     protected function configure(): void
@@ -35,7 +41,6 @@ class ScrapeFashionDaysCommand extends Command
         $url = $input->getArgument('url');
         $output->writeln("🚀 STARTING FashionDays Scraper...");
 
-        // 1. Chrome настройки
         $client = Client::createChromeClient(null, [
             '--no-sandbox',
             '--headless',
@@ -46,20 +51,18 @@ class ScrapeFashionDaysCommand extends Command
         ]);
 
         $client->request('GET', $url);
-        $output->writeln("⏳ Loading page...");
-        sleep(5);
+        $output->writeln("⏳ Page loaded. Scrolling...");
 
-        // 2. Търсим контейнера
+        // Лек скрол за активиране на DOM елементите
         try {
-            $client->waitFor('#products-listing-list');
-        } catch (\Exception $e) {
-            $output->writeln("❌ List not found or timeout.");
-            return Command::FAILURE;
-        }
+            $client->executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            sleep(2);
+        } catch (\Exception $e) {}
 
         $crawler = $client->getCrawler();
-        $nodes = $crawler->filter('#products-listing-list > li');
 
+        // Селектор за продуктите
+        $nodes = $crawler->filter('#products-listing-list li.product-card, .campaign-product-card');
         $count = $nodes->count();
         $output->writeln("📦 Products found: $count");
 
@@ -67,57 +70,68 @@ class ScrapeFashionDaysCommand extends Command
 
         $nodes->each(function ($node) use ($output, &$savedCount) {
             try {
-                // --- 1. ЛИНК ---
-                $linkNode = $node->filter('a.product-card-link');
-                if ($linkNode->count() === 0) $linkNode = $node->filter('a');
-
+                // --- 1. ЛИНК НА ПРОДУКТА ---
+                $linkNode = $node->filter('a.campaign-item, a.product-card-link');
                 if ($linkNode->count() === 0) return;
+
                 $rawLink = $linkNode->attr('href');
-
-                // === ВАЖНО: ПОЧИСТВАНЕ НА ЛИНКА ===
-                // Махаме всичко след '?', за да стане къс и да не гърми базата
-                $linkParts = explode('?', $rawLink);
-                $link = $linkParts[0];
-
-                // Защита: Ако дори след почистването е над 500 символа, пропускаме го
-                if (strlen($link) > 499) {
-                    return;
-                }
+                // ТУК чистим параметрите, защото за линка на продукта те не са нужни
+                $link = explode('?', $rawLink)[0];
+                if (strlen($link) > 499) return;
 
                 // --- 2. ЗАГЛАВИЕ ---
-                $brand = $node->filter('.product-card-brand')->count() ? $node->filter('.product-card-brand')->text() : '';
-                $desc = $node->filter('.product-card-description')->count() ? $node->filter('.product-card-description')->text() : '';
+                $brandNode = $node->filter('.product-card-brand');
+                $nameNode = $node->filter('.product-card-name, .campaign-product-card-name');
 
-                if (!$brand && !$desc) {
-                    $fullText = $node->text();
-                    $name = substr($fullText, 0, 50) . '...';
+                $brand = $brandNode->count() ? trim($brandNode->text()) : '';
+                $prodName = $nameNode->count() ? trim($nameNode->text()) : '';
+
+                if (empty($brand) && empty($prodName)) {
+                    $name = mb_substr($node->text(), 0, 50) . '...';
                 } else {
-                    $name = trim("$brand $desc");
+                    $name = trim("$brand $prodName");
                 }
 
                 // --- 3. ЦЕНА ---
-                $fullText = $node->text();
-                preg_match_all('/(\d+)\s*лв/', $fullText, $matches);
-
+                $priceNode = $node->filter('.new-price, .product-new-price');
                 $price = 0.0;
-                if (!empty($matches[1])) {
-                    $rawPrice = end($matches[1]);
-                    if (floatval($rawPrice) > 1000) {
-                        $price = floatval($rawPrice) / 100;
-                    } else {
-                        $price = floatval($rawPrice);
+
+                if ($priceNode->count() > 0) {
+                    $priceText = preg_replace('/[^0-9]/', '', $priceNode->text());
+                    $price = (float)$priceText / 100;
+                }
+
+                // --- 4. СНИМКА (ВАЖНАТА ПРОМЯНА) ---
+                $image = '';
+                $imgNode = $node->filter('img');
+
+                if ($imgNode->count() > 0) {
+                    // Взимаме data-original, защото там е истинският линк
+                    $dataOriginal = $imgNode->attr('data-original');
+                    $src = $imgNode->attr('src');
+
+                    // Логика: Търсим линк, който НЕ е 'blank'
+                    if (!empty($dataOriginal) && !str_contains($dataOriginal, 'blank_')) {
+                        $image = $dataOriginal;
+                    } elseif (!empty($src) && !str_contains($src, 'blank_')) {
+                        $image = $src;
                     }
                 }
 
-                // --- 4. СНИМКА ---
-                $imgNode = $node->filter('img');
-                $image = '';
-                if ($imgNode->count() > 0) {
-                    $image = $imgNode->attr('data-original') ?? $imgNode->attr('src');
+                // ФИНАЛНА ОБРАБОТКА НА СНИМКАТА
+                if (!empty($image)) {
+                    // 1. Добавяме протокол ако липсва
+                    if (str_starts_with($image, '//')) {
+                        $image = 'https:' . $image;
+                    }
+
+                    // 2. ВАЖНО: НЕ МАХАМЕ ПАРАМЕТРИТЕ СЛЕД '?' ЗА СНИМКАТА!
+                    // FashionDays изискват '?s=...' токена, за да се отвори снимката.
+                    // Предишният код го триеше и затова снимката се чупеше.
                 }
 
                 // --- ЗАПИС ---
-                if ($price > 0 && !empty($name)) {
+                if ($price > 0 && !empty($name) && !empty($image)) {
                     $exists = $this->entityManager->getRepository(Product::class)->findOneBy(['link' => $link]);
 
                     if (!$exists) {
@@ -126,18 +140,21 @@ class ScrapeFashionDaysCommand extends Command
                         $product->setPrice($price);
                         $product->setLink($link);
                         $product->setImage($image);
-                        $product->setSource('FashionDays'); // Set source instead of category
-                        $product->setCategory(null); // Category will be null for now (can be mapped later)
+                        $product->setSource('FashionDays');
                         $product->setUpdatedAt(new \DateTimeImmutable());
+
+                        $category = $this->detectAndCreateCategory($name, $link);
+                        $product->setCategory($category);
 
                         $this->entityManager->persist($product);
                         $savedCount++;
-                        $output->writeln("   ✅ Saved: $name | $price лв.");
+
+                        $output->writeln("   ✅ Saved: " . mb_substr($name, 0, 40));
                     }
                 }
 
             } catch (\Exception $e) {
-                // Skip errors
+                // skip errors
             }
         });
 
@@ -146,5 +163,44 @@ class ScrapeFashionDaysCommand extends Command
         $client->quit();
 
         return Command::SUCCESS;
+    }
+
+    private function detectAndCreateCategory(string $name, string $url): ?Category
+    {
+        $combinedText = mb_strtolower($name . ' ' . $url);
+
+        $categoryRules = [
+            'Телевизори' => ['tv', 'телевизор', 'televizor'],
+            'Лаптопи' => ['laptop', 'лаптоп', 'notebook'],
+            'Телефони' => ['phone', 'телефон', 'smartphone', 'iphone'],
+            'Дрехи' => ['dress', 'shirt', 'tricou', 'рокля', 'риза', 'pants', 'jeans', 'jacket', 'тениска', 'блуза', 'суитшърт', 'boss', 'панталон', 'яке'],
+            'Обувки' => ['shoes', 'обувки', 'sneakers', 'boots', 'маратонки', 'боти'],
+            'Чанти' => ['bag', 'чанта', 'backpack', 'портфейл', 'wallet'],
+            'Аксесоари' => ['колан', 'belt', 'шапка', 'hat', 'cap', 'шал', 'scarf'],
+            'Часовници' => ['часовник', 'watch'],
+        ];
+
+        $matchedCategoryName = 'Общи';
+        foreach ($categoryRules as $categoryName => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($combinedText, $keyword)) {
+                    $matchedCategoryName = $categoryName;
+                    break 2;
+                }
+            }
+        }
+
+        $category = $this->entityManager->getRepository(Category::class)
+            ->findOneBy(['name' => $matchedCategoryName]);
+
+        if (!$category) {
+            $category = new Category();
+            $category->setName($matchedCategoryName);
+            $category->setSlug($this->slugger->slug($matchedCategoryName)->lower()->toString());
+            $this->entityManager->persist($category);
+            $this->entityManager->flush();
+        }
+
+        return $category;
     }
 }

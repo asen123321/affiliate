@@ -581,15 +581,16 @@
       </call>
     </service>
     <service id="App\Command\ScrapeFashionDaysCommand" class="App\Command\ScrapeFashionDaysCommand" autowire="true" autoconfigure="true">
-      <tag name="console.command" command="app:scrape-fashion" description="Scrapes FashionDays (Final Fix with Link Cleaner)" help=""/>
+      <tag name="console.command" command="app:scrape-fashion" description="Scrapes FashionDays (Final: Preserves Image Signature)" help=""/>
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
       <argument type="service" id="doctrine.orm.default_entity_manager"/>
+      <argument type="service" id="slugger"/>
       <call method="setName">
         <argument>app:scrape-fashion</argument>
       </call>
       <call method="setDescription">
-        <argument>Scrapes FashionDays (Final Fix with Link Cleaner)</argument>
+        <argument>Scrapes FashionDays (Final: Preserves Image Signature)</argument>
       </call>
     </service>
     <service id="App\Command\ScrapeProductCommand" class="App\Command\ScrapeProductCommand" autowire="true" autoconfigure="true">
@@ -10099,7 +10100,7 @@
     <service id=".App\Command\ScrapeFashionDaysCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>app:scrape-fashion</argument>
       <argument type="collection"/>
-      <argument>Scrapes FashionDays (Final Fix with Link Cleaner)</argument>
+      <argument>Scrapes FashionDays (Final: Preserves Image Signature)</argument>
       <argument>false</argument>
       <argument type="service_closure" id="App\Command\ScrapeFashionDaysCommand"/>
     </service>

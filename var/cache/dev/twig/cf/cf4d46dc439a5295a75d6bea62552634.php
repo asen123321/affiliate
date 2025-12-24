@@ -1098,6 +1098,6 @@ class __TwigTemplate_4aa640167526b326c5c162307b302ad7 extends Template
         {% block body %}{% endblock %}
     </body>
 </html>
-", "base.html.twig", "/home/needy/affiliate-site/templates/base.html.twig");
+", "base.html.twig", "/var/www/html/templates/base.html.twig");
     }
 }

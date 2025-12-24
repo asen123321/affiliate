@@ -173,7 +173,9 @@ class ScrapeEmagHtmlCommand extends Command
         $shortName = mb_substr($name, 0, 180, 'UTF-8');
         $slug = $this->slugger->slug($shortName)->lower()->toString() . '-' . uniqid();
         $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
-        $category = $platform . '-deals';
+
+        // AUTO-DETECT CATEGORY (Bulgarian keywords)
+        $categoryId = $this->detectAndCreateCategorySQL($shortName, $origLink);
 
         // 2. Генериране на описание на БЪЛГАРСКИ (като в стария файл)
         // Sanitize the shortName to prevent XSS attacks
@@ -191,9 +193,15 @@ class ScrapeEmagHtmlCommand extends Command
             // Проверка за дубликат в product
             $exists = $this->connection->fetchOne('SELECT id FROM product WHERE link = ?', [$affLink]);
             if (!$exists) {
+                $source = match($platform) {
+                    'fashiondays' => 'FashionDays',
+                    'alleop' => 'Alleop',
+                    default => 'eMAG'
+                };
+
                 $this->connection->executeStatement(
-                    'INSERT INTO product (name, link, price, image, category, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-                    [$shortName, $affLink, $price, $image, $category, $now]
+                    'INSERT INTO product (name, link, price, image, category_id, source, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [$shortName, $affLink, $price, $image, $categoryId, $source, $now]
                 );
             }
 
@@ -219,5 +227,58 @@ class ScrapeEmagHtmlCommand extends Command
         } catch (\Exception $e) {
             $io->error("\nГрешка при запис: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Detect and auto-create category based on product name/URL using SQL
+     */
+    private function detectAndCreateCategorySQL(string $name, string $url): ?int
+    {
+        $combinedText = mb_strtolower($name . ' ' . $url);
+
+        // Category mapping rules (Bulgarian keywords)
+        $categoryRules = [
+            'Телевизори' => ['tv', 'телевизор', 'televizor', 'smart tv', 'oled', 'qled'],
+            'Лаптопи' => ['laptop', 'лаптоп', 'notebook', 'macbook', 'ultrabook'],
+            'Телефони' => ['phone', 'телефон', 'smartphone', 'iphone', 'samsung galaxy', 'mobile'],
+            'Таблети' => ['tablet', 'таблет', 'ipad'],
+            'Слушалки' => ['headphones', 'слушалки', 'earbuds', 'airpods', 'headset'],
+            'Часовници' => ['watch', 'часовник', 'smartwatch', 'ceasuri'],
+            'Дрехи' => ['dress', 'shirt', 'tricou', 'рокля', 'риза', 'pants', 'jeans', 'jacket'],
+            'Обувки' => ['shoes', 'обувки', 'sneakers', 'boots', 'pantofi', 'adidasi'],
+            'Чанти' => ['bag', 'чанта', 'backpack', 'rucsac', 'geanta'],
+            'Очила' => ['glasses', 'очила', 'sunglasses', 'ochelari'],
+        ];
+
+        // Find matching category
+        $matchedCategoryName = 'Общи'; // Default fallback
+        foreach ($categoryRules as $categoryName => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (stripos($combinedText, $keyword) !== false) {
+                    $matchedCategoryName = $categoryName;
+                    break 2;
+                }
+            }
+        }
+
+        // Check if category exists in database
+        $categoryId = $this->connection->fetchOne(
+            'SELECT id FROM category WHERE name = ?',
+            [$matchedCategoryName]
+        );
+
+        // If not exists, CREATE IT
+        if (!$categoryId) {
+            $slug = $this->slugger->slug($matchedCategoryName)->lower()->toString();
+
+            $this->connection->executeStatement(
+                'INSERT INTO category (name, slug, external_mapping_keywords) VALUES (?, ?, ?)',
+                [$matchedCategoryName, $slug, json_encode([$matchedCategoryName])]
+            );
+
+            $categoryId = $this->connection->lastInsertId();
+        }
+
+        return (int)$categoryId;
     }
 }
