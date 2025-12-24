@@ -361,3 +361,12 @@ bb316d,172.18.0.1,GET,http://localhost/?source=fashion_days,1766574520,,200,requ
 cd6c03,172.18.0.1,GET,http://localhost/category/mzhki-drexi,1766574533,,200,request
 86941b,172.18.0.1,GET,http://localhost/category/parfyumi,1766575279,,200,request
 d4a680,172.18.0.1,GET,http://localhost/,1766576628,,200,request
+d595eb,172.18.0.1,GET,http://localhost/,1766578079,8a5f5c,500,request
+8a5f5c,172.18.0.1,GET,http://localhost/,1766578079,,500,request
+82b45c,172.18.0.1,GET,http://localhost/favicon.ico,1766578207,,302,request
+bb2345,172.18.0.1,GET,http://localhost/favicon.ico,1766588235,,302,request
+75f799,172.18.0.1,GET,http://localhost/,1766588287,dedff1,500,request
+dedff1,172.18.0.1,GET,http://localhost/,1766588287,,500,request
+34ace2,172.18.0.1,GET,http://localhost/,1766588435,,200,request
+e0943b,172.18.0.1,GET,http://localhost/category/televizori,1766588454,,200,request
+36130c,172.18.0.1,GET,http://localhost/,1766588464,,200,request

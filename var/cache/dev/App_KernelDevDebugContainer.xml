@@ -493,8 +493,18 @@
       </call>
     </service>
     <service id="App\Command\MigrateCategoriesCommand" class="App\Command\MigrateCategoriesCommand" autowire="true" autoconfigure="true">
-      <tag name="container.error" message="Warning: include(/var/www/html/src/Command/MigrateCategoriesCommand.php): Failed to open stream: Permission denied"/>
-      <tag name="container.error" message="Invalid service &quot;App\Command\MigrateCategoriesCommand&quot;: warning: include(/var/www/html/src/Command/MigrateCategoriesCommand.php): Failed to open stream: Permission denied"/>
+      <tag name="console.command" command="app:migrate-categories" description="Migrate existing products to use the new Category system" help=""/>
+      <tag name="console.command"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="App\Repository\ProductRepository"/>
+      <argument type="service" id="App\Service\CategoryMappingService"/>
+      <argument type="service" id="doctrine.orm.default_entity_manager"/>
+      <call method="setName">
+        <argument>app:migrate-categories</argument>
+      </call>
+      <call method="setDescription">
+        <argument>Migrate existing products to use the new Category system</argument>
+      </call>
     </service>
     <service id="App\Command\QuickScrapeCampaignCommand" class="App\Command\QuickScrapeCampaignCommand" autowire="true" autoconfigure="true">
       <tag name="console.command" command="app:quick-scrape" description="🚀 FAST: Scrape eMag campaign using data attributes" help=""/>
@@ -8204,6 +8214,9 @@
     <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\GenerateSitemapCommand" class="App\Command\GenerateSitemapCommand" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Command\GenerateSitemapCommand.0.App\Command\GenerateSitemapCommand" class="App\Command\GenerateSitemapCommand" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Command\GenerateSitemapCommand" class="App\Command\GenerateSitemapCommand" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\MigrateCategoriesCommand" class="App\Command\MigrateCategoriesCommand" autowire="true" abstract="true"/>
+    <service id=".instanceof.App\Command\MigrateCategoriesCommand.0.App\Command\MigrateCategoriesCommand" class="App\Command\MigrateCategoriesCommand" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Command\MigrateCategoriesCommand" class="App\Command\MigrateCategoriesCommand" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\QuickScrapeCampaignCommand" class="App\Command\QuickScrapeCampaignCommand" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Command\QuickScrapeCampaignCommand.0.App\Command\QuickScrapeCampaignCommand" class="App\Command\QuickScrapeCampaignCommand" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Command\QuickScrapeCampaignCommand" class="App\Command\QuickScrapeCampaignCommand" autowire="true" autoconfigure="true" abstract="true"/>
@@ -10041,6 +10054,13 @@
       <argument>false</argument>
       <argument type="service_closure" id="App\Command\GenerateSitemapCommand"/>
     </service>
+    <service id=".App\Command\MigrateCategoriesCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
+      <argument>app:migrate-categories</argument>
+      <argument type="collection"/>
+      <argument>Migrate existing products to use the new Category system</argument>
+      <argument>false</argument>
+      <argument type="service_closure" id="App\Command\MigrateCategoriesCommand"/>
+    </service>
     <service id=".App\Command\QuickScrapeCampaignCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>app:quick-scrape</argument>
       <argument type="collection"/>
@@ -10832,12 +10852,13 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator._QVJxTR"/>
+      <argument type="service" id=".service_locator.lAVr2J8"/>
       <argument type="collection">
         <argument key="app:add-product">App\Command\AddProductCommand</argument>
         <argument key="app:discover-profitshare">App\Command\DiscoverProfitShareCommand</argument>
         <argument key="app:link">App\Command\GenerateLinkCommand</argument>
         <argument key="app:generate-sitemap">App\Command\GenerateSitemapCommand</argument>
+        <argument key="app:migrate-categories">App\Command\MigrateCategoriesCommand</argument>
         <argument key="app:quick-scrape">App\Command\QuickScrapeCampaignCommand</argument>
         <argument key="app:scrape-alleop">App\Command\ScrapeAlleopCommand</argument>
         <argument key="app:scrape-campaign">App\Command\ScrapeCampaignCommand</argument>
@@ -10973,13 +10994,14 @@
         <argument key="make:webhook">maker.auto_command.make_webhook</argument>
       </argument>
     </service>
-    <service id=".service_locator._QVJxTR" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.lAVr2J8" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Command\AddProductCommand" type="service_closure" id=".App\Command\AddProductCommand.lazy"/>
         <argument key="App\Command\DiscoverProfitShareCommand" type="service_closure" id=".App\Command\DiscoverProfitShareCommand.lazy"/>
         <argument key="App\Command\GenerateLinkCommand" type="service_closure" id=".App\Command\GenerateLinkCommand.lazy"/>
         <argument key="App\Command\GenerateSitemapCommand" type="service_closure" id=".App\Command\GenerateSitemapCommand.lazy"/>
+        <argument key="App\Command\MigrateCategoriesCommand" type="service_closure" id=".App\Command\MigrateCategoriesCommand.lazy"/>
         <argument key="App\Command\QuickScrapeCampaignCommand" type="service_closure" id=".App\Command\QuickScrapeCampaignCommand.lazy"/>
         <argument key="App\Command\ScrapeAlleopCommand" type="service_closure" id=".App\Command\ScrapeAlleopCommand.lazy"/>
         <argument key="App\Command\ScrapeCampaignCommand" type="service_closure" id=".App\Command\ScrapeCampaignCommand.lazy"/>
