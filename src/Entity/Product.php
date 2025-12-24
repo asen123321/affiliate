@@ -26,8 +26,12 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $category = null;
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Category $category = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $source = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -53,8 +57,11 @@ class Product
     public function getImage(): ?string { return $this->image; }
     public function setImage(?string $image): static { $this->image = $image; return $this; }
 
-    public function getCategory(): ?string { return $this->category; }
-    public function setCategory(?string $category): static { $this->category = $category; return $this; }
+    public function getCategory(): ?Category { return $this->category; }
+    public function setCategory(?Category $category): static { $this->category = $category; return $this; }
+
+    public function getSource(): ?string { return $this->source; }
+    public function setSource(?string $source): static { $this->source = $source; return $this; }
 
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
 

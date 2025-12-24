@@ -7,11 +7,13 @@ use App\Entity\Review;
 use App\Repository\ProductRepository;
 use App\Repository\ReviewRepository;
 use App\Service\ProfitShareService;
+use App\Service\CategoryMappingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -27,7 +29,8 @@ class AddProductCommand extends Command
         private EntityManagerInterface $em,
         private ProductRepository $productRepo,
         private ReviewRepository $reviewRepo,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
+        private CategoryMappingService $categoryMappingService
     ) {
         parent::__construct();
     }
@@ -38,7 +41,8 @@ class AddProductCommand extends Command
             ->addArgument('url', InputArgument::REQUIRED, 'Original Product URL')
             ->addArgument('name', InputArgument::REQUIRED, 'Product Name')
             ->addArgument('price', InputArgument::REQUIRED, 'Price')
-            ->addArgument('image', InputArgument::REQUIRED, 'Image URL');
+            ->addArgument('image', InputArgument::REQUIRED, 'Image URL')
+            ->addOption('category', 'c', InputOption::VALUE_OPTIONAL, 'Category name (e.g., "Телефони", "Laptops")', 'Общи');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -49,6 +53,7 @@ class AddProductCommand extends Command
         $name = $input->getArgument('name');
         $price = (float)$input->getArgument('price');
         $image = $input->getArgument('image');
+        $categoryName = $input->getOption('category');
 
         $io->title('➕ Adding Manual Product');
 
@@ -68,7 +73,14 @@ class AddProductCommand extends Command
         $product->setLink($affiliateLink);
         $product->setPrice($price);
         $product->setImage($image);
-        $product->setCategory('phones'); // Слагаме ги в категория телефони
+
+        // Map category using CategoryMappingService
+        $localCategory = $this->categoryMappingService->findLocalCategory($categoryName);
+        $product->setCategory($localCategory);
+
+        // Set source (default to eMAG, ID 35)
+        $product->setSource('eMAG');
+
         $product->setUpdatedAt(new \DateTimeImmutable());
 
         $this->em->persist($product);

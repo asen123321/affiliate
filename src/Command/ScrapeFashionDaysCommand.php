@@ -126,7 +126,8 @@ class ScrapeFashionDaysCommand extends Command
                         $product->setPrice($price);
                         $product->setLink($link);
                         $product->setImage($image);
-                        $product->setCategory('FashionDays');
+                        $product->setSource('FashionDays'); // Set source instead of category
+                        $product->setCategory(null); // Category will be null for now (can be mapped later)
                         $product->setUpdatedAt(new \DateTimeImmutable());
 
                         $this->entityManager->persist($product);

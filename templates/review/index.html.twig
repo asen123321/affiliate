@@ -83,8 +83,17 @@
             <p class="lead text-muted">Handpicked by experts. Verified by real tests. Loved by thousands.</p>
         </div>
 
-        <div class="row g-4">
-            {% for item in reviews %}
+        {# 2-Column Layout: Sidebar (Left) + Content (Right) #}
+        <div class="row">
+            {# Left Sidebar - Categories #}
+            <div class="col-lg-3 mb-4">
+                {% include '_sidebar_categories.html.twig' %}
+            </div>
+
+            {# Right Content - Products #}
+            <div class="col-lg-9">
+                <div class="row g-4">
+                {% for item in reviews %}
                 {# --- 1. НОРМАЛИЗИРАНЕ НА ДАННИТЕ (Smart Logic) --- #}
 
                 {# Име #}
@@ -101,7 +110,12 @@
                 {# Бадж / Категория #}
                 {% set displayBadge = null %}
                 {% if item.badge is defined and item.badge %}{% set displayBadge = item.badge %}
-                {% elseif item.category is defined and item.category %}{% set displayBadge = item.category %}
+                {% elseif item.category is defined and item.category %}
+                    {% if item.category.name is defined %}
+                        {% set displayBadge = item.category.name %}
+                    {% else %}
+                        {% set displayBadge = item.category %}
+                    {% endif %}
                 {% endif %}
 
                 {# Рейтинг (Продуктите нямат, слагаме 5.0 по подразбиране или скриваме) #}
@@ -121,7 +135,7 @@
                 {% endif %}
 
                 {# --- 2. ВИЗУАЛИЗАЦИЯ --- #}
-                <div class="col-6 col-md-4 col-lg-3">
+                <div class="col-6 col-md-4">
                     <div class="product-card h-100">
                         {# БАДЖ #}
                         {% if displayBadge %}
@@ -193,15 +207,17 @@
                         </div>
                     </div>
                 </div>
-            {% else %}
-                <div class="col-12">
-                    <div class="alert alert-light text-center rounded-4 border-0 shadow-sm py-5">
-                        <div class="display-1 mb-3">😢</div>
-                        <h4 class="fw-bold mb-2">No deals available yet</h4>
-                        <p class="text-muted mb-0">Check back soon for amazing offers!</p>
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-light text-center rounded-4 border-0 shadow-sm py-5">
+                            <div class="display-1 mb-3">😢</div>
+                            <h4 class="fw-bold mb-2">No deals available yet</h4>
+                            <p class="text-muted mb-0">Check back soon for amazing offers!</p>
+                        </div>
                     </div>
+                {% endfor %}
                 </div>
-            {% endfor %}
+            </div>
         </div>
 
         {# Настройки за пагинацията #}

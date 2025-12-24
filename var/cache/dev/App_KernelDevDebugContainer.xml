@@ -446,6 +446,7 @@
       <argument type="service" id="App\Repository\ProductRepository"/>
       <argument type="service" id="App\Repository\ReviewRepository"/>
       <argument type="service" id="slugger"/>
+      <argument type="service" id="App\Service\CategoryMappingService"/>
       <call method="setName">
         <argument>app:add-product</argument>
       </call>
@@ -490,6 +491,10 @@
       <call method="setDescription">
         <argument>Generate sitemap.xml for all published reviews</argument>
       </call>
+    </service>
+    <service id="App\Command\MigrateCategoriesCommand" class="App\Command\MigrateCategoriesCommand" autowire="true" autoconfigure="true">
+      <tag name="container.error" message="Warning: include(/var/www/html/src/Command/MigrateCategoriesCommand.php): Failed to open stream: Permission denied"/>
+      <tag name="container.error" message="Invalid service &quot;App\Command\MigrateCategoriesCommand&quot;: warning: include(/var/www/html/src/Command/MigrateCategoriesCommand.php): Failed to open stream: Permission denied"/>
     </service>
     <service id="App\Command\QuickScrapeCampaignCommand" class="App\Command\QuickScrapeCampaignCommand" autowire="true" autoconfigure="true">
       <tag name="console.command" command="app:quick-scrape" description="🚀 FAST: Scrape eMag campaign using data attributes" help=""/>
@@ -541,6 +546,7 @@
       <argument type="service" id="App\Repository\ProductRepository"/>
       <argument type="service" id="App\Repository\ReviewRepository"/>
       <argument type="service" id="slugger"/>
+      <argument type="service" id="App\Service\CategoryMappingService"/>
       <call method="setName">
         <argument>app:scrape-emag</argument>
       </call>
@@ -665,7 +671,15 @@
     <service id="App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true">
       <tag name="doctrine.fixture.orm"/>
     </service>
+    <service id="App\DataFixtures\CategoryFixtures" class="App\DataFixtures\CategoryFixtures" autowire="true" autoconfigure="true">
+      <tag name="doctrine.fixture.orm"/>
+      <argument type="service" id="slugger"/>
+    </service>
     <service id="App\Entity\AffiliateLink" class="App\Entity\AffiliateLink" autowire="true" autoconfigure="true">
+      <tag name="container.excluded" source="because it's a Doctrine entity"/>
+      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
+    </service>
+    <service id="App\Entity\Category" class="App\Entity\Category" autowire="true" autoconfigure="true">
       <tag name="container.excluded" source="because it's a Doctrine entity"/>
       <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
     </service>
@@ -693,6 +707,10 @@
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
     </service>
+    <service id="App\Repository\CategoryRepository" class="App\Repository\CategoryRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
+    </service>
     <service id="App\Repository\ProductRepository" class="App\Repository\ProductRepository" autowire="true" autoconfigure="true">
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
@@ -706,6 +724,10 @@
       <argument type="service" id="doctrine"/>
     </service>
     <service id="App\Service\CategoryDetector" class="App\Service\CategoryDetector" autowire="true" autoconfigure="true"/>
+    <service id="App\Service\CategoryMappingService" class="App\Service\CategoryMappingService" autowire="true" autoconfigure="true">
+      <argument type="service" id="App\Repository\CategoryRepository"/>
+      <argument type="service" id="monolog.logger"/>
+    </service>
     <service id="App\Service\EmagScraper" class="App\Service\EmagScraper" autowire="true" autoconfigure="true">
       <argument type="service" id="http_client.uri_template"/>
       <argument type="service" id="monolog.logger"/>
@@ -748,7 +770,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.QMPUrb2"/>
+      <argument type="service" id=".service_locator.VtXAS0m"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -3941,7 +3963,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.QMPUrb2"/>
+      <argument type="service" id=".service_locator.VtXAS0m"/>
     </service>
     <service id="debug.log_processor" class="Symfony\Bridge\Monolog\Processor\DebugProcessor">
       <tag name="kernel.reset" method="reset"/>
@@ -5942,7 +5964,7 @@
     <service id="doctrine.orm.configuration" class="Doctrine\ORM\Configuration" abstract="true"/>
     <service id="doctrine.orm.entity_manager.abstract" class="Doctrine\ORM\EntityManager" lazy="true" abstract="true"/>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory">
-      <argument type="service" id=".service_locator.o6WwTp3"/>
+      <argument type="service" id=".service_locator.kGifDE5"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -8104,6 +8126,10 @@
             <argument key="fixture" type="service" id="App\DataFixtures\AppFixtures"/>
             <argument key="groups" type="collection"/>
           </argument>
+          <argument type="collection">
+            <argument key="fixture" type="service" id="App\DataFixtures\CategoryFixtures"/>
+            <argument key="groups" type="collection"/>
+          </argument>
         </argument>
       </call>
     </service>
@@ -8225,8 +8251,12 @@
     <service id=".abstract.instanceof.App\Controller\WebhookController" class="App\Controller\WebhookController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\FixturesBundle\ORMFixtureInterface.0.App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\FixturesBundle\ORMFixtureInterface.0.App\DataFixtures\CategoryFixtures" class="App\DataFixtures\CategoryFixtures" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\DataFixtures\CategoryFixtures" class="App\DataFixtures\CategoryFixtures" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.App\Entity\AffiliateLink.0.App\Entity\AffiliateLink" class="App\Entity\AffiliateLink" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Entity\AffiliateLink" class="App\Entity\AffiliateLink" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.App\Entity\Category.0.App\Entity\Category" class="App\Entity\Category" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Entity\Category" class="App\Entity\Category" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.App\Entity\Product.0.App\Entity\Product" class="App\Entity\Product" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Entity\Product" class="App\Entity\Product" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.App\Entity\ProductView.0.App\Entity\ProductView" class="App\Entity\ProductView" autowire="true" abstract="true"/>
@@ -8239,6 +8269,8 @@
     <service id=".abstract.instanceof.App\EventSubscriber\SecurityHeadersSubscriber" class="App\EventSubscriber\SecurityHeadersSubscriber" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\AffiliateLinkRepository" class="App\Repository\AffiliateLinkRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\AffiliateLinkRepository" class="App\Repository\AffiliateLinkRepository" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\CategoryRepository" class="App\Repository\CategoryRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\CategoryRepository" class="App\Repository\CategoryRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ProductRepository" class="App\Repository\ProductRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\ProductRepository" class="App\Repository\ProductRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ProductViewRepository" class="App\Repository\ProductViewRepository" autowire="true" abstract="true"/>
@@ -8763,19 +8795,35 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.1vYpZ1B" method="withContext"/>
     </service>
-    <service id=".service_locator.18a9E3e" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.rankbLT" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="reviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
         <argument key="productRepository" type="service_closure" id="App\Repository\ProductRepository"/>
+        <argument key="categoryRepository" type="service_closure" id="App\Repository\CategoryRepository"/>
         <argument key="paginator" type="service_closure" id="knp_paginator"/>
       </argument>
     </service>
-    <service id=".service_locator.18a9E3e.App\Controller\ReviewController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.rankbLT.App\Controller\ReviewController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\ReviewController::index()"/>
       <argument>App\Controller\ReviewController::index()</argument>
       <argument type="service" id="service_container"/>
-      <factory service=".service_locator.18a9E3e" method="withContext"/>
+      <factory service=".service_locator.rankbLT" method="withContext"/>
+    </service>
+    <service id=".service_locator.77H4LMt" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="categoryRepository" type="service_closure" id="App\Repository\CategoryRepository"/>
+        <argument key="productRepository" type="service_closure" id="App\Repository\ProductRepository"/>
+        <argument key="reviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
+        <argument key="paginator" type="service_closure" id="knp_paginator"/>
+      </argument>
+    </service>
+    <service id=".service_locator.77H4LMt.App\Controller\ReviewController::showCategory()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\ReviewController::showCategory()"/>
+      <argument>App\Controller\ReviewController::showCategory()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.77H4LMt" method="withContext"/>
     </service>
     <service id=".service_locator.O6NwTWa" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -8855,14 +8903,15 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator..TL8LKF" method="withContext"/>
     </service>
-    <service id=".service_locator.QMPUrb2" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.VtXAS0m" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\ReviewController::index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController::index" type="service_closure" id=".service_locator.rankbLT.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController::showCategory" type="service_closure" id=".service_locator.77H4LMt.App\Controller\ReviewController::showCategory()"/>
         <argument key="App\Controller\ReviewController::show" type="service_closure" id=".service_locator.O6NwTWa.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController::search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
         <argument key="App\Controller\ReviewController::comparePrices" type="service_closure" id=".service_locator.O6NwTWa.App\Controller\ReviewController::comparePrices()"/>
@@ -8872,7 +8921,8 @@
         <argument key="App\Controller\WebhookController::profitshareWebhook" type="service_closure" id=".service_locator..TL8LKF.App\Controller\WebhookController::profitshareWebhook()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\ReviewController:index" type="service_closure" id=".service_locator.18a9E3e.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController:index" type="service_closure" id=".service_locator.rankbLT.App\Controller\ReviewController::index()"/>
+        <argument key="App\Controller\ReviewController:showCategory" type="service_closure" id=".service_locator.77H4LMt.App\Controller\ReviewController::showCategory()"/>
         <argument key="App\Controller\ReviewController:show" type="service_closure" id=".service_locator.O6NwTWa.App\Controller\ReviewController::show()"/>
         <argument key="App\Controller\ReviewController:search" type="service_closure" id=".service_locator.iVeQ29l.App\Controller\ReviewController::search()"/>
         <argument key="App\Controller\ReviewController:comparePrices" type="service_closure" id=".service_locator.O6NwTWa.App\Controller\ReviewController::comparePrices()"/>
@@ -9213,10 +9263,11 @@
         <argument key="turbo.doctrine.event_listener" type="service_closure" id="turbo.doctrine.event_listener"/>
       </argument>
     </service>
-    <service id=".service_locator.o6WwTp3" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.kGifDE5" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Repository\AffiliateLinkRepository" type="service_closure" id="App\Repository\AffiliateLinkRepository"/>
+        <argument key="App\Repository\CategoryRepository" type="service_closure" id="App\Repository\CategoryRepository"/>
         <argument key="App\Repository\ProductRepository" type="service_closure" id="App\Repository\ProductRepository"/>
         <argument key="App\Repository\ProductViewRepository" type="service_closure" id="App\Repository\ProductViewRepository"/>
         <argument key="App\Repository\ReviewRepository" type="service_closure" id="App\Repository\ReviewRepository"/>
@@ -11331,7 +11382,7 @@
     <service id="Knp\Component\Pager\ArgumentAccess\ArgumentAccessInterface" alias="Knp\Component\Pager\ArgumentAccess\RequestArgumentAccess"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.QMPUrb2"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.VtXAS0m"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id=".Psr\Log\LoggerInterface $request.logger" alias="monolog.logger.request"/>
@@ -11391,7 +11442,8 @@
     <service id=".signing.messenger.default_serializer.inner" alias="messenger.transport.native_php_serializer"/>
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
-    <service id=".service_locator.6dGoynW" alias=".service_locator.18a9E3e"/>
+    <service id=".service_locator.REQlScJ" alias=".service_locator.rankbLT"/>
+    <service id=".service_locator.Ocoux3O" alias=".service_locator.77H4LMt"/>
     <service id=".service_locator.c0He_FW" alias=".service_locator.O6NwTWa"/>
     <service id=".service_locator.88imcB2" alias=".service_locator.iVeQ29l"/>
     <service id=".service_locator._sEmkqt" alias=".service_locator.rq1PEF6"/>

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ProductView;
+use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ProductViewRepository;
 use App\Repository\ReviewRepository;
@@ -19,11 +20,11 @@ use Psr\Log\LoggerInterface;
 class ReviewController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-
     public function index(
         Request $request,
         ReviewRepository $reviewRepository,
-        ProductRepository $productRepository, // <--- ВАЖНО: Инжектираме ProductRepository
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
         PaginatorInterface $paginator
     ): Response {
         $source = $request->query->get('source');
@@ -33,8 +34,8 @@ class ReviewController extends AbstractController
         if ($source === 'fashion_days') {
             // 1. АКО Е FASHION DAYS -> Търсим в таблица PRODUCT
             $qb = $productRepository->createQueryBuilder('p')
-                ->where('p.category = :fd_name')
-                ->setParameter('fd_name', 'FashionDays')
+                ->where('p.source = :source_name')
+                ->setParameter('source_name', 'FashionDays')
                 ->orderBy('p.updatedAt', 'DESC');
         } else {
             // 2. ЗА ВСИЧКО ДРУГО (eMAG, Alleop*) -> Търсим в таблица REVIEW
@@ -65,8 +66,55 @@ class ReviewController extends AbstractController
             60
         );
 
+        // Get category tree for sidebar
+        $categories = $categoryRepository->getCategoryTree();
+
         return $this->render('review/index.html.twig', [
             'reviews' => $pagination,
+            'categories' => $categories,
+        ]);
+    }
+
+    #[Route('/category/{slug}', name: 'app_category_show')]
+    public function showCategory(
+        string $slug,
+        Request $request,
+        CategoryRepository $categoryRepository,
+        ProductRepository $productRepository,
+        ReviewRepository $reviewRepository,
+        PaginatorInterface $paginator
+    ): Response {
+        $category = $categoryRepository->findBySlug($slug);
+
+        if (!$category) {
+            throw $this->createNotFoundException('Category not found');
+        }
+
+        // Get all products in this category and its children
+        $categoryIds = [$category->getId()];
+        foreach ($category->getChildren() as $child) {
+            $categoryIds[] = $child->getId();
+        }
+
+        // Get products from Product entity
+        $qb = $productRepository->createQueryBuilder('p')
+            ->where('p.category IN (:categories)')
+            ->setParameter('categories', $categoryIds)
+            ->orderBy('p.updatedAt', 'DESC');
+
+        $pagination = $paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            60
+        );
+
+        // Get category tree for sidebar
+        $categories = $categoryRepository->getCategoryTree();
+
+        return $this->render('review/index.html.twig', [
+            'reviews' => $pagination,
+            'categories' => $categories,
+            'currentCategory' => $category,
         ]);
     }
 
@@ -156,14 +204,10 @@ class ReviewController extends AbstractController
         $alleopQb = $productRepository->createQueryBuilder('p')
             ->where('p.price > 0');
 
-        if ($currentCategory) {
-            $alleopQb->andWhere('(p.category = :category OR LOWER(p.name) LIKE :startTerm)')
-                ->setParameter('category', $currentCategory)
-                ->setParameter('startTerm', $searchTerm . '%');
-        } else {
-            $alleopQb->andWhere('LOWER(p.name) LIKE :startTerm')
-                ->setParameter('startTerm', $searchTerm . '%');
-        }
+        // Note: Product.category is now a Category entity, not a string
+        // We can only search by product name since Review.category is a string
+        $alleopQb->andWhere('LOWER(p.name) LIKE :startTerm')
+            ->setParameter('startTerm', $searchTerm . '%');
 
         $alleopResults = $alleopQb->setMaxResults(6)
             ->getQuery()
@@ -183,8 +227,8 @@ class ReviewController extends AbstractController
 
         // --- 6. ТЪРСЕНЕ В FASHION DAYS (Таблица Product) - По категория ---
         $fashionQb = $productRepository->createQueryBuilder('p')
-            ->where('p.category = :cat')
-            ->setParameter('cat', 'FashionDays')
+            ->where('p.source = :source_name')
+            ->setParameter('source_name', 'FashionDays')
             ->andWhere('p.price > 0');
 
         if ($currentCategory) {
@@ -481,9 +525,9 @@ class ReviewController extends AbstractController
 
         // 3. Fashion Days (Product) - with category filter
         $fashionQb = $productRepository->createQueryBuilder('p')
-            ->where('p.category = :fd')
+            ->where('p.source = :source_name')
             ->andWhere('p.price > 0')
-            ->setParameter('fd', 'FashionDays');
+            ->setParameter('source_name', 'FashionDays');
 
         if (!empty($searchTerm)) {
             $fashionQb->andWhere('LOWER(p.name) LIKE :term')
@@ -491,7 +535,9 @@ class ReviewController extends AbstractController
         }
 
         if (!empty($category)) {
-            $fashionQb->andWhere('p.category = :category')
+            // Join category table to filter by category slug/name
+            $fashionQb->innerJoin('p.category', 'c')
+                ->andWhere('c.slug = :category OR c.name = :category')
                 ->setParameter('category', $category);
         }
 

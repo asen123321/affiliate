@@ -1,0 +1,170 @@
+{#
+    Sidebar Category Menu - eMAG Style
+    Displays hierarchical category tree in a vertical menu
+#}
+
+<div class="category-sidebar">
+    <div class="sidebar-header">
+        <h5 class="sidebar-title">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+            Избери категория
+        </h5>
+    </div>
+
+    <div class="category-list">
+        {% if categories is defined and categories|length > 0 %}
+            {% for category in categories %}
+                <div class="category-item">
+                    {# Parent Category #}
+                    <a href="{{ path('app_category_show', {slug: category.slug}) }}"
+                       class="category-link {% if category.children|length > 0 %}has-children{% endif %}"
+                       {% if app.request.get('_route_params').slug|default == category.slug %}aria-current="page"{% endif %}>
+                        <span class="category-name">{{ category.name }}</span>
+                        {% if category.children|length > 0 %}
+                            <i class="bi bi-chevron-right arrow-icon"></i>
+                        {% endif %}
+                    </a>
+
+                    {# Children Categories #}
+                    {% if category.children|length > 0 %}
+                        <div class="category-children">
+                            {% for child in category.children %}
+                                <a href="{{ path('app_category_show', {slug: child.slug}) }}"
+                                   class="category-child-link"
+                                   {% if app.request.get('_route_params').slug|default == child.slug %}aria-current="page"{% endif %}>
+                                    {{ child.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-light text-center">
+                <small class="text-muted">Няма налични категории</small>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.category-sidebar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: sticky;
+    top: 20px;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 18px 20px;
+    color: white;
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.category-list {
+    padding: 0;
+}
+
+.category-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.category-link:hover {
+    background: #f7f7f7;
+    color: #667eea;
+    padding-left: 24px;
+}
+
+.category-link[aria-current="page"] {
+    background: #f0f4ff;
+    color: #667eea;
+    border-left: 4px solid #667eea;
+}
+
+.category-link .arrow-icon {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.category-link:hover .arrow-icon {
+    transform: translateX(4px);
+}
+
+.category-children {
+    background: #fafafa;
+    padding: 8px 0;
+    display: none;
+}
+
+.category-item:hover .category-children,
+.category-item:focus-within .category-children {
+    display: block;
+}
+
+.category-child-link {
+    display: block;
+    padding: 10px 20px 10px 40px;
+    text-decoration: none;
+    color: #5a5a5a;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.category-child-link:hover {
+    background: #f0f0f0;
+    color: #667eea;
+    padding-left: 44px;
+}
+
+.category-child-link[aria-current="page"] {
+    background: #e8edff;
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .category-sidebar {
+        position: relative;
+        top: 0;
+        margin-bottom: 20px;
+    }
+
+    .category-children {
+        display: block;
+    }
+}
+
+/* Accessibility */
+.category-link:focus,
+.category-child-link:focus {
+    outline: 2px solid #667eea;
+    outline-offset: -2px;
+}
+</style>

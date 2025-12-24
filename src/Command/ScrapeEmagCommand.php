@@ -7,6 +7,7 @@ use App\Entity\Review;
 use App\Repository\ProductRepository;
 use App\Repository\ReviewRepository;
 use App\Service\ProfitShareService;
+use App\Service\CategoryMappingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -37,7 +38,8 @@ class ScrapeEmagCommand extends Command
         private EntityManagerInterface $entityManager,
         private ProductRepository $productRepository,
         private ReviewRepository $reviewRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
+        private CategoryMappingService $categoryMappingService
     ) {
         parent::__construct();
     }
@@ -207,7 +209,15 @@ class ScrapeEmagCommand extends Command
         $product->setName($safeName);
         $product->setPrice($item['price_vat'] ?? 0);
         $product->setImage($item['image'] ?? null);
-        $product->setCategory($item['category_name'] ?? $item['_category'] ?? 'unknown');
+
+        // SECTION 4: Smart category mapping based on feed category data
+        $sourceCategoryName = $item['category_name'] ?? '';
+        $localCategory = $this->categoryMappingService->findLocalCategory($sourceCategoryName);
+        $product->setCategory($localCategory);
+
+        // Set source for filtering
+        $product->setSource('eMAG');
+
         $product->setUpdatedAt(new \DateTimeImmutable());
 
         $this->entityManager->persist($product);

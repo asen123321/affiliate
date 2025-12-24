@@ -42,9 +42,12 @@ return [
                         .')'
                     .')'
                 .')'
-                .'|/review/([^/]++)(*:218)'
-                .'|/compare\\-category/([^/]++)(*:253)'
-                .'|/buy/([^/]++)(*:274)'
+                .'|/c(?'
+                    .'|ategory/([^/]++)(*:223)'
+                    .'|ompare\\-category/([^/]++)(*:256)'
+                .')'
+                .'|/review/([^/]++)(*:281)'
+                .'|/buy/([^/]++)(*:302)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -56,9 +59,10 @@ return [
         168 => [[['_route' => '_profiler_exception', '_controller' => 'web_profiler.controller.exception_panel::body'], ['token'], null, null, false, false, null]],
         181 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
         191 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
-        218 => [[['_route' => 'app_review_show', '_controller' => 'App\\Controller\\ReviewController::show'], ['slug'], null, null, false, true, null]],
-        253 => [[['_route' => 'app_compare_category', '_controller' => 'App\\Controller\\ReviewController::compareCategory'], ['category'], null, null, false, true, null]],
-        274 => [
+        223 => [[['_route' => 'app_category_show', '_controller' => 'App\\Controller\\ReviewController::showCategory'], ['slug'], null, null, false, true, null]],
+        256 => [[['_route' => 'app_compare_category', '_controller' => 'App\\Controller\\ReviewController::compareCategory'], ['category'], null, null, false, true, null]],
+        281 => [[['_route' => 'app_review_show', '_controller' => 'App\\Controller\\ReviewController::show'], ['slug'], null, null, false, true, null]],
+        302 => [
             [['_route' => 'app_buy_redirect', '_controller' => 'App\\Controller\\ReviewController::buyRedirect'], ['id'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],
